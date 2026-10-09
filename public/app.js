@@ -8,7 +8,11 @@ let configVersion = 0, configNeedsSync = false;
 let companyGoalsUnconfirmed = false;
 let lastPresetRole = 'AI Agent', roleUpdate = Promise.resolve(), titleRuleRole = '';
 let catalogSignature = '', rolePresetByKey = new Map();
+const roleAllowanceByKey = new Map();
+let roleComposing = false;
 let presetRemovedExclusions = [], explicitExclusionTerms = new Set();
+let previousExclusionTerms = new Set(), explicitRemovedExclusionTerms = new Set();
+let replacingExclusionList = false;
 let pendingAction = '', stopPending = false, stopVersion = 0, reconcilePending = false, formDirty = false, connectionLoaded = false;
 function buttonBusy(button, busy, caption) {
   if(!button)return;
@@ -77,8 +81,7 @@ function fillRoleTitleExclusions(role) {
   $('role-title-exclusion-note').textContent=`仅对“${role}”生效，只匹配职位标题。`;
 }
 function selectedRole() {
-  const form=$('config-form');
-  return (form.elements.targetRole.value==='__custom__'?form.elements.customRole.value:form.elements.targetRole.value).trim();
+  return $('config-form').elements.targetRole.value.trim();
 }
 function selectedCity() {
   const form=$('config-form');
@@ -90,38 +93,43 @@ function ensureChoice(select,value,label=value) {
   if(!group){group=document.createElement('optgroup');group.label='已保存的自定义';select.append(group);}
   const option=document.createElement('option');option.value=value;option.textContent=label;group.append(option);
 }
+function syncRolePicker() {
+  const form=$('config-form'),role=selectedRole();
+  const option=[...form.elements.rolePicker.options].find(option=>option.value&&targetRoleKey(option.value)===targetRoleKey(role));
+  form.elements.rolePicker.value=option?.value||'';
+}
 function renderCatalogs(data) {
   const catalogs=data.catalogs||{}, signature=JSON.stringify([catalogs.roleGroups||[],catalogs.cityGroups||[],data.cities||{}]);
   if(signature===catalogSignature)return;
   catalogSignature=signature;
   rolePresetByKey=new Map((catalogs.roleGroups||[]).flatMap(group=>group.options||[]).map(option=>[targetRoleKey(option.targetRole),option]));
-  const form=$('config-form'),currentRole=formLoaded?form.elements.targetRole.value:data.config.targetRole||'AI Agent',currentCity=formLoaded?form.elements.city.value:data.config.city||'北京';
-  for(const [select,groups,nameKey,value] of [[form.elements.targetRole,catalogs.roleGroups||[{label:'默认',options:[{targetRole:'AI Agent',label:'AI Agent'}]}],'targetRole',currentRole],[form.elements.city,catalogs.cityGroups||[{label:'城市',options:Object.entries(data.cities||{}).map(([name,code])=>({name,code}))}],'name',currentCity]]){
+  const form=$('config-form'),currentCity=formLoaded?form.elements.city.value:data.config.city||'北京';
+  for(const [select,groups,nameKey,value] of [[form.elements.rolePicker,catalogs.roleGroups||[{label:'默认',options:[{targetRole:'AI Agent',label:'AI Agent'}]}],'targetRole',data.config.targetRole||'AI Agent'],[form.elements.city,catalogs.cityGroups||[{label:'城市',options:Object.entries(data.cities||{}).map(([name,code])=>({name,code}))}],'name',currentCity]]){
     select.replaceChildren();
+    if(select===form.elements.rolePicker){const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='选择岗位';placeholder.disabled=true;select.append(placeholder);}
     for(const group of groups){const container=document.createElement('optgroup');container.label=group.label;for(const item of group.options||[]){const option=document.createElement('option');option.value=item[nameKey];option.textContent=item.label||item[nameKey];container.append(option);}select.append(container);}
-    if(select===form.elements.targetRole)ensureChoice(select,'AI Agent');
-    const manual=document.createElement('option');manual.value='__custom__';manual.textContent='自定义…';select.append(manual);
+    if(select===form.elements.rolePicker)ensureChoice(select,'AI Agent');
+    else{const manual=document.createElement('option');manual.value='__custom__';manual.textContent='自定义…';select.append(manual);}
     ensureChoice(select,value);select.value=value;
   }
+  if(formLoaded)syncRolePicker();
 }
 function fillForm(config) {
   const form=$('config-form');
-  for(const name of ['targetRole','city'])ensureChoice(form.elements[name],config[name]);
+  ensureChoice(form.elements.rolePicker,config.targetRole);ensureChoice(form.elements.city,config.city);
   for(const [key,value] of Object.entries(config)) {
     const field=form.elements.namedItem(key);
     if(field) field.value=Array.isArray(value)?value.join('\n'):String(value);
   }
-  form.elements.customRole.value=config.targetRole||'';form.elements.customCity.value=config.city||'';
+  form.elements.customCity.value=config.city||'';
   formLoaded=true;
   lastPresetRole=config.targetRole||'AI Agent';
   presetRemovedExclusions=[];
   explicitExclusionTerms=new Set((config.excludeKeywords||[]).filter(term=>unblockedRoleTerms(lastPresetRole).includes(term)));
+  previousExclusionTerms=new Set(config.excludeKeywords||[]);explicitRemovedExclusionTerms=new Set();
   fillRoleTitleExclusions(lastPresetRole);
-  updateCity();updateCustomRole();
+  updateCity();syncRolePicker();
   $('settings').open=true;
-}
-function updateCustomRole() {
-  $('custom-role-field').hidden=$('config-form').elements.targetRole.value!=='__custom__';
 }
 function updateCity() {
   const form=$('config-form'),custom=form.elements.city.value==='__custom__',code=state?.cities?.[selectedCity()];
@@ -130,22 +138,29 @@ function updateCity() {
   if(code)form.elements.cityCode.value=code;
 }
 function unblockedRoleTerms(role) {
-  return rolePresetByKey.get(targetRoleKey(role))?.allowExcludedKeywords||[];
+  return roleAllowanceByKey.get(targetRoleKey(role))||rolePresetByKey.get(targetRoleKey(role))?.allowExcludedKeywords||[];
 }
 async function updateRoleDefaults() {
   const form=$('config-form'), role=selectedRole();
-  if(!role)throw new Error('请选择目标岗位，或填写自定义岗位');
+  if(!role)throw new Error('请选择或输入目标岗位');
+  if(role.length>100)throw new Error('目标岗位不能超过100个字符');
   if(targetRoleKey(role)!==titleRuleRole)fillRoleTitleExclusions(role);
-  if(role===lastPresetRole)return;
+  const sameRole=role===lastPresetRole,key=targetRoleKey(role);
+  if(sameRole&&(roleAllowanceByKey.has(key)||rolePresetByKey.has(key)))return;
   const response=await fetch(`/api/role-defaults?role=${encodeURIComponent(role)}`),defaults=await response.json();
   if(role!==selectedRole())return;
   if(!response.ok)throw new Error(defaults.error||'无法更新岗位默认搜索词');
+  const allowed=Array.isArray(defaults.allowExcludedKeywords)?defaults.allowExcludedKeywords.filter(term=>typeof term==='string'):unblockedRoleTerms(role);
+  roleAllowanceByKey.set(key,allowed);
+  if(roleAllowanceByKey.size>250)roleAllowanceByKey.delete(roleAllowanceByKey.keys().next().value);
+  if(key===targetRoleKey(state?.config?.targetRole))for(const term of state.config.excludeKeywords||[])if(allowed.includes(term)&&!explicitRemovedExclusionTerms.has(term))explicitExclusionTerms.add(term);
+  if(sameRole)return;
   form.elements.queries.value=defaults.queries.join('\n');
   form.elements.requiredAny.value=defaults.requiredAny.join('\n');
-  const allowed=unblockedRoleTerms(role);
   const terms=[...new Set([...form.elements.excludeKeywords.value.split('\n').map(term=>term.trim()).filter(Boolean),...presetRemovedExclusions])];
   presetRemovedExclusions=terms.filter(term=>allowed.includes(term)&&!explicitExclusionTerms.has(term));
   form.elements.excludeKeywords.value=terms.filter(term=>!presetRemovedExclusions.includes(term)).join('\n');
+  previousExclusionTerms=new Set(terms.filter(term=>!presetRemovedExclusions.includes(term)));
   lastPresetRole=role;
   $('role-note').textContent=`已按“${role}”重设搜索词和匹配词；可继续编辑，也请检查排除规则。`;
 }
@@ -258,21 +273,35 @@ $('filter').onchange=renderJobs;
 $('settings-open').onclick=()=>{$('settings').open=true;$('settings').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});const field=$('config-form').elements.targetRole;if(!field.disabled)field.focus({preventScroll:true});};
 $('config-form').oninput=event=>{
   formDirty=true;$('save-feedback').textContent='有未保存的修改';
+  if(event.target===$('config-form').elements.targetRole)syncRolePicker();
   if(event.target===$('config-form').elements.excludeKeywords){
-    const terms=event.target.value.split('\n').map(term=>term.trim()).filter(Boolean),allowed=unblockedRoleTerms(selectedRole());
-    for(const term of explicitExclusionTerms)if(!terms.includes(term))explicitExclusionTerms.delete(term);
-    for(const term of terms)if(allowed.includes(term))explicitExclusionTerms.add(term);
+    const terms=new Set(event.target.value.split('\n').map(term=>term.trim()).filter(Boolean));
+    const allowed=unblockedRoleTerms(selectedRole()),pendingRole=selectedRole()!==lastPresetRole;
+    for(const term of previousExclusionTerms)if(!terms.has(term)){explicitExclusionTerms.delete(term);explicitRemovedExclusionTerms.add(term);}
+    for(const term of terms)if(!previousExclusionTerms.has(term)){if(pendingRole||allowed.includes(term))explicitExclusionTerms.add(term);explicitRemovedExclusionTerms.delete(term);}
+    if(replacingExclusionList&&pendingRole)for(const term of terms){explicitExclusionTerms.add(term);explicitRemovedExclusionTerms.delete(term);}
+    replacingExclusionList=false;
+    previousExclusionTerms=terms;
   }
 };
+$('config-form').elements.excludeKeywords.addEventListener('beforeinput',event=>{
+  const field=event.target;replacingExclusionList=String(event.inputType).startsWith('insert')&&field.selectionStart===0&&field.selectionEnd===field.value.length;
+});
 $('config-form').elements.city.onchange=()=>{updateCity();if($('config-form').elements.city.value==='__custom__'){$('advanced-settings').open=true;$('config-form').elements.customCity.focus();}};
 $('config-form').elements.customCity.oninput=updateCity;
 for(const button of document.querySelectorAll('[data-speed-profile]'))button.onclick=()=>fillSpeedProfile(button.dataset.speedProfile);
 function requestRoleDefaults(){const pending=updateRoleDefaults();roleUpdate=pending;pending.catch(error=>{if(pending!==roleUpdate)return;clientError=error.message;notice(clientError);});}
-$('config-form').elements.targetRole.onchange=()=>{updateCustomRole();if($('config-form').elements.targetRole.value==='__custom__'){$('advanced-settings').open=true;$('config-form').elements.customRole.focus();return;}requestRoleDefaults();};
-$('config-form').elements.customRole.onchange=()=>{if(selectedRole())requestRoleDefaults();};
+$('config-form').elements.targetRole.addEventListener('compositionstart',()=>{roleComposing=true;});
+$('config-form').elements.targetRole.addEventListener('compositionend',()=>{roleComposing=false;syncRolePicker();});
+$('config-form').elements.targetRole.onchange=event=>{if(!roleComposing&&!event.isComposing&&selectedRole())requestRoleDefaults();};
+$('config-form').elements.rolePicker.onchange=()=>{
+  const form=$('config-form');if(!form.elements.rolePicker.value)return;
+  form.elements.targetRole.value=form.elements.rolePicker.value;
+  formDirty=true;$('save-feedback').textContent='有未保存的修改';requestRoleDefaults();
+};
 $('config-form').onsubmit=async event=>{
   event.preventDefault();
-  if(configSaving||pendingAction||stopPending||['running','waiting','paused'].includes(state?.runner?.status))return;
+  if(roleComposing||configSaving||pendingAction||stopPending||['running','waiting','paused'].includes(state?.runner?.status))return;
   const startedStopVersion=stopVersion;
   configSaving=true;buttonBusy(event.submitter,true,'保存中');updateFormAvailability();updateControlAvailability();$('save-feedback').textContent='正在保存…';
   try {
@@ -280,7 +309,7 @@ $('config-form').onsubmit=async event=>{
     await settleRoleUpdates();
     const form=new FormData(event.target), config={};
     for(const [key,value] of form.entries()){
-      if(['roleTitleExclusionTerms','customRole','customCity'].includes(key))continue;
+      if(['roleTitleExclusionTerms','rolePicker','customCity'].includes(key))continue;
       if(['contactCompanyTarget','resumeCompanyTarget'].includes(key)){
         const number=Number(value);if(!String(value).trim()||!Number.isSafeInteger(number)||number<0)throw new Error('公司目标必须填写0或非负安全整数');config[key]=number;
       }else config[key]=['queries','requiredAny','excludeKeywords','excludeCompanies'].includes(key)?value.split('\n').map(x=>x.trim()).filter(Boolean):['delaySeconds','maxPages','idleMinutes','contactBatchSize','batchBreakMinutes'].includes(key)?Number(value):key==='autoRun'?value==='true':value;
@@ -300,8 +329,9 @@ $('config-form').onsubmit=async event=>{
       if(['contactCompanyTarget','resumeCompanyTarget'].some(key=>state.config[key]!==config[key]))throw new Error('公司目标未确认保存，请更新并重新启动本地程序后再保存设置。');
       companyGoalsUnconfirmed=false;
     }
-    for(const name of ['targetRole','city']){ensureChoice(event.target.elements[name],config[name]);event.target.elements[name].value=config[name];}
-    updateCustomRole();updateCity();
+    event.target.elements.targetRole.value=config.targetRole;ensureChoice(event.target.elements.rolePicker,config.targetRole);
+    ensureChoice(event.target.elements.city,config.city);event.target.elements.city.value=config.city;
+    syncRolePicker();updateCity();
     formDirty=false;$('settings').open=true;
     if(event.submitter?.value==='start'&&startedStopVersion===stopVersion){await post('start');if(startedStopVersion!==stopVersion)await post('stop');}
     $('save-feedback').textContent=startedStopVersion===stopVersion?'已保存':'已保存，投递已停止';clientError='';await refresh();

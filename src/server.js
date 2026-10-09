@@ -4,6 +4,7 @@ import { extname, resolve, sep } from 'node:path';
 import { timingSafeEqual } from 'node:crypto';
 import { validateConfig, roleSearchDefaults, CITY_CODES } from './core.js';
 import { CHOICE_CATALOGS } from './catalogs.js';
+import { findJobPreset } from './job-presets.js';
 
 const json = (res, status, data) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(data)); };
 export function createServer({ store, runner, token, publicDir, extensionBridge = null, setupExtension = async () => {}, inspectPage = null, timingSnapshot = null, heartbeat = () => {}, shutdown = async () => {}, leaseClosed = () => {}, leaseGraceMs = 2000 }) {
@@ -116,7 +117,10 @@ export function createServer({ store, runner, token, publicDir, extensionBridge 
         if (url.search) throw new Error('运行计时只接受固定只读请求');
         return json(res, 200, typeof timingSnapshot === 'function' ? timingSnapshot() : null);
       }
-      if (url.pathname === '/api/role-defaults') return json(res,200,roleSearchDefaults(url.searchParams.get('role')??'AI Agent'));
+      if (url.pathname === '/api/role-defaults') {
+        const role=url.searchParams.get('role')??'AI Agent',defaults=roleSearchDefaults(role);
+        return json(res,200,{...defaults,allowExcludedKeywords:[...(findJobPreset(role)?.allowExcludedKeywords||[])]});
+      }
       if (url.pathname === '/api/export') {
         res.writeHead(200, { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="boss-applications.csv"' });
         return res.end(store.exportCsv());

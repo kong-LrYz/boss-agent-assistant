@@ -17,5 +17,15 @@ dialog{border:1px solid var(--line);border-radius:16px;padding:24px;max-width:48
 @media(max-width:640px){.shell{padding:0 16px 20px}header{height:62px}.intro{padding:21px 0 17px}.intro>div{display:block}h1{font-size:25px}.target-summary{margin-top:8px}.panel{padding:18px}.basic-grid,.grid,.grid.two{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr);gap:9px}.metrics article{padding:14px}.metrics strong{font-size:25px}.grid{gap:0}.formfooter{align-items:flex-start;flex-direction:column}.formfooter>.actions{width:100%}.formfooter button{flex:1}.sectionhead{align-items:flex-start}.record-tools{flex-wrap:wrap;justify-content:flex-end}.record-tools select{max-width:145px}.control-actions>.actions:first-child{width:100%}.control-actions #start{flex:1}.control-actions #login{width:100%}.pace-settings .sectionhead{flex-direction:column}summary span{display:block;margin:7px 0 0}.secondary-actions{justify-content:space-between}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}button:active:not(:disabled),.export:active{transform:none}}
 /* Native pickers keep keyboard, touch, and assistive-technology selection familiar. */
-.basic-grid>label{min-width:0}.basic-grid select{min-width:0;text-overflow:ellipsis}
-#custom-role-field,#custom-city-field,#city-code-field{scroll-margin-top:20px}
+.basic-grid>label,.role-field{min-width:0}.basic-grid select{min-width:0;text-overflow:ellipsis}.role-field{margin-bottom:16px}.role-field>label{margin:0}
+.role-combobox{display:flex;position:relative;margin-top:7px;border:1px solid var(--line);border-radius:8px;background:#fcfdfb;font-size:13px;transition:border-color .15s ease,box-shadow .15s ease}
+.role-combobox:focus-within{border-color:#83a592;box-shadow:0 0 0 3px #83a59224}
+.role-combobox input{min-width:0;flex:1;margin:0;border:0;background:transparent;border-radius:8px 0 0 8px}
+.role-combobox input:focus{box-shadow:none}
+.role-combobox select{flex:0 0 44px;width:44px;margin:0;border:0;border-radius:0 8px 8px 0;padding:0;appearance:none;color:transparent;background:transparent;box-shadow:none}
+.role-combobox select option,.role-combobox select optgroup{color:var(--ink);background:#fff}
+.role-combobox select:hover:not(:disabled){background:#f0f5ef}
+.role-combobox select:focus-visible{outline:2px solid #588a6f;outline-offset:-4px}
+.role-combobox::after{content:"";position:absolute;right:17px;top:calc(50% - 4px);width:7px;height:7px;border:solid #718078;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);pointer-events:none}
+.role-combobox:has(input:disabled){background:#f3f5f1}
+#custom-city-field,#city-code-field{scroll-margin-top:20px}

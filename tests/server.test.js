@@ -297,8 +297,13 @@ test('role presets and a role-only configuration change remove inherited Agent m
  t.after(async()=>{server.closeAllConnections();await new Promise(r=>server.close(r));rmSync(dir,{recursive:true,force:true});});
  const base=`http://127.0.0.1:${server.address().port}`;
  let res=await fetch(base+'/api/role-defaults?role='+encodeURIComponent('Java开发'));assert.equal(res.status,200);
- assert.deepEqual(await res.json(),{queries:['Java开发'],requiredAny:['Java开发']});
+ assert.deepEqual(await res.json(),{queries:['Java开发'],requiredAny:['Java开发'],allowExcludedKeywords:[]});
+ res=await fetch(base+'/api/role-defaults?role='+encodeURIComponent('海外销售工程师'));assert.equal(res.status,200);
+ assert.deepEqual(await res.json(),{queries:['海外销售工程师'],requiredAny:['海外销售工程师'],allowExcludedKeywords:['销售','电销']});
+ res=await fetch(base+'/api/role-defaults?role='+encodeURIComponent('在线客服专员'));assert.equal(res.status,200);
+ assert.deepEqual(await res.json(),{queries:['在线客服专员'],requiredAny:['在线客服专员'],allowExcludedKeywords:['客服']});
  res=await fetch(base+'/api/role-defaults?role=');assert.equal(res.status,400);
+ res=await fetch(base+'/api/role-defaults?role='+encodeURIComponent('岗'.repeat(101)));assert.equal(res.status,400);
  const save=body=>fetch(base+'/api/config',{method:'POST',headers:{Origin:base,'x-boss-token':'role-token','content-type':'application/json'},body:JSON.stringify(body)});
  res=await save({targetRole:'Java开发'});assert.equal(res.status,200);assert.equal(store.loadConfig().targetRole,'Java开发');assert.deepEqual(store.loadConfig().requiredAny,['Java开发']);
  res=await save({targetRole:'后端开发',queries:['Spring工程师'],requiredAny:['Spring']});assert.equal(res.status,200);assert.deepEqual(store.loadConfig().queries,['Spring工程师']);assert.deepEqual(store.loadConfig().requiredAny,['Spring']);

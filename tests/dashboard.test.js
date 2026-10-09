@@ -6,11 +6,12 @@ import { join } from 'node:path';
 import { chromium } from 'playwright';
 import { Store } from '../src/store.js';
 import { createServer } from '../src/server.js';
+import { evaluateJob } from '../src/core.js';
 
 async function chooseRole(page,value){
- const select=page.getByLabel('目标岗位',{exact:true});
+ const select=page.getByLabel('选择目标岗位',{exact:true});
  if(await select.locator('option').evaluateAll((options,value)=>options.some(option=>option.value===value),value))return select.selectOption(value);
- await select.selectOption('__custom__');const field=page.getByLabel('自定义目标岗位',{exact:true});await field.fill(value);await field.press('Tab');
+ const field=page.getByLabel('目标岗位',{exact:true});await field.fill(value);await field.press('Tab');
 }
 
 
@@ -235,7 +236,7 @@ test('company goals default to unlimited and the settings entry opens editable r
 });
 test('company goals persist without company deduplication controls while speed profiles change only timing',async t=>{
  const {page,store}=await roleRulesDashboard(t,[{targetRole:'AI Agent',keywords:['产品']},{targetRole:'Java开发',keywords:['客服']}]);await chooseRole(page,'Java开发');await page.getByLabel('目标岗位',{exact:true}).press('Tab');await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='Java开发');await page.getByLabel('目标城市',{exact:true}).selectOption('上海');await page.locator('[name="contactCompanyTarget"]').fill('500');await page.locator('[name="resumeCompanyTarget"]').fill('100');
- await page.getByRole('button',{name:'填入无等待档',exact:true}).click();assert.equal(await page.locator('[name="contactCompanyTarget"]').inputValue(),'500');assert.equal(await page.locator('[name="resumeCompanyTarget"]').inputValue(),'100');assert.equal(await page.locator('[name="companyDedup"]').count(),0);assert.equal(await page.getByLabel('自定义目标岗位',{exact:true}).inputValue(),'Java开发');assert.equal(await page.getByLabel('目标城市',{exact:true}).inputValue(),'上海');assert.equal(await page.locator('[name="queries"]').inputValue(),'Java开发');assert.equal(await page.getByLabel('本目标岗位排除职能（仅看职位标题）').inputValue(),'客服');
+ await page.getByRole('button',{name:'填入无等待档',exact:true}).click();assert.equal(await page.locator('[name="contactCompanyTarget"]').inputValue(),'500');assert.equal(await page.locator('[name="resumeCompanyTarget"]').inputValue(),'100');assert.equal(await page.locator('[name="companyDedup"]').count(),0);assert.equal(await page.getByLabel('目标岗位',{exact:true}).inputValue(),'Java开发');assert.equal(await page.getByLabel('目标城市',{exact:true}).inputValue(),'上海');assert.equal(await page.locator('[name="queries"]').inputValue(),'Java开发');assert.equal(await page.getByLabel('本目标岗位排除职能（仅看职位标题）').inputValue(),'客服');
  await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);await page.waitForFunction(()=>document.getElementById('target-role-label').textContent==='Java开发');const config=store.loadConfig();assert.equal(config.contactCompanyTarget,500);assert.equal(config.resumeCompanyTarget,100);assert.equal(config.companyDedup,false);assert.equal(config.targetRole,'Java开发');assert.equal(config.city,'上海');assert.deepEqual(config.roleTitleExclusions,[{targetRole:'AI Agent',keywords:['产品']},{targetRole:'Java开发',keywords:['客服']}]);assert.match(await page.locator('#goal-summary').innerText(),/500.*100.*两项/u);
 });
 test('finite company goals must be read back before starting when an older backend acknowledges but drops them',async t=>{
@@ -279,7 +280,7 @@ test('target-specific title exclusions switch and save without changing other ro
  assert.deepEqual(store.loadConfig().excludeKeywords,['销售']);
  await page.waitForFunction(()=>document.getElementById('current').textContent.includes('产品经理'));
  await page.locator('#settings').evaluate(el=>{el.open=true;});
- await page.getByLabel('目标岗位',{exact:true}).selectOption('AI Agent');await page.getByLabel('目标岗位',{exact:true}).press('Tab');
+ await page.getByLabel('选择目标岗位',{exact:true}).selectOption('AI Agent');await page.getByLabel('目标岗位',{exact:true}).press('Tab');
  await page.waitForFunction(()=>document.querySelector('[name="requiredAny"]').value.includes('智能体'));
  assert.equal(await field.inputValue(),'产品\n运营');
 });
@@ -469,30 +470,87 @@ test('zero extra waiting profile saves every zero without starting outreach', as
 
 test('role and city catalogs support no-typing choices while preserving unsaved values across polls',async t=>{
  const {page,store}=await roleRulesDashboard(t,[{targetRole:'AI Agent',keywords:['产品经理']}]);
- const target=page.getByLabel('目标岗位',{exact:true}),city=page.getByLabel('目标城市',{exact:true});
- assert.equal(await target.evaluate(element=>element.tagName),'SELECT');assert.equal(await city.evaluate(element=>element.tagName),'SELECT');
- assert.ok(await target.locator('optgroup').count()>=10);assert.ok(await target.locator('option').count()>=70);
- await target.selectOption('销售专员');await city.selectOption('上海');await page.getByLabel('岗位类型',{exact:true}).selectOption('experienced');
+ const target=page.getByLabel('目标岗位',{exact:true}),picker=page.getByLabel('选择目标岗位',{exact:true}),city=page.getByLabel('目标城市',{exact:true});
+ assert.equal(await target.evaluate(element=>element.tagName),'INPUT');assert.equal(await city.evaluate(element=>element.tagName),'SELECT');
+ assert.ok(await picker.locator('optgroup').count()>=10);assert.ok(await picker.locator('option').count()>=70);
+ await picker.selectOption('销售专员');await city.selectOption('上海');await page.getByLabel('岗位类型',{exact:true}).selectOption('experienced');
  await page.waitForTimeout(2200);assert.equal(await target.inputValue(),'销售专员');assert.equal(await city.inputValue(),'上海');assert.equal(store.loadConfig().targetRole,'AI Agent');
  await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
  const config=store.loadConfig();assert.equal(config.targetRole,'销售专员');assert.equal(config.city,'上海');assert.equal(config.cityCode,'101020100');assert.ok(config.requiredAny.includes('销售专员'));assert.ok(!config.excludeKeywords.includes('销售'));assert.deepEqual(config.roleTitleExclusions,[{targetRole:'AI Agent',keywords:['产品经理']}]);
- assert.equal(await page.locator('#city-code-field').isVisible(),false);assert.equal(await page.locator('#custom-role-field').isVisible(),false);
+ assert.equal(await page.locator('#city-code-field').isVisible(),false);assert.equal(await page.locator('[name="customRole"]').count(),0);
 });
 
 test('stored custom role and custom city remain selectable and save without losing custom filters',async t=>{
  const {page,store}=await roleRulesDashboard(t,[]);
  store.saveConfig({...store.loadConfig(),targetRole:'卫星遥感标校',queries:['卫星标校'],requiredAny:['遥感'],city:'自定义测试城',cityCode:'101999999'});
  await page.reload();await page.waitForFunction(()=>document.querySelector('[name="targetRole"]').value==='卫星遥感标校');
- assert.equal(await page.getByLabel('目标城市',{exact:true}).inputValue(),'自定义测试城');assert.equal(await page.getByLabel('目标岗位',{exact:true}).evaluate(element=>element.tagName),'SELECT');
+ assert.equal(await page.getByLabel('目标城市',{exact:true}).inputValue(),'自定义测试城');assert.equal(await page.getByLabel('目标岗位',{exact:true}).evaluate(element=>element.tagName),'INPUT');
+ assert.equal(await page.getByLabel('选择目标岗位',{exact:true}).inputValue(),'卫星遥感标校');
  await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
  assert.deepEqual(store.loadConfig().queries,['卫星标校']);assert.deepEqual(store.loadConfig().requiredAny,['遥感']);assert.equal(store.loadConfig().cityCode,'101999999');
 });
 
-test('advanced manual role selection still replaces defaults and survives save',async t=>{
+test('main role field accepts a custom role without opening advanced settings and trims on save',async t=>{
  const {page,store}=await roleRulesDashboard(t,[]);
- await page.getByLabel('目标岗位',{exact:true}).selectOption('__custom__');await page.getByLabel('自定义目标岗位',{exact:true}).fill('卫星遥感标校');
+ await page.locator('#advanced-settings').evaluate(element=>{element.open=false;});
+ await page.getByLabel('目标岗位',{exact:true}).fill('  卫星遥感标校  ');
  await page.getByRole('button',{name:'保存设置',exact:true}).click();await page.waitForFunction(()=>document.getElementById('save-feedback').textContent==='已保存');
  assert.equal(store.loadConfig().targetRole,'卫星遥感标校');assert.deepEqual(store.loadConfig().queries,['卫星遥感标校']);assert.equal(await page.getByLabel('目标岗位',{exact:true}).inputValue(),'卫星遥感标校');
+ assert.equal(await page.locator('#advanced-settings').evaluate(element=>element.open),false);
+ assert.equal(await page.locator('#notice').isVisible(),false);
+});
+
+test('role picker and typing can replace each other without submitting the helper or altering other settings',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[{targetRole:'AI Agent',keywords:['产品经理']}]);
+ const input=page.getByLabel('目标岗位',{exact:true}),picker=page.getByLabel('选择目标岗位',{exact:true}),previous=store.loadConfig();
+ let submitted,starts=0;page.on('request',request=>{const path=new URL(request.url()).pathname;if(path==='/api/config'&&request.method()==='POST')submitted=request.postDataJSON();if(path==='/api/start')starts++;});
+ await input.fill('卫星遥感标校');await input.press('Tab');
+ await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='卫星遥感标校');assert.equal(await picker.inputValue(),'');
+ await picker.selectOption('销售专员');assert.equal(await input.inputValue(),'销售专员');
+ await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='销售专员');
+ await input.fill('机器人运动控制');await input.press('Tab');
+ await page.waitForTimeout(2200);assert.equal(await input.inputValue(),'机器人运动控制');assert.equal(await picker.inputValue(),'');
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
+ assert.equal(store.loadConfig().targetRole,'机器人运动控制');assert.deepEqual(store.loadConfig().queries,['机器人运动控制']);assert.equal(Object.hasOwn(submitted,'rolePicker'),false);assert.equal(Object.hasOwn(submitted,'customRole'),false);assert.equal(starts,0);
+ for(const key of ['city','cityCode','roleType','resumeName','autoRun','contactCompanyTarget','resumeCompanyTarget','delaySeconds','idleMinutes','batchBreakMinutes'])assert.deepEqual(store.loadConfig()[key],previous[key]);
+ assert.deepEqual(store.loadConfig().roleTitleExclusions,previous.roleTitleExclusions);
+});
+
+test('role catalog is keyboard reachable beside the editable input',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);
+ const input=page.getByLabel('目标岗位',{exact:true}),picker=page.getByLabel('选择目标岗位',{exact:true});
+ await input.focus();await input.press('Tab');assert.equal(await picker.evaluate(element=>element===document.activeElement),true);
+ await picker.press('Shift+Tab');assert.equal(await input.evaluate(element=>element===document.activeElement),true);
+ await input.press('ControlOrMeta+A');await input.pressSequentially('Rust');await input.press('Tab');assert.equal(await input.inputValue(),'Rust');
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
+ assert.equal(store.loadConfig().targetRole,'Rust');assert.deepEqual(store.loadConfig().queries,['Rust']);
+});
+
+test('role input keeps IME intermediate text from triggering defaults or saving',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);
+ const input=page.getByLabel('目标岗位',{exact:true});let defaults=0,posts=0;
+ page.on('request',request=>{const path=new URL(request.url()).pathname;if(path==='/api/role-defaults')defaults++;if(path==='/api/config'&&request.method()==='POST')posts++;});
+ await input.focus();await input.dispatchEvent('compositionstart');
+ await input.evaluate(element=>{element.value='机';element.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true,inputType:'insertCompositionText',data:'机'}));});
+ await input.dispatchEvent('change');
+ await page.locator('#config-form').evaluate(form=>form.dispatchEvent(new SubmitEvent('submit',{bubbles:true,cancelable:true,submitter:form.querySelector('button[value="save"]')})));
+ assert.equal(defaults,0);assert.equal(posts,0);assert.equal(store.loadConfig().targetRole,'AI Agent');
+ await input.evaluate(element=>{element.value='机器人开发';element.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true,inputType:'insertCompositionText',data:'机器人开发'}));});
+ await input.dispatchEvent('compositionend');await input.dispatchEvent('change');await input.press('Tab');
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
+ assert.equal(store.loadConfig().targetRole,'机器人开发');assert.deepEqual(store.loadConfig().queries,['机器人开发']);assert.equal(posts,1);assert.ok(defaults>=1);
+});
+
+test('blank role cannot be saved and a saved case variant keeps custom search filters',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);const input=page.getByLabel('目标岗位',{exact:true});let posts=0;
+ page.on('request',request=>{if(new URL(request.url()).pathname==='/api/config'&&request.method()==='POST')posts++;});
+ await input.fill('');await page.getByRole('button',{name:'保存设置',exact:true}).click();assert.equal(await input.evaluate(element=>element.checkValidity()),false);assert.equal(posts,0);
+ await input.fill('   ');await page.getByRole('button',{name:'保存设置',exact:true}).click();await page.waitForFunction(()=>document.getElementById('notice').textContent.includes('请选择或输入目标岗位'));assert.equal(posts,0);
+ store.saveConfig({...store.loadConfig(),targetRole:'ａｉ  ａｇｅｎｔ',queries:['保留的检索词'],requiredAny:['自定义匹配']});
+ await page.reload();await page.waitForFunction(()=>document.querySelector('[name="targetRole"]').value==='ａｉ  ａｇｅｎｔ');
+ assert.equal(await page.getByLabel('选择目标岗位',{exact:true}).inputValue(),'AI Agent');
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
+ assert.equal(store.loadConfig().targetRole,'ａｉ  ａｇｅｎｔ');assert.deepEqual(store.loadConfig().queries,['保留的检索词']);assert.deepEqual(store.loadConfig().requiredAny,['自定义匹配']);
 });
 
 
@@ -506,7 +564,7 @@ test('isolated record errors keep active dashboard running without a continue pr
 
 test('browsing role choices restores automatic exclusions and preserves explicit edits',async t=>{
  const {page,store}=await roleRulesDashboard(t,[]);
- const role=page.getByLabel('目标岗位',{exact:true}),field=page.getByLabel('排除的岗位关键词（每行一个）');
+ const role=page.getByLabel('选择目标岗位',{exact:true}),field=page.getByLabel('排除的岗位关键词（每行一个）');
  await field.fill('销售\n电销\n客服');
  await role.selectOption('销售专员');
  await page.waitForFunction(()=>!document.querySelector('[name="excludeKeywords"]').value.split('\n').includes('销售'));
@@ -523,6 +581,68 @@ test('browsing role choices restores automatic exclusions and preserves explicit
  assert.ok((await field.inputValue()).split('\n').includes('销售'));assert.ok((await field.inputValue()).split('\n').includes('特定外包'));
  await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
  assert.ok(store.loadConfig().excludeKeywords.includes('销售'));assert.ok(store.loadConfig().excludeKeywords.includes('特定外包'));
+});
+
+test('typed custom role families remove inherited blockers and restore them when returning to Agent',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);
+ store.saveConfig({...store.loadConfig(),excludeKeywords:['销售','电销','客服']});await page.reload();await page.waitForFunction(()=>document.querySelector('[name="delaySeconds"]').value==='90');await page.locator('#advanced-settings').evaluate(element=>{element.open=true;});
+ const input=page.getByLabel('目标岗位',{exact:true}),field=page.getByLabel('排除的岗位关键词（每行一个）');
+ await field.fill(`${await field.inputValue()}\n特定外包`);await page.locator('#advanced-settings').evaluate(element=>{element.open=false;});
+ await input.fill('海外销售工程师');await input.press('Tab');
+ await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='海外销售工程师');
+ assert.ok(!(await field.inputValue()).split('\n').includes('销售'));assert.ok(!(await field.inputValue()).split('\n').includes('电销'));assert.ok((await field.inputValue()).split('\n').includes('特定外包'));
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
+ const config=store.loadConfig(),result=evaluateJob({title:'海外销售工程师',description:'海外销售工程师',company:'示例公司',city:config.city,tags:['实习']},config);
+ assert.equal(result.eligible,true,JSON.stringify(result.reasons));assert.equal(await page.locator('#advanced-settings').evaluate(element=>element.open),false);
+ await page.getByLabel('选择目标岗位',{exact:true}).selectOption('AI Agent');await page.waitForFunction(()=>document.querySelector('[name="queries"]').value.startsWith('AI Agent\n'));
+ assert.ok((await field.inputValue()).split('\n').includes('销售'));assert.ok((await field.inputValue()).split('\n').includes('电销'));assert.ok((await field.inputValue()).split('\n').includes('特定外包'));
+ await input.fill('在线客服专员');await input.press('Tab');await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='在线客服专员');assert.ok(!(await field.inputValue()).split('\n').includes('客服'));
+});
+
+test('custom role metadata preserves new advanced exclusions edited while its response is pending',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);
+ store.saveConfig({...store.loadConfig(),excludeKeywords:['销售','电销','客服']});await page.reload();await page.waitForFunction(()=>document.querySelector('[name="delaySeconds"]').value==='90');await page.locator('#advanced-settings').evaluate(element=>{element.open=true;});
+ const input=page.getByLabel('目标岗位',{exact:true}),field=page.getByLabel('排除的岗位关键词（每行一个）');let release,requested;
+ const held=new Promise(resolve=>{release=resolve;}),seen=new Promise(resolve=>{requested=resolve;});t.after(()=>release());
+ await page.route('**/api/role-defaults?role=*',async route=>{if(new URL(route.request().url()).searchParams.get('role')!=='海外销售工程师')return route.continue();requested();await held;await route.continue();});
+ await input.fill('海外销售工程师');await input.press('Tab');await seen;
+ await field.press('ControlOrMeta+End');await field.pressSequentially('\n特定外包');
+ release();await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='海外销售工程师');
+ assert.ok(!(await field.inputValue()).split('\n').includes('销售'));assert.ok(!(await field.inputValue()).split('\n').includes('电销'));assert.ok((await field.inputValue()).split('\n').includes('特定外包'));
+ await field.fill(`${await field.inputValue()}\n销售`);
+ await page.getByLabel('选择目标岗位',{exact:true}).selectOption('AI Agent');await page.waitForFunction(()=>document.querySelector('[name="queries"]').value.startsWith('AI Agent\n'));
+ await input.fill('海外销售工程师');await input.press('Tab');await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='海外销售工程师');assert.ok((await field.inputValue()).split('\n').includes('销售'));
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);assert.ok(store.loadConfig().excludeKeywords.includes('销售'));
+});
+
+test('an explicit replacement exclusion list is honored before unknown role metadata arrives',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);let release,requested;
+ const held=new Promise(resolve=>{release=resolve;}),seen=new Promise(resolve=>{requested=resolve;});t.after(()=>release());
+ await page.route('**/api/role-defaults?role=*',async route=>{requested();await held;await route.continue();});
+ const input=page.getByLabel('目标岗位',{exact:true}),field=page.getByLabel('排除的岗位关键词（每行一个）');
+ await input.fill('海外销售工程师');await input.press('Tab');await seen;await field.fill('销售\n特定外包');release();
+ await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='海外销售工程师');assert.deepEqual((await field.inputValue()).split('\n'),['销售','特定外包']);
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);assert.deepEqual(store.loadConfig().excludeKeywords,['销售','特定外包']);
+});
+
+test('an explicit replacement exclusion list is honored while an official role preset is pending',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);let release,requested;
+ const held=new Promise(resolve=>{release=resolve;}),seen=new Promise(resolve=>{requested=resolve;});t.after(()=>release());
+ await page.route('**/api/role-defaults?role=*',async route=>{requested();await held;await route.continue();});
+ await page.getByLabel('选择目标岗位',{exact:true}).selectOption('销售专员');await seen;await page.getByLabel('排除的岗位关键词（每行一个）').fill('销售\n特定外包');release();
+ await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='销售专员');
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);assert.deepEqual(store.loadConfig().excludeKeywords,['销售','特定外包']);
+});
+
+test('saved custom role keeps its explicit blocker and personal search terms through first save and role switches',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);
+ store.saveConfig({...store.loadConfig(),targetRole:'海外销售工程师',queries:['保留的海外业务检索'],requiredAny:['自定义匹配'],excludeKeywords:['销售','特定外包']});
+ await page.reload();await page.waitForFunction(()=>document.querySelector('[name="targetRole"]').value==='海外销售工程师');
+ await Promise.all([page.waitForResponse(r=>r.url().endsWith('/api/config')&&r.ok()),page.getByRole('button',{name:'保存设置',exact:true}).click()]);
+ assert.deepEqual(store.loadConfig().queries,['保留的海外业务检索']);assert.deepEqual(store.loadConfig().requiredAny,['自定义匹配']);assert.deepEqual(store.loadConfig().excludeKeywords,['销售','特定外包']);
+ const input=page.getByLabel('目标岗位',{exact:true}),field=page.getByLabel('排除的岗位关键词（每行一个）');
+ await page.getByLabel('选择目标岗位',{exact:true}).selectOption('AI Agent');await page.waitForFunction(()=>document.querySelector('[name="queries"]').value.startsWith('AI Agent\n'));
+ await input.fill('海外销售工程师');await input.press('Tab');await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='海外销售工程师');assert.ok((await field.inputValue()).split('\n').includes('销售'));assert.ok((await field.inputValue()).split('\n').includes('特定外包'));
 });
 
 test('official broad city options and nationwide save their verified codes without typing',async t=>{
