@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
 import { BossBrowser } from '../src/boss-browser.js';
@@ -38,7 +38,12 @@ test('missing production Chrome reports BROWSER_NOT_FOUND without silent library
 test('a failed native Chrome start reaps its owned child and never falls back',async t=>{
  const dir=await mkdtemp(path.join(os.tmpdir(),'boss-chrome-start-'));t.after(()=>rm(dir,{recursive:true,force:true}));
  const runtime=new ChromeRuntime({env:{BOSS_CHROME_PATH:process.execPath},timeoutMs:2000});
+ // This fresh fixture has no session to recover; test the real failed child
+ // launch without depending on the host's Windows CIM process inventory.
+ let recoveryChecks=0;
+ runtime.recover=async(profile,executable)=>{recoveryChecks++;assert.equal(profile,await realpath(path.join(dir,'profile')));assert.equal(await realpath(executable),await realpath(process.execPath));return false;};
  await assert.rejects(runtime.start(path.join(dir,'profile')),error=>error.code==='BROWSER_START_FAILED');
+ assert.equal(recoveryChecks,1);
  assert.equal(runtime.child,null);assert.equal(runtime.browser,null);
 });
 test('native Chrome local fixture uses a dedicated profile and reaps only its owned process',async t=>{
