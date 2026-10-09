@@ -77,7 +77,7 @@ export class ExtensionBridge extends EventEmitter {
   #canExecute;
   #file;
 
-  constructor({ dataDir, timeoutMs = 15_000, pollMs = 10_000, leaseMs = 8000, canExecute = () => true }) {
+  constructor({ dataDir, timeoutMs = 15_000, pollMs = 10_000, leaseMs, sessionLeaseMs = leaseMs === undefined ? 15_000 : Math.min(leaseMs, 15_000), canExecute = () => true }) {
     super();
     if (!text(dataDir, 4096)) throw new TypeError('需要本地数据目录');
     if (typeof canExecute !== 'function') throw new TypeError('canExecute 必须是函数');
@@ -85,7 +85,8 @@ export class ExtensionBridge extends EventEmitter {
     this.dataDir = path.resolve(dataDir);
     this.timeoutMs = duration(timeoutMs, 'timeoutMs');
     this.pollMs = Math.min(duration(pollMs, 'pollMs'), 10_000);
-    this.leaseMs = duration(leaseMs, 'leaseMs');
+    this.leaseMs = duration(leaseMs === undefined ? 8000 : leaseMs, 'leaseMs');
+    this.sessionLeaseMs = duration(sessionLeaseMs, 'sessionLeaseMs', 15_000);
     fs.mkdirSync(this.dataDir, { recursive: true, mode: 0o700 });
     const directory = fs.lstatSync(this.dataDir);
     if (!directory.isDirectory() || directory.isSymbolicLink()) throw failure('BRIDGE_STATE_INVALID', '桥接数据目录必须是普通目录');
@@ -175,7 +176,9 @@ export class ExtensionBridge extends EventEmitter {
     const effect = effects.has(op);
     if (effect && !this.#active) throw failure('BRIDGE_INACTIVE', '任务未运行，未派发网页动作');
     const timeout = Object.hasOwn(options, 'timeoutMs') ? duration(options.timeoutMs, 'timeoutMs') : this.timeoutMs;
-    const ttl = effect ? Math.min(timeout, this.leaseMs) : timeout;
+    // A cold work tab can use the worker's ten-second readiness window. Only
+    // session creation gets this bounded budget; sends and navigation keep theirs.
+    const ttl = effect ? Math.min(timeout, op === 'OPEN_SESSION' ? this.sessionLeaseMs : this.leaseMs) : timeout;
     const command = packet({ v: VERSION, id: randomUUID(), seq: ++this.#sequence, epoch: this.#epoch, expiresAt: Date.now() + ttl, op, args, ...(Object.hasOwn(options, 'target') ? { target: options.target } : {}) });
     return new Promise((resolve, reject) => {
       const record = { command, effect, delivered: false, permitted: false, resolve, reject };

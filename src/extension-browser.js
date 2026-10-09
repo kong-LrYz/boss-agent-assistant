@@ -67,9 +67,10 @@ function navigationDestination(op, args) {
 
 /** Fixed semantic operations through our own extension; no debugger transport. */
 export class ExtensionBrowser {
-  constructor({ bridge, launcher = new NormalChromeRuntime(), profileDir, outputDir, onEvent = async () => {}, checkpoint = async () => {}, timeoutMs = 12000, pollMs = 250, navigationDelayMs = 0, now = Date.now, sleep = pause }) {
+  constructor({ bridge, launcher = new NormalChromeRuntime(), profileDir, outputDir, onEvent = async () => {}, checkpoint = async () => {}, timeoutMs, sessionTimeoutMs = timeoutMs === undefined ? 15000 : Math.min(timeoutMs, 15000), pollMs = 250, navigationDelayMs = 0, now = Date.now, sleep = pause }) {
     if (!bridge) throw new TypeError('需要扩展消息桥');
-    Object.assign(this, { bridge, launcher, profileDir, outputDir, onEvent, checkpoint, timeoutMs, pollMs, navigationDelayMs, now, sleep });
+    if (!Number.isSafeInteger(sessionTimeoutMs) || sessionTimeoutMs <= 0 || sessionTimeoutMs > 15000) throw new TypeError('sessionTimeoutMs 必须是 1 到 15000 的毫秒整数');
+    Object.assign(this, { bridge, launcher, profileDir, outputDir, onEvent, checkpoint, timeoutMs: timeoutMs === undefined ? 12000 : timeoutMs, sessionTimeoutMs, pollMs, navigationDelayMs, now, sleep });
     this.meta = null; this.session = false; this.detail = null; this.epoch = null; this.lastNavigationAt = 0; this.authPending = false; this.portalObservation = null;
     this.rateGate = null; this.rateLimitFailures = 0;
     this.readWaitBudget = new AsyncLocalStorage();
@@ -123,7 +124,7 @@ export class ExtensionBrowser {
     this.epoch = epoch;
     this.operationTimings = []; this.timingTotals.clear(); this.timingRequests = 0; this.timingEpoch = epoch;
     this.meta = null; this.detail = null; this.authPending = false; this.portalObservation = null;
-    await this.call('OPEN_SESSION', { url: loginUrl });
+    await this.call('OPEN_SESSION', { url: loginUrl }, this.sessionTimeoutMs);
     this.session = true;
     await this.onEvent({ type: 'browser_open', message: '扩展已建立专用工作标签' });
     return this;

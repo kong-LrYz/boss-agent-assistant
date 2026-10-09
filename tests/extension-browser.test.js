@@ -37,6 +37,24 @@ async function persistentStage(t){const dir=await mkdtemp(path.join(os.tmpdir(),
 
 test('unpaired login preparation launches setup but never reads the website',async()=>{const {browser,bridge,launches}=setup({paired:false,connected:false});await browser.openForLogin();assert.equal(launches[0].opts.setup,true);assert.equal(bridge.calls.length,0);await assert.rejects(browser.open(),{code:'EXTENSION_REQUIRED'});assert.equal(bridge.calls.length,0);});
 test('offline extension and absent positive account cannot claim login',async()=>{const offline=setup({connected:false});await assert.rejects(offline.browser.open(),{code:'EXTENSION_OFFLINE'});const missing=setup({handlers:{READ_STATUS:()=>({loggedIn:false,ready:true})}});await assert.rejects(missing.browser.login(),{code:'LOGIN_REQUIRED'});});
+test('default cold session requests a bounded startup budget without delaying ready operations',async()=>{
+ const sleeps=[];const {browser,bridge}=setup({browserOptions:{timeoutMs:undefined,sleep:async ms=>sleeps.push(ms)}});
+ await browser.open();
+ const startup=bridge.calls.filter(call=>call.op==='OPEN_SESSION');assert.equal(startup.length,1);assert.equal(startup[0].options.timeoutMs,15000);
+ await browser.call('NAV_SEARCH',{query:'AI Agent',cityCode:'101010100'});
+ assert.equal(bridge.calls.at(-1).options.timeoutMs,12000);
+ assert.deepEqual(sleeps,[]);
+});
+for(const [options,expected]of [[{timeoutMs:40},40],[{timeoutMs:40,sessionTimeoutMs:15000},15000],[{timeoutMs:undefined,sessionTimeoutMs:3000},3000]])test(`cold session honors an explicitly chosen startup timeout (${expected} ms)`,async()=>{
+ const {browser,bridge}=setup({browserOptions:options});await browser.open();assert.equal(bridge.calls.find(call=>call.op==='OPEN_SESSION').options.timeoutMs,expected);
+});
+test('a lost cold-session result remains one dispatch and never becomes an active browser session',async()=>{
+ const sleeps=[],original=Object.assign(Error('fixture startup result lost'),{code:'UNKNOWN_RESULT'});const {browser,bridge}=setup({browserOptions:{timeoutMs:undefined,sleep:async ms=>sleeps.push(ms)},handlers:{OPEN_SESSION:()=>{throw original;}}});
+ await assert.rejects(browser.open(),error=>error===original);assert.equal(browser.session,false);assert.equal(bridge.calls.filter(call=>call.op==='OPEN_SESSION').length,1);assert.deepEqual(sleeps,[]);
+});
+for(const sessionTimeoutMs of[0,-1,15001,'15000'])test(`invalid cold-session timeout is rejected (${sessionTimeoutMs})`,()=>{
+ assert.throws(()=>setup({browserOptions:{sessionTimeoutMs}}),TypeError);
+});
 test('cold browser startup conditionally waits for its paired extension without relaunching or duplicate sessions',async()=>{
  let clock=1000;const sleeps=[];const {browser,bridge,launches}=setup({connected:false,browserOptions:{timeoutMs:50,pollMs:10,now:()=>clock,sleep:async ms=>{sleeps.push(ms);clock+=ms;if(sleeps.length===2)bridge.connected=true;}}});
  await browser.open();assert.equal(launches.length,1);assert.deepEqual(sleeps,[10,10]);assert.equal(bridge.calls.filter(call=>call.op==='BEGIN').length,1);assert.equal(bridge.calls.filter(call=>call.op==='OPEN_SESSION').length,1);

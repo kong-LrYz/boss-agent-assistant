@@ -48,6 +48,98 @@ async function fixture(t, options = {}) {
   return { bridge, dataDir, request, pair, poll, base, token: () => token };
 }
 
+test('cold session creation can finish after the ordinary effect lease without replaying', async t => {
+  const f = await fixture(t, { timeoutMs: 20_000, leaseMs: undefined });
+  await f.pair(); f.bridge.beginRun();
+  const originalNow = Date.now, started = originalNow();
+  let pending;
+  try {
+    Date.now = () => started;
+    pending = capture(f.bridge.request('OPEN_SESSION', { url: 'https://www.zhipin.com/web/user/' }));
+  } finally { Date.now = originalNow; }
+  const { command } = await f.poll(), body = { id: command.id, epoch: command.epoch };
+  assert.equal(command.expiresAt - started, 15_000);
+  assert.equal(f.bridge.leaseMs, 8000);
+  try {
+    Date.now = () => started + 9000;
+    assert.equal((await f.request('/bridge/permit', { body })).status, 200);
+    assert.equal((await f.request('/bridge/permit', { body })).status, 409);
+    assert.equal((await f.request('/bridge/result', { body: { ...body, result: { opened: true } } })).status, 200);
+  } finally { Date.now = originalNow; }
+  assert.equal((await pending).result.opened, true);
+  assert.equal((await f.poll()).command, null);
+});
+
+for (const op of ['NAV_SEARCH', 'NAV_JOB', 'SEND_GREETING', 'CONFIRM_RESUME']) test(`the cold-start budget does not extend ${op}`, async t => {
+  const f = await fixture(t, { timeoutMs: 20_000, leaseMs: undefined });
+  await f.pair(); f.bridge.beginRun();
+  const originalNow = Date.now, started = originalNow();
+  let pending;
+  try { Date.now = () => started; pending = capture(f.bridge.request(op)); }
+  finally { Date.now = originalNow; }
+  const { command } = await f.poll();
+  assert.equal(command.expiresAt - started, 8000);
+  try {
+    Date.now = () => started + 8000;
+    assert.equal((await f.request('/bridge/permit', { body: { id: command.id, epoch: command.epoch } })).status, 410);
+  } finally { Date.now = originalNow; }
+  assert.equal((await pending).error.code, 'UNKNOWN_RESULT');
+  assert.equal((await f.poll()).command, null);
+});
+
+for (const [options, requestTimeout, expected] of [
+  [{ leaseMs: 1200 }, 20_000, 1200],
+  [{ leaseMs: 1200, sessionLeaseMs: 15_000 }, 20_000, 15_000],
+  [{ leaseMs: undefined, sessionLeaseMs: 12_000 }, 20_000, 12_000],
+  [{ leaseMs: undefined, sessionLeaseMs: 15_000 }, 900, 900]
+]) test(`session creation preserves explicit lease and request deadlines (${expected} ms)`, async t => {
+  const f = await fixture(t, { timeoutMs: 20_000, ...options });
+  await f.pair(); f.bridge.beginRun();
+  const originalNow = Date.now, started = originalNow();
+  let pending;
+  try { Date.now = () => started; pending = capture(f.bridge.request('OPEN_SESSION', {}, { timeoutMs: requestTimeout })); }
+  finally { Date.now = originalNow; }
+  const { command } = await f.poll();
+  assert.equal(command.expiresAt - started, expected);
+  const body = { id: command.id, epoch: command.epoch };
+  assert.equal((await f.request('/bridge/result', { body: { ...body, error: { code: 'PAGE_NOT_READY', message: 'fixture pending' } } })).status, 200);
+  assert.equal((await pending).error.code, 'PAGE_NOT_READY');
+});
+
+test('the longer cold-session deadline still expires once and cannot be revived', async t => {
+  const f = await fixture(t, { timeoutMs: 20_000, leaseMs: undefined });
+  await f.pair(); f.bridge.beginRun();
+  const pending = capture(f.bridge.request('OPEN_SESSION'));
+  const { command } = await f.poll(), body = { id: command.id, epoch: command.epoch };
+  assert.equal((await f.request('/bridge/permit', { body })).status, 200);
+  const originalNow = Date.now;
+  try {
+    Date.now = () => command.expiresAt;
+    assert.equal((await f.request('/bridge/result', { body: { ...body, result: { opened: true } } })).status, 410);
+  } finally { Date.now = originalNow; }
+  assert.equal((await pending).error.code, 'UNKNOWN_RESULT');
+  assert.equal((await f.request('/bridge/permit', { body })).status, 404);
+  assert.equal((await f.poll()).command, null);
+});
+
+test('stopping a cold session immediately rejects its longer-lived command', async t => {
+  const f = await fixture(t, { timeoutMs: 20_000, leaseMs: undefined });
+  await f.pair(); f.bridge.beginRun();
+  const pending = capture(f.bridge.request('OPEN_SESSION'));
+  const { command } = await f.poll(), body = { id: command.id, epoch: command.epoch };
+  f.bridge.cancel();
+  assert.equal((await pending).error.code, 'UNKNOWN_RESULT');
+  assert.equal((await f.request('/bridge/permit', { body })).status, 409);
+  assert.equal((await f.request('/bridge/result', { body: { ...body, result: { opened: true } } })).status, 409);
+  assert.equal((await f.poll()).command, null);
+});
+
+for (const sessionLeaseMs of [0, -1, 15_001, '15000']) test(`invalid cold-session lease is rejected (${sessionLeaseMs})`, async t => {
+  const dataDir = mkdtempSync(join(tmpdir(), 'boss-session-budget-'));
+  t.after(() => rmSync(dataDir, { recursive: true, force: true }));
+  assert.throws(() => new ExtensionBridge({ dataDir, sessionLeaseMs }), TypeError);
+});
+
 test('pairing accepts only an extension origin and consumes its code once', async t => {
   const f = await fixture(t);
   const pairingCode = f.bridge.snapshot().pairingCode;
