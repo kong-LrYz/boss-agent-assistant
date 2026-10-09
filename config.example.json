@@ -1,0 +1,43 @@
+{
+  "setupComplete": false,
+  "autoRun": true,
+  "city": "北京",
+  "cityCode": "101010100",
+  "targetRole": "AI Agent",
+  "roleType": "internship",
+  "queries": [
+    "AI Agent",
+    "智能体",
+    "Agent开发",
+    "LLM Agent"
+  ],
+  "requiredAny": [
+    "agent",
+    "智能体"
+  ],
+  "excludeKeywords": [
+    "销售",
+    "电销",
+    "客服",
+    "招生",
+    "讲师",
+    "培训师",
+    "数据标注",
+    "标注员"
+  ],
+  "excludeCompanies": [],
+  "roleTitleExclusions": [],
+  "greetingTemplate": "您好，我对{company}的{title}岗位感兴趣。{profileSummary}希望进一步了解工作内容，期待与您沟通，谢谢。",
+  "profileSummary": "",
+  "resumeName": "",
+  "dailyLimit": 0,
+  "runLimit": 0,
+  "contactCompanyTarget": 0,
+  "resumeCompanyTarget": 0,
+  "companyDedup": false,
+  "delaySeconds": 0,
+  "maxPages": 5,
+  "idleMinutes": 0,
+  "contactBatchSize": 5,
+  "batchBreakMinutes": 0
+}

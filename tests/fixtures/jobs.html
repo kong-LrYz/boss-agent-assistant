@@ -1,0 +1,17 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><title>搜索</title>
+<ul class="job-list-box">
+<li class="job-card-wrapper"><a class="job-card-left" href="https://www.zhipin.com/job_detail/a123.html?ka=search_list_1"><span class="job-name">AI Agent开发实习生</span><span class="job-area">北京·海淀区</span></a><a class="company-name">示例科技</a><ul class="tag-list"><li>实习</li></ul></li>
+<li class="job-card-wrapper"><a href="https://evil.example/job_detail/evil.html"><span class="job-name">Agent开发</span></a><a class="company-name">恶意地址</a></li>
+</ul>
+<a class="next" href="/web/geek/jobs?city=101010100&query=AI%20Agent&page=2">下一页</a>
+<script>
+function nextPage(){document.querySelector('.job-name').textContent='LLM Agent工程师';document.querySelector('.job-card-left').href='https://www.zhipin.com/job_detail/b456.html';document.querySelector('.next').remove();}
+if(new URL(location).searchParams.get('page')==='2')nextPage();
+if('__MODE__'==='spa')document.querySelector('.next').onclick=event=>{event.preventDefault();nextPage();};
+if('__MODE__'==='stuck')document.querySelector('.next').onclick=event=>event.preventDefault();
+if('__MODE__'==='authenticated')document.body.insertAdjacentHTML('beforeend','<nav class="user-nav"><div class="user-name">王同学</div></nav>');
+if('__MODE__'==='delayed-blank')setTimeout(()=>location.replace('about:blank'),100);
+if('__MODE__'==='history-back'){document.querySelector('.job-list-box').remove();setTimeout(()=>history.back(),120);}
+if('__MODE__'==='late-history-back')setTimeout(()=>history.back(),650);
+</script>
+</html>

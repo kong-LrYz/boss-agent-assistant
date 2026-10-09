@@ -1,0 +1,48 @@
+name: Local fixture tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node 22 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Check installer entrypoints
+        run: |
+          node --check scripts/install.js
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            powershell.exe -NoProfile -Command '$tokens=$null;$errors=$null;[System.Management.Automation.Language.Parser]::ParseFile((Join-Path $PWD "scripts/install-node.ps1"),[ref]$tokens,[ref]$errors)|Out-Null;if($errors.Count){$errors|Format-List;exit 1}'
+          else
+            sh -n start.sh install.sh scripts/install-node.sh
+          fi
+      - name: Install fixture browser
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            npx playwright install --with-deps chromium
+          else
+            npx playwright install chromium
+          fi
+      - name: Run local tests without a BOSS account
+        run: npm test

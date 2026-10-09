@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="boss-session" content="__SESSION_TOKEN__">
+  <title>BOSS 岗位投递助手</title>
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header><div class="brand"><span class="mark">B</span><span>BOSS 投递助手</span></div><span class="local">● 本地运行</span></header>
+    <main>
+      <section class="intro"><div><h1>岗位投递</h1><p class="target-summary"><span id="target-city-label">北京</span><span class="separator">/</span><span id="target-role-label">AI Agent</span></p></div><button id="settings-open" type="button" class="quiet" aria-label="设置目标岗位 / 城市 / 数量">修改设置</button></section>
+      <details class="panel settings" id="settings" open><summary>求职设置</summary>
+        <form id="config-form">
+          <div class="grid basic-grid"><label>目标岗位<select name="targetRole" aria-label="目标岗位" required><option value="AI Agent">AI Agent</option></select></label><label>目标城市<select name="city" aria-label="目标城市" required><option value="北京">北京</option></select></label><label>岗位类型<select name="roleType" aria-label="岗位类型"><option value="internship">找实习</option><option value="graduate">找工作（应届／校招）</option><option value="experienced">找工作（正式社招）</option><option value="any">实习和工作都可（不限）</option></select></label></div>
+          <details id="advanced-settings" class="subdetails"><summary>数量与高级设置</summary><div class="detail-content">
+            <div id="goal-settings" class="grid two basic-grid"><label>打招呼公司目标（0为不限）<input name="contactCompanyTarget" type="number" value="0" min="0" max="1000000" step="1" required></label><label>附件送达公司目标（0为不限）<input name="resumeCompanyTarget" type="number" value="0" min="0" max="1000000" step="1" required></label></div>
+            <label id="custom-role-field" hidden>自定义目标岗位<input name="customRole" maxlength="100" placeholder="填写目录中没有的岗位"></label>
+            <div class="grid two"><label id="custom-city-field" hidden>自定义城市名称<input name="customCity" maxlength="40" placeholder="填写目录中没有的城市"></label><label id="city-code-field" hidden>自定义城市的 BOSS 城市编码<input name="cityCode" placeholder="搜索网址 city= 后的9位数字" inputmode="numeric"></label></div>
+            <div class="grid two"><label>启动行为<select name="autoRun"><option value="true">每次启动自动持续投递</option><option value="false">打开后由我点击开始</option></select></label><label>附件简历名称<input name="resumeName" placeholder="仅有一份附件可留空"></label></div>
+            <p class="hint">多份附件需填写准确名称；仅有一份会自动选择。</p>
+            <p id="role-note" class="hint">更换岗位后，搜索词与匹配词会更新，可继续编辑。</p>
+            <label>搜索词（每行一个）<textarea name="queries" rows="2"></textarea></label>
+            <div class="grid two"><label>目标关键词（每行一个，匹配任意一项）<textarea name="requiredAny" rows="2"></textarea></label><label>排除的岗位关键词（每行一个）<textarea name="excludeKeywords" rows="2"></textarea></label></div>
+            <label>本目标岗位排除职能（仅看职位标题）<textarea name="roleTitleExclusionTerms" rows="2" maxlength="5050" placeholder="每行一个职能，可留空"></textarea><small id="role-title-exclusion-note">仅对当前目标岗位生效，只匹配职位标题。</small></label>
+            <label>排除的公司（每行一个，可留空）<textarea name="excludeCompanies" rows="2"></textarea></label>
+            <label>个人简介（选填，请只写真实信息）<textarea name="profileSummary" rows="2" placeholder="熟悉的技术、项目与到岗时间"></textarea></label>
+            <label>自定义招呼语<textarea name="greetingTemplate" rows="2"></textarea><small>可用 {title}、{company}、{profileSummary}。</small></label>
+            <div id="pace-settings" class="pace-settings">
+              <div class="sectionhead"><h2>速度与扫描</h2><div class="actions"><button type="button" id="speed-efficient" data-speed-profile="efficient" disabled>填入无等待档</button><button type="button" id="speed-steady" data-speed-profile="steady" disabled>填入稳健档</button></div></div>
+              <p class="hint" id="speed-note">只填入设置，保存后生效。</p>
+              <div class="grid"><label>额外发送间隔（秒，0为不等待）<input name="delaySeconds" type="number" min="0" max="3600"></label><label>每个搜索词最多页数<input name="maxPages" type="number" min="1" max="100"></label><label>额外轮次等待（分钟，0为不等待）<input name="idleMinutes" type="number" min="0" max="1440"></label></div>
+              <div class="grid two"><label>连续处理多少个新岗位后休息<input name="contactBatchSize" type="number" min="1" max="20"></label><label>额外批次休息（分钟，0为不休息）<input name="batchBreakMinutes" type="number" min="0" max="1440"></label></div>
+            </div>
+          </div></details>
+          <div class="formfooter"><span id="save-feedback" role="status"></span><div class="actions"><button type="submit" value="save">保存设置</button><button class="primary" type="submit" value="start">开始投递</button></div></div>
+        </form>
+      </details>
+      <section class="panel control">
+        <div class="statusline"><div><span id="status-dot" class="dot"></span><strong id="status" role="status">准备就绪</strong><p id="current">首次使用，先保存求职设置。</p></div><span id="cycle">第 0 轮</span></div>
+        <div class="control-actions"><div class="actions"><button id="start" class="primary">开始持续投递</button><button id="stop" class="danger">停止</button><button id="login">打开浏览器 / 扫码登录</button></div><div class="actions secondary-actions"><button id="preview" class="quiet">仅预览岗位</button><button id="pause" class="quiet" hidden>暂停</button><button id="resume" hidden>继续</button><button id="quit" class="quiet">退出程序</button></div></div>
+        <div id="notice" class="notice" role="alert" hidden></div>
+      </section>
+      <details id="extension-panel" class="panel connection" hidden>
+        <summary>浏览器连接 <span id="extension-status">等待扩展</span></summary><div class="detail-content">
+          <ol class="setup-steps"><li>打开扩展管理，开启“开发者模式”。</li><li>点击“加载已解压的扩展”，选择下面的目录。</li><li>打开本项目扩展，粘贴配对码并连接。</li></ol>
+          <label>本项目扩展目录<input id="extension-directory" readonly></label>
+          <div class="actions"><button id="extension-setup">打开扩展管理</button><button id="copy-extension-directory">复制目录</button></div>
+          <div id="pairing-area"><label>配对码<input id="pairing-code" type="password" readonly autocomplete="off"></label><button id="copy-pairing-code">复制配对码</button></div>
+          <details class="subdetails"><summary>连接帮助</summary><p class="hint">扩展管理无法打开时，在专用 Chrome 地址栏输入 chrome://extensions/。配对只需一次；后续启动自动连接。BOSS 详情页弹窗被阻止时，仅允许 www.zhipin.com 的弹出窗口。单个岗位页面不符或发送结果未知时，会锁定该记录并继续其他岗位。验证码、登录失效或账号风险仍需处理。</p></details>
+        </div>
+      </details>
+      <section class="metrics" aria-label="投递统计"><article><span>已发现</span><strong id="m-discovered">0</strong></article><article><span>符合条件</span><strong id="m-eligible">0</strong></article><article><span>已打招呼</span><strong id="m-contacted">0</strong></article><article><span>简历待同意</span><strong id="m-requested">0</strong></article><article><span>附件已发送</span><strong id="m-delivered">0</strong></article></section>
+      <section class="panel results"><div class="sectionhead"><h2>投递记录</h2><div class="record-tools"><select id="filter" aria-label="筛选记录"><option value="all">全部记录</option><option value="eligible">符合条件</option><option value="sent">附件已发送</option><option value="requested">待同意</option><option value="uncertain">需人工核对</option></select><a class="export" href="/api/export">导出 CSV</a></div></div>
+        <div class="tablewrap"><table><thead><tr><th>岗位 / 公司</th><th>匹配</th><th>沟通</th><th>简历</th><th>原因 / 操作</th></tr></thead><tbody id="jobs"><tr><td colspan="5" class="empty">暂无投递记录。</td></tr></tbody></table></div>
+      </section>
+      <details class="panel utilities" id="diagnostics"><summary>进度与运行日志</summary><div class="detail-content">
+        <section id="goal-panel"><div class="sectionhead"><h2>公司目标进度</h2><span id="goal-status">不限数量</span></div><div class="grid two"><p id="goal-contact">打招呼公司 0 / 不限</p><p id="goal-resume">附件送达公司 0 / 不限</p></div><p id="goal-summary" class="hint">未设置数量目标，持续至你停止。</p><p class="hint" id="goal-note">未设置数量目标，持续至你停止。</p></section>
+        <section id="performance-panel"><div class="sectionhead"><h2>本次耗时与筛选</h2><span id="performance-rate">样本不足（至少5个已确认新联系）</span></div><p class="hint" id="performance-summary">详情检查 0 · 预筛跳过 0 · 已确认新联系 0 · 耗时 0秒 · 节奏等待 0秒</p><p class="hint" id="performance-waits">联系间隔 0秒 · 批次休息 0秒 · 轮次等待 0秒</p></section>
+        <section class="logs"><div class="sectionhead"><h2>运行日志</h2><span>最新 100 条</span></div><ol id="events"><li class="empty">等待启动。</li></ol></section>
+      </div></details>
+    </main>
+  </div>
+  <dialog id="reconcile-dialog"><form method="dialog"><h2>核对操作结果</h2><p>先核对 BOSS 聊天记录。只有确认从未发送，才选择“未发送”。</p><input id="reconcile-key" type="hidden"><label>打招呼<select id="reconcile-greeting"><option value="sent">已打招呼</option><option value="existing">之前已有沟通</option><option value="none">确认未打招呼</option></select></label><label>简历<select id="reconcile-resume"><option value="requested">请求已发，待同意</option><option value="sent">附件已经发送</option><option value="none">确认未发送 / 未请求</option><option value="unavailable">无法发送附件</option></select></label><div class="actions"><button value="cancel">取消</button><button id="reconcile-save" type="button" class="primary">保存核对结果</button></div></form></dialog>
+</body></html>

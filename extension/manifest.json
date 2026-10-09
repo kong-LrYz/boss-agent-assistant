@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "本地 BOSS 岗位助手",
+  "version": "2.0.0",
+  "minimum_chrome_version": "120",
+  "description": "将本人的 BOSS 网页与本地岗位助手配对，使用固定网页控件操作。",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApNIcuWCrx7lrwCboSQIC3pX/ywILyhAZXsr84PIQr+yQDmuw/0id2LleqEYeBco/pT4zoSgDebRCdUV09JbeAEw2xYcZJaP9rwCG5ml+RM9OdnEfrwqjtSltFCJ8INxBuM4uon+itS/uyb5t4EJfjre+7CY3Yj3Vxf2XkubtmKsjVwK3BtpjD0sJAP1fG1ZTjlYKPHJ19bOWyuIo2MQYwk7GS01uetXsn+vi77t+I6FR3iYLG5kgztn3IV1emeLC+XNdZ166CwE2sBFWP9Z9ZdlmkC7bu+nkGYD9NBI1OscNFhN899yi5z8b4VKZpSz9mBH+73H9eOu48WwUPj9QVQIDAQAB",
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://www.zhipin.com/*",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "连接本地岗位助手"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.zhipin.com/*"
+      ],
+      "js": [
+        "dom-executor.js",
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false,
+      "world": "ISOLATED"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'"
+  }
+}

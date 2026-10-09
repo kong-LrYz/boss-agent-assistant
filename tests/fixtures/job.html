@@ -1,0 +1,51 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><title>BOSS 岗位 fixture</title>
+<main class="job-detail">
+  <h1 class="job-title">AI Agent开发实习生</h1><div class="company-name">示例科技</div>
+  <div class="job-location">北京·海淀区</div><div class="job-tags"><span>实习</span><span>Python</span></div>
+  <div class="job-sec-text">在北京开发 LLM Agent 智能体，负责工具调用和模型评测。</div>
+  <div class="job-boss-info" data-recruiter-id="recruiter123"><span class="boss-name">李招聘</span></div>
+  <div class="op"><button id="contact">立即沟通</button></div>
+</main>
+<aside><button onclick="window.wrongRecipientSent=true">发送简历</button><button onclick="window.wrongRecipientSent=true">发送</button></aside>
+<script>
+const mode = '__MODE__';
+const stored = JSON.parse(localStorage.getItem('conversation') || 'null');
+let current = stored || {greetings: [], resume: null};
+function save() { localStorage.setItem('conversation', JSON.stringify(current)); }
+function message(text, cls) { const el=document.createElement('div'); el.className='message-item sent '+(cls==='resume-card'?'':cls);if(cls==='resume-card'){const card=document.createElement('div');card.className='resume-card';card.textContent=text;el.append(card);}else el.textContent=text; document.querySelector('.messages').append(el); }
+function chat() {
+ if(document.querySelector('.chat-window'))return;
+ const title=mode==='wrong-recipient'?'后端开发':'AI Agent开发实习生';
+ const company=mode==='wrong-recipient'?'其他公司':'示例科技';
+ const jobLink=mode==='missing-jobid'?'':`<a class="job-link" href="https://www.zhipin.com/job_detail/${mode==='wrong-jobid'?'otherJob':'a123'}.html">查看职位</a>`;
+ document.body.insertAdjacentHTML('beforeend', `<section class="chat-window"><header class="chat-header"><span class="job-title">${title}</span><span class="company-name">${company}</span>${jobLink}</header><div class="messages"></div><div class="chat-editor"><textarea></textarea><button id="send">发送</button><button id="resume">发送简历</button></div></section>`);
+ current.greetings.forEach(g=>message(g,'text'));
+ if(mode==='custom')document.querySelector('.messages').insertAdjacentHTML('beforeend','<div class="chat-empty">新会话，尚未发送消息</div>');
+ if(current.resume==='requested' || (mode==='request' && current.resume==='sent'))message('已向对方申请发送附件简历，等待对方同意',mode==='request-card'?'resume-card':'resume-request');
+ if(mode==='approved' && current.resume==='requested')document.querySelector('.messages').insertAdjacentHTML('beforeend','<div class="message-item received resume-approved">对方已同意接收附件简历</div>');
+ if(current.resume==='sent')message('已发送附件简历：王同学.pdf','resume-attachment');
+ if(current.resume==='failed')message('王同学.pdf 发送失败，请重试','resume-attachment');
+ document.querySelector('#send').onclick=()=>{ const input=document.querySelector('textarea');current.greetings.push(input.value);save();message(input.value,'text');input.value=''; };
+ document.querySelector('#resume').onclick=()=>{
+  current.resumeClicks=(current.resumeClicks||0)+1;save();
+  if(mode==='request' || mode==='request-card'){current.resume='requested';save();message('已向对方申请发送附件简历，等待对方同意',mode==='request-card'?'resume-card':'resume-request');return;}
+  document.body.insertAdjacentHTML('beforeend','<section class="resume-dialog"><h2>选择附件简历</h2><label class="resume-item"><input type="radio" name="resume">王同学.pdf</label>'+ (mode==='multiple'?'<label class="resume-item"><input type="radio" name="resume">另一个.pdf</label>':'')+'<button id="confirm-resume">发送</button></section>');
+  document.querySelector('#confirm-resume').onclick=()=>{
+   if(!document.querySelector('.resume-item input:checked'))return;
+   if(mode==='failed-resume'){current.resume='failed';save();message('王同学.pdf 发送失败，请重试','resume-attachment');}
+   else if(mode!=='no-evidence'){current.resume='sent';save();message('已发送附件简历：王同学.pdf','resume-attachment');}
+   document.querySelector('.resume-dialog').remove();
+  };
+ };
+}
+document.querySelector('#contact').textContent=stored?'继续沟通':'立即沟通';
+document.querySelector('#contact').onclick=()=>{
+ if(!stored && mode!=='custom' && mode!=='delayed' && mode!=='empty-unconfirmed'){ current.greetings.push('您好，我对该岗位感兴趣。');save(); }
+ chat();
+ if(mode==='failed-greeting')document.querySelector('.message-item').textContent='您好，我对该岗位感兴趣。 发送失败，请重试';
+ if(mode==='delayed' && !stored)setTimeout(()=>{current.greetings.push('您好，我对该岗位感兴趣。');save();message('您好，我对该岗位感兴趣。','text');},150);
+};
+if(mode==='existing') { current.greetings=['已经打过招呼'];save();document.querySelector('#contact').textContent='继续沟通'; }
+if(mode==='login') document.body.insertAdjacentHTML('beforeend','<section class="login-dialog">扫码登录</section>');
+if(mode==='captcha') document.body.insertAdjacentHTML('beforeend','<section class="verify-dialog">请完成安全验证</section>');
+</script></html>

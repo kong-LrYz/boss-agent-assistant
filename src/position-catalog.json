@@ -1,0 +1,5530 @@
+{
+  "sourceUrls": [
+    "https://www.zhipin.com/"
+  ],
+  "checkedAt": "2026-10-09",
+  "captureMethod": "Official BOSS public homepage indexed HTML rendered text",
+  "sourceTextSha256": "188410a59478c0e066630e35582bd1e395bdbfefc3514b57a9fdd4490f4a3597",
+  "coverage": "Public homepage position taxonomy, exact labels and hierarchy; no private API calls, no inferred position codes",
+  "roleGroups": [
+    {
+      "label": "互联网/AI / 后端开发",
+      "parent": "互联网/AI",
+      "category": "后端开发",
+      "options": [
+        {
+          "targetRole": "Java",
+          "label": "Java"
+        },
+        {
+          "targetRole": "C/C++",
+          "label": "C/C++"
+        },
+        {
+          "targetRole": "PHP",
+          "label": "PHP"
+        },
+        {
+          "targetRole": "Python",
+          "label": "Python"
+        },
+        {
+          "targetRole": "C#",
+          "label": "C#"
+        },
+        {
+          "targetRole": ".NET",
+          "label": ".NET"
+        },
+        {
+          "targetRole": "Golang",
+          "label": "Golang"
+        },
+        {
+          "targetRole": "Node.js",
+          "label": "Node.js"
+        },
+        {
+          "targetRole": "语音/视频/图形开发",
+          "label": "语音/视频/图形开发"
+        },
+        {
+          "targetRole": "高性能计算工程师",
+          "label": "高性能计算工程师"
+        },
+        {
+          "targetRole": "GIS工程师",
+          "label": "GIS工程师"
+        },
+        {
+          "targetRole": "区块链工程师",
+          "label": "区块链工程师"
+        },
+        {
+          "targetRole": "全栈工程师",
+          "label": "全栈工程师"
+        },
+        {
+          "targetRole": "软件项目经理",
+          "label": "软件项目经理"
+        },
+        {
+          "targetRole": "其他后端开发",
+          "label": "其他后端开发"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 前端/移动开发",
+      "parent": "互联网/AI",
+      "category": "前端/移动开发",
+      "options": [
+        {
+          "targetRole": "前端开发工程师",
+          "label": "前端开发工程师"
+        },
+        {
+          "targetRole": "Android",
+          "label": "Android"
+        },
+        {
+          "targetRole": "iOS",
+          "label": "iOS"
+        },
+        {
+          "targetRole": "U3D",
+          "label": "U3D"
+        },
+        {
+          "targetRole": "UE4",
+          "label": "UE4"
+        },
+        {
+          "targetRole": "Cocos",
+          "label": "Cocos"
+        },
+        {
+          "targetRole": "技术美术",
+          "label": "技术美术"
+        },
+        {
+          "targetRole": "JavaScript",
+          "label": "JavaScript"
+        },
+        {
+          "targetRole": "鸿蒙开发工程师",
+          "label": "鸿蒙开发工程师"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 测试",
+      "parent": "互联网/AI",
+      "category": "测试",
+      "options": [
+        {
+          "targetRole": "测试工程师",
+          "label": "测试工程师"
+        },
+        {
+          "targetRole": "软件测试",
+          "label": "软件测试"
+        },
+        {
+          "targetRole": "自动化测试",
+          "label": "自动化测试"
+        },
+        {
+          "targetRole": "功能测试",
+          "label": "功能测试"
+        },
+        {
+          "targetRole": "测试开发",
+          "label": "测试开发"
+        },
+        {
+          "targetRole": "硬件测试",
+          "label": "硬件测试"
+        },
+        {
+          "targetRole": "游戏测试",
+          "label": "游戏测试"
+        },
+        {
+          "targetRole": "性能测试",
+          "label": "性能测试"
+        },
+        {
+          "targetRole": "渗透测试",
+          "label": "渗透测试"
+        },
+        {
+          "targetRole": "测试经理",
+          "label": "测试经理"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 运维/技术支持",
+      "parent": "互联网/AI",
+      "category": "运维/技术支持",
+      "options": [
+        {
+          "targetRole": "运维工程师",
+          "label": "运维工程师"
+        },
+        {
+          "targetRole": "IT技术支持",
+          "label": "IT技术支持"
+        },
+        {
+          "targetRole": "网络工程师",
+          "label": "网络工程师"
+        },
+        {
+          "targetRole": "网络安全",
+          "label": "网络安全"
+        },
+        {
+          "targetRole": "系统工程师",
+          "label": "系统工程师"
+        },
+        {
+          "targetRole": "运维开发工程师",
+          "label": "运维开发工程师"
+        },
+        {
+          "targetRole": "系统管理员",
+          "label": "系统管理员"
+        },
+        {
+          "targetRole": "DBA",
+          "label": "DBA"
+        },
+        {
+          "targetRole": "电脑/打印机维修",
+          "label": "电脑/打印机维修"
+        },
+        {
+          "targetRole": "系统安全",
+          "label": "系统安全"
+        },
+        {
+          "targetRole": "技术文档工程师",
+          "label": "技术文档工程师"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 人工智能",
+      "parent": "互联网/AI",
+      "category": "人工智能",
+      "options": [
+        {
+          "targetRole": "图像算法",
+          "label": "图像算法"
+        },
+        {
+          "targetRole": "自然语言处理算法",
+          "label": "自然语言处理算法"
+        },
+        {
+          "targetRole": "大模型算法",
+          "label": "大模型算法"
+        },
+        {
+          "targetRole": "数据挖掘",
+          "label": "数据挖掘"
+        },
+        {
+          "targetRole": "规控算法",
+          "label": "规控算法"
+        },
+        {
+          "targetRole": "SLAM算法",
+          "label": "SLAM算法"
+        },
+        {
+          "targetRole": "推荐算法",
+          "label": "推荐算法"
+        },
+        {
+          "targetRole": "搜索算法",
+          "label": "搜索算法"
+        },
+        {
+          "targetRole": "语音算法",
+          "label": "语音算法"
+        },
+        {
+          "targetRole": "风控算法",
+          "label": "风控算法"
+        },
+        {
+          "targetRole": "高性能计算工程师",
+          "label": "高性能计算工程师"
+        },
+        {
+          "targetRole": "算法工程师",
+          "label": "算法工程师"
+        },
+        {
+          "targetRole": "算法研究员",
+          "label": "算法研究员"
+        },
+        {
+          "targetRole": "机器学习",
+          "label": "机器学习"
+        },
+        {
+          "targetRole": "深度学习",
+          "label": "深度学习"
+        },
+        {
+          "targetRole": "自动驾驶系统工程师",
+          "label": "自动驾驶系统工程师"
+        },
+        {
+          "targetRole": "数据标注/AI训练师",
+          "label": "数据标注/AI训练师"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 销售技术支持",
+      "parent": "互联网/AI",
+      "category": "销售技术支持",
+      "options": [
+        {
+          "targetRole": "售前技术支持",
+          "label": "售前技术支持"
+        },
+        {
+          "targetRole": "售后技术支持",
+          "label": "售后技术支持"
+        },
+        {
+          "targetRole": "销售技术支持",
+          "label": "销售技术支持"
+        },
+        {
+          "targetRole": "客户成功",
+          "label": "客户成功"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 数据",
+      "parent": "互联网/AI",
+      "category": "数据",
+      "options": [
+        {
+          "targetRole": "数据分析师",
+          "label": "数据分析师"
+        },
+        {
+          "targetRole": "数据开发",
+          "label": "数据开发"
+        },
+        {
+          "targetRole": "数据仓库",
+          "label": "数据仓库"
+        },
+        {
+          "targetRole": "ETL工程师",
+          "label": "ETL工程师"
+        },
+        {
+          "targetRole": "数据挖掘",
+          "label": "数据挖掘"
+        },
+        {
+          "targetRole": "数据架构师",
+          "label": "数据架构师"
+        },
+        {
+          "targetRole": "爬虫工程师",
+          "label": "爬虫工程师"
+        },
+        {
+          "targetRole": "数据采集",
+          "label": "数据采集"
+        },
+        {
+          "targetRole": "数据治理",
+          "label": "数据治理"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 技术项目管理",
+      "parent": "互联网/AI",
+      "category": "技术项目管理",
+      "options": [
+        {
+          "targetRole": "项目经理/主管",
+          "label": "项目经理/主管"
+        },
+        {
+          "targetRole": "软件项目经理",
+          "label": "软件项目经理"
+        },
+        {
+          "targetRole": "实施工程师",
+          "label": "实施工程师"
+        },
+        {
+          "targetRole": "实施顾问",
+          "label": "实施顾问"
+        },
+        {
+          "targetRole": "需求分析工程师",
+          "label": "需求分析工程师"
+        },
+        {
+          "targetRole": "项目专员/助理",
+          "label": "项目专员/助理"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 高端技术职位",
+      "parent": "互联网/AI",
+      "category": "高端技术职位",
+      "options": [
+        {
+          "targetRole": "技术经理",
+          "label": "技术经理"
+        },
+        {
+          "targetRole": "架构师",
+          "label": "架构师"
+        },
+        {
+          "targetRole": "技术总监",
+          "label": "技术总监"
+        },
+        {
+          "targetRole": "CTO/CIO",
+          "label": "CTO/CIO"
+        },
+        {
+          "targetRole": "技术合伙人",
+          "label": "技术合伙人"
+        },
+        {
+          "targetRole": "运维总监",
+          "label": "运维总监"
+        }
+      ]
+    },
+    {
+      "label": "互联网/AI / 其他技术职位",
+      "parent": "互联网/AI",
+      "category": "其他技术职位",
+      "options": [
+        {
+          "targetRole": "其他技术职位",
+          "label": "其他技术职位"
+        }
+      ]
+    },
+    {
+      "label": "电子/电气/通信 / 电子/硬件开发",
+      "parent": "电子/电气/通信",
+      "category": "电子/硬件开发",
+      "options": [
+        {
+          "targetRole": "电子工程师",
+          "label": "电子工程师"
+        },
+        {
+          "targetRole": "硬件工程师",
+          "label": "硬件工程师"
+        },
+        {
+          "targetRole": "嵌入式软件工程师",
+          "label": "嵌入式软件工程师"
+        },
+        {
+          "targetRole": "FPGA开发",
+          "label": "FPGA开发"
+        },
+        {
+          "targetRole": "单片机",
+          "label": "单片机"
+        },
+        {
+          "targetRole": "驱动开发工程师",
+          "label": "驱动开发工程师"
+        },
+        {
+          "targetRole": "PCB工程师",
+          "label": "PCB工程师"
+        },
+        {
+          "targetRole": "电子维修技术员",
+          "label": "电子维修技术员"
+        },
+        {
+          "targetRole": "射频工程师",
+          "label": "射频工程师"
+        },
+        {
+          "targetRole": "电路设计",
+          "label": "电路设计"
+        },
+        {
+          "targetRole": "系统集成",
+          "label": "系统集成"
+        },
+        {
+          "targetRole": "光学工程师",
+          "label": "光学工程师"
+        },
+        {
+          "targetRole": "DSP开发",
+          "label": "DSP开发"
+        },
+        {
+          "targetRole": "电源工程师",
+          "label": "电源工程师"
+        },
+        {
+          "targetRole": "电池工程师",
+          "label": "电池工程师"
+        },
+        {
+          "targetRole": "电声工程师",
+          "label": "电声工程师"
+        }
+      ]
+    },
+    {
+      "label": "电子/电气/通信 / 半导体/芯片",
+      "parent": "电子/电气/通信",
+      "category": "半导体/芯片",
+      "options": [
+        {
+          "targetRole": "集成电路IC设计",
+          "label": "集成电路IC设计"
+        },
+        {
+          "targetRole": "数字IC验证工程师",
+          "label": "数字IC验证工程师"
+        },
+        {
+          "targetRole": "模拟版图设计工程师",
+          "label": "模拟版图设计工程师"
+        },
+        {
+          "targetRole": "芯片测试工程师",
+          "label": "芯片测试工程师"
+        },
+        {
+          "targetRole": "DFT工程师",
+          "label": "DFT工程师"
+        },
+        {
+          "targetRole": "FAE",
+          "label": "FAE"
+        },
+        {
+          "targetRole": "数字前端设计师",
+          "label": "数字前端设计师"
+        },
+        {
+          "targetRole": "数字后端工程师",
+          "label": "数字后端工程师"
+        },
+        {
+          "targetRole": "模拟IC设计工程师",
+          "label": "模拟IC设计工程师"
+        }
+      ]
+    },
+    {
+      "label": "电子/电气/通信 / 电气/自动化",
+      "parent": "电子/电气/通信",
+      "category": "电气/自动化",
+      "options": [
+        {
+          "targetRole": "电气工程师",
+          "label": "电气工程师"
+        },
+        {
+          "targetRole": "电气设计工程师",
+          "label": "电气设计工程师"
+        },
+        {
+          "targetRole": "自动化工程师",
+          "label": "自动化工程师"
+        },
+        {
+          "targetRole": "机电工程师",
+          "label": "机电工程师"
+        },
+        {
+          "targetRole": "建筑机电工程师",
+          "label": "建筑机电工程师"
+        },
+        {
+          "targetRole": "电力工程师",
+          "label": "电力工程师"
+        }
+      ]
+    },
+    {
+      "label": "电子/电气/通信 / 技术项目管理",
+      "parent": "电子/电气/通信",
+      "category": "技术项目管理",
+      "options": [
+        {
+          "targetRole": "项目经理/主管",
+          "label": "项目经理/主管"
+        },
+        {
+          "targetRole": "实施工程师",
+          "label": "实施工程师"
+        },
+        {
+          "targetRole": "实施顾问",
+          "label": "实施顾问"
+        },
+        {
+          "targetRole": "硬件项目经理",
+          "label": "硬件项目经理"
+        },
+        {
+          "targetRole": "项目专员/助理",
+          "label": "项目专员/助理"
+        }
+      ]
+    },
+    {
+      "label": "电子/电气/通信 / 通信",
+      "parent": "电子/电气/通信",
+      "category": "通信",
+      "options": [
+        {
+          "targetRole": "通信项目专员",
+          "label": "通信项目专员"
+        },
+        {
+          "targetRole": "通信项目经理",
+          "label": "通信项目经理"
+        },
+        {
+          "targetRole": "通信技术工程师",
+          "label": "通信技术工程师"
+        },
+        {
+          "targetRole": "通信研发工程师",
+          "label": "通信研发工程师"
+        },
+        {
+          "targetRole": "数据通信工程师",
+          "label": "数据通信工程师"
+        },
+        {
+          "targetRole": "光网络工程师",
+          "label": "光网络工程师"
+        },
+        {
+          "targetRole": "有线传输工程师",
+          "label": "有线传输工程师"
+        },
+        {
+          "targetRole": "核心网工程师",
+          "label": "核心网工程师"
+        },
+        {
+          "targetRole": "通信标准化工程师",
+          "label": "通信标准化工程师"
+        },
+        {
+          "targetRole": "网络工程师",
+          "label": "网络工程师"
+        },
+        {
+          "targetRole": "宽带装维",
+          "label": "宽带装维"
+        },
+        {
+          "targetRole": "无线/天线工程师",
+          "label": "无线/天线工程师"
+        }
+      ]
+    },
+    {
+      "label": "电子/电气/通信 / 销售技术支持",
+      "parent": "电子/电气/通信",
+      "category": "销售技术支持",
+      "options": [
+        {
+          "targetRole": "售前技术支持",
+          "label": "售前技术支持"
+        },
+        {
+          "targetRole": "售后技术支持",
+          "label": "售后技术支持"
+        },
+        {
+          "targetRole": "销售技术支持",
+          "label": "销售技术支持"
+        }
+      ]
+    },
+    {
+      "label": "电子/电气/通信 / 运维/技术支持",
+      "parent": "电子/电气/通信",
+      "category": "运维/技术支持",
+      "options": [
+        {
+          "targetRole": "运维工程师",
+          "label": "运维工程师"
+        },
+        {
+          "targetRole": "系统工程师",
+          "label": "系统工程师"
+        },
+        {
+          "targetRole": "技术文档工程师",
+          "label": "技术文档工程师"
+        }
+      ]
+    },
+    {
+      "label": "产品 / 产品经理",
+      "parent": "产品",
+      "category": "产品经理",
+      "options": [
+        {
+          "targetRole": "产品经理",
+          "label": "产品经理"
+        },
+        {
+          "targetRole": "产品专员/助理",
+          "label": "产品专员/助理"
+        },
+        {
+          "targetRole": "产品总监",
+          "label": "产品总监"
+        },
+        {
+          "targetRole": "用户研究",
+          "label": "用户研究"
+        },
+        {
+          "targetRole": "电商产品经理",
+          "label": "电商产品经理"
+        },
+        {
+          "targetRole": "AI产品经理",
+          "label": "AI产品经理"
+        },
+        {
+          "targetRole": "数据产品经理",
+          "label": "数据产品经理"
+        },
+        {
+          "targetRole": "移动产品经理",
+          "label": "移动产品经理"
+        },
+        {
+          "targetRole": "金融产品经理",
+          "label": "金融产品经理"
+        },
+        {
+          "targetRole": "跨境电商产品开发",
+          "label": "跨境电商产品开发"
+        },
+        {
+          "targetRole": "化妆品产品经理",
+          "label": "化妆品产品经理"
+        },
+        {
+          "targetRole": "硬件产品经理",
+          "label": "硬件产品经理"
+        },
+        {
+          "targetRole": "需求分析工程师",
+          "label": "需求分析工程师"
+        }
+      ]
+    },
+    {
+      "label": "产品 / 游戏策划/制作",
+      "parent": "产品",
+      "category": "游戏策划/制作",
+      "options": [
+        {
+          "targetRole": "游戏策划",
+          "label": "游戏策划"
+        },
+        {
+          "targetRole": "系统策划",
+          "label": "系统策划"
+        },
+        {
+          "targetRole": "游戏数值策划",
+          "label": "游戏数值策划"
+        },
+        {
+          "targetRole": "游戏制作人",
+          "label": "游戏制作人"
+        }
+      ]
+    },
+    {
+      "label": "客服/运营 / 客服",
+      "parent": "客服/运营",
+      "category": "客服",
+      "options": [
+        {
+          "targetRole": "客服专员",
+          "label": "客服专员"
+        },
+        {
+          "targetRole": "客服主管",
+          "label": "客服主管"
+        },
+        {
+          "targetRole": "客服经理",
+          "label": "客服经理"
+        },
+        {
+          "targetRole": "网络客服",
+          "label": "网络客服"
+        },
+        {
+          "targetRole": "电话客服",
+          "label": "电话客服"
+        },
+        {
+          "targetRole": "售后客服",
+          "label": "售后客服"
+        },
+        {
+          "targetRole": "售前客服",
+          "label": "售前客服"
+        }
+      ]
+    },
+    {
+      "label": "客服/运营 / 内容运营",
+      "parent": "客服/运营",
+      "category": "内容运营",
+      "options": [
+        {
+          "targetRole": "新媒体运营",
+          "label": "新媒体运营"
+        },
+        {
+          "targetRole": "直播运营",
+          "label": "直播运营"
+        },
+        {
+          "targetRole": "视频运营",
+          "label": "视频运营"
+        },
+        {
+          "targetRole": "内容运营",
+          "label": "内容运营"
+        },
+        {
+          "targetRole": "微信运营",
+          "label": "微信运营"
+        }
+      ]
+    },
+    {
+      "label": "客服/运营 / 电商运营",
+      "parent": "客服/运营",
+      "category": "电商运营",
+      "options": [
+        {
+          "targetRole": "国内电商运营",
+          "label": "国内电商运营"
+        },
+        {
+          "targetRole": "跨境电商运营",
+          "label": "跨境电商运营"
+        },
+        {
+          "targetRole": "品类运营",
+          "label": "品类运营"
+        },
+        {
+          "targetRole": "淘宝运营",
+          "label": "淘宝运营"
+        },
+        {
+          "targetRole": "天猫运营",
+          "label": "天猫运营"
+        },
+        {
+          "targetRole": "京东运营",
+          "label": "京东运营"
+        },
+        {
+          "targetRole": "拼多多运营",
+          "label": "拼多多运营"
+        },
+        {
+          "targetRole": "亚马逊运营",
+          "label": "亚马逊运营"
+        },
+        {
+          "targetRole": "跨境电商产品开发",
+          "label": "跨境电商产品开发"
+        },
+        {
+          "targetRole": "阿里国际站运营",
+          "label": "阿里国际站运营"
+        }
+      ]
+    },
+    {
+      "label": "客服/运营 / 业务运营",
+      "parent": "客服/运营",
+      "category": "业务运营",
+      "options": [
+        {
+          "targetRole": "运营助理/专员",
+          "label": "运营助理/专员"
+        },
+        {
+          "targetRole": "产品运营",
+          "label": "产品运营"
+        },
+        {
+          "targetRole": "用户运营",
+          "label": "用户运营"
+        },
+        {
+          "targetRole": "商家运营",
+          "label": "商家运营"
+        },
+        {
+          "targetRole": "数据/策略运营",
+          "label": "数据/策略运营"
+        },
+        {
+          "targetRole": "社群运营",
+          "label": "社群运营"
+        },
+        {
+          "targetRole": "游戏运营",
+          "label": "游戏运营"
+        },
+        {
+          "targetRole": "网站运营",
+          "label": "网站运营"
+        },
+        {
+          "targetRole": "内容审核",
+          "label": "内容审核"
+        },
+        {
+          "targetRole": "数据标注/AI训练师",
+          "label": "数据标注/AI训练师"
+        },
+        {
+          "targetRole": "外卖运营",
+          "label": "外卖运营"
+        }
+      ]
+    },
+    {
+      "label": "客服/运营 / 线下运营",
+      "parent": "客服/运营",
+      "category": "线下运营",
+      "options": [
+        {
+          "targetRole": "线下拓展运营",
+          "label": "线下拓展运营"
+        },
+        {
+          "targetRole": "商场运营",
+          "label": "商场运营"
+        }
+      ]
+    },
+    {
+      "label": "客服/运营 / 编辑",
+      "parent": "客服/运营",
+      "category": "编辑",
+      "options": [
+        {
+          "targetRole": "文案编辑",
+          "label": "文案编辑"
+        },
+        {
+          "targetRole": "主编/副主编",
+          "label": "主编/副主编"
+        },
+        {
+          "targetRole": "网站编辑",
+          "label": "网站编辑"
+        },
+        {
+          "targetRole": "医学编辑",
+          "label": "医学编辑"
+        }
+      ]
+    },
+    {
+      "label": "客服/运营 / 高端运营职位",
+      "parent": "客服/运营",
+      "category": "高端运营职位",
+      "options": [
+        {
+          "targetRole": "运营经理/主管",
+          "label": "运营经理/主管"
+        },
+        {
+          "targetRole": "运营总监",
+          "label": "运营总监"
+        },
+        {
+          "targetRole": "COO",
+          "label": "COO"
+        },
+        {
+          "targetRole": "客服总监",
+          "label": "客服总监"
+        }
+      ]
+    },
+    {
+      "label": "客服/运营 / 其他运营职位",
+      "parent": "客服/运营",
+      "category": "其他运营职位",
+      "options": [
+        {
+          "targetRole": "其他运营职位",
+          "label": "其他运营职位"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 销售",
+      "parent": "销售",
+      "category": "销售",
+      "options": [
+        {
+          "targetRole": "销售专员",
+          "label": "销售专员"
+        },
+        {
+          "targetRole": "电话销售",
+          "label": "电话销售"
+        },
+        {
+          "targetRole": "网络销售",
+          "label": "网络销售"
+        },
+        {
+          "targetRole": "渠道销售",
+          "label": "渠道销售"
+        },
+        {
+          "targetRole": "大客户代表",
+          "label": "大客户代表"
+        },
+        {
+          "targetRole": "客户经理",
+          "label": "客户经理"
+        },
+        {
+          "targetRole": "BD经理",
+          "label": "BD经理"
+        },
+        {
+          "targetRole": "销售工程师",
+          "label": "销售工程师"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 销售管理",
+      "parent": "销售",
+      "category": "销售管理",
+      "options": [
+        {
+          "targetRole": "销售经理/主管",
+          "label": "销售经理/主管"
+        },
+        {
+          "targetRole": "销售总监",
+          "label": "销售总监"
+        },
+        {
+          "targetRole": "销售VP",
+          "label": "销售VP"
+        },
+        {
+          "targetRole": "城市经理",
+          "label": "城市经理"
+        },
+        {
+          "targetRole": "区域总监",
+          "label": "区域总监"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 销售行政/商务",
+      "parent": "销售",
+      "category": "销售行政/商务",
+      "options": [
+        {
+          "targetRole": "销售助理",
+          "label": "销售助理"
+        },
+        {
+          "targetRole": "销售运营",
+          "label": "销售运营"
+        },
+        {
+          "targetRole": "商务专员",
+          "label": "商务专员"
+        },
+        {
+          "targetRole": "商务经理",
+          "label": "商务经理"
+        },
+        {
+          "targetRole": "商务总监",
+          "label": "商务总监"
+        },
+        {
+          "targetRole": "招商",
+          "label": "招商"
+        },
+        {
+          "targetRole": "客户成功",
+          "label": "客户成功"
+        },
+        {
+          "targetRole": "业务跟单",
+          "label": "业务跟单"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 外贸销售",
+      "parent": "销售",
+      "category": "外贸销售",
+      "options": [
+        {
+          "targetRole": "外贸业务员",
+          "label": "外贸业务员"
+        },
+        {
+          "targetRole": "外贸经理",
+          "label": "外贸经理"
+        },
+        {
+          "targetRole": "货代/物流销售",
+          "label": "货代/物流销售"
+        },
+        {
+          "targetRole": "海外销售",
+          "label": "海外销售"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 教培销售",
+      "parent": "销售",
+      "category": "教培销售",
+      "options": [
+        {
+          "targetRole": "课程顾问",
+          "label": "课程顾问"
+        },
+        {
+          "targetRole": "留学顾问",
+          "label": "留学顾问"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 汽车销售",
+      "parent": "销售",
+      "category": "汽车销售",
+      "options": [
+        {
+          "targetRole": "汽车销售",
+          "label": "汽车销售"
+        },
+        {
+          "targetRole": "汽车配件销售",
+          "label": "汽车配件销售"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 房地产销售/招商",
+      "parent": "销售",
+      "category": "房地产销售/招商",
+      "options": [
+        {
+          "targetRole": "置业顾问",
+          "label": "置业顾问"
+        },
+        {
+          "targetRole": "地产中介",
+          "label": "地产中介"
+        },
+        {
+          "targetRole": "地产招商",
+          "label": "地产招商"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 服务业销售",
+      "parent": "销售",
+      "category": "服务业销售",
+      "options": [
+        {
+          "targetRole": "导购",
+          "label": "导购"
+        },
+        {
+          "targetRole": "服装导购",
+          "label": "服装导购"
+        },
+        {
+          "targetRole": "珠宝销售",
+          "label": "珠宝销售"
+        },
+        {
+          "targetRole": "美容顾问",
+          "label": "美容顾问"
+        },
+        {
+          "targetRole": "化妆品导购",
+          "label": "化妆品导购"
+        },
+        {
+          "targetRole": "家装导购",
+          "label": "家装导购"
+        },
+        {
+          "targetRole": "会籍顾问",
+          "label": "会籍顾问"
+        },
+        {
+          "targetRole": "旅游顾问",
+          "label": "旅游顾问"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 医疗销售",
+      "parent": "销售",
+      "category": "医疗销售",
+      "options": [
+        {
+          "targetRole": "医药代表",
+          "label": "医药代表"
+        },
+        {
+          "targetRole": "医疗器械销售",
+          "label": "医疗器械销售"
+        },
+        {
+          "targetRole": "药店店员",
+          "label": "药店店员"
+        },
+        {
+          "targetRole": "药店店长",
+          "label": "药店店长"
+        },
+        {
+          "targetRole": "医美咨询",
+          "label": "医美咨询"
+        },
+        {
+          "targetRole": "健康顾问",
+          "label": "健康顾问"
+        },
+        {
+          "targetRole": "口腔咨询师",
+          "label": "口腔咨询师"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 广告/会展销售",
+      "parent": "销售",
+      "category": "广告/会展销售",
+      "options": [
+        {
+          "targetRole": "广告销售",
+          "label": "广告销售"
+        },
+        {
+          "targetRole": "会展活动销售",
+          "label": "会展活动销售"
+        },
+        {
+          "targetRole": "会议活动销售",
+          "label": "会议活动销售"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 金融销售",
+      "parent": "销售",
+      "category": "金融销售",
+      "options": [
+        {
+          "targetRole": "理财顾问",
+          "label": "理财顾问"
+        },
+        {
+          "targetRole": "保险顾问",
+          "label": "保险顾问"
+        },
+        {
+          "targetRole": "信用卡销售",
+          "label": "信用卡销售"
+        },
+        {
+          "targetRole": "证券经纪人",
+          "label": "证券经纪人"
+        },
+        {
+          "targetRole": "机构业务经理",
+          "label": "机构业务经理"
+        }
+      ]
+    },
+    {
+      "label": "销售 / 其他销售职位",
+      "parent": "销售",
+      "category": "其他销售职位",
+      "options": [
+        {
+          "targetRole": "其他销售职位",
+          "label": "其他销售职位"
+        }
+      ]
+    },
+    {
+      "label": "人力/行政/法务 / 人力资源",
+      "parent": "人力/行政/法务",
+      "category": "人力资源",
+      "options": [
+        {
+          "targetRole": "人力资源专员/助理",
+          "label": "人力资源专员/助理"
+        },
+        {
+          "targetRole": "人力资源经理/主管",
+          "label": "人力资源经理/主管"
+        },
+        {
+          "targetRole": "人力资源总监",
+          "label": "人力资源总监"
+        },
+        {
+          "targetRole": "招聘",
+          "label": "招聘"
+        },
+        {
+          "targetRole": "HRBP",
+          "label": "HRBP"
+        },
+        {
+          "targetRole": "培训",
+          "label": "培训"
+        },
+        {
+          "targetRole": "员工关系",
+          "label": "员工关系"
+        },
+        {
+          "targetRole": "组织发展",
+          "label": "组织发展"
+        },
+        {
+          "targetRole": "企业文化",
+          "label": "企业文化"
+        },
+        {
+          "targetRole": "薪酬绩效",
+          "label": "薪酬绩效"
+        },
+        {
+          "targetRole": "猎头顾问",
+          "label": "猎头顾问"
+        }
+      ]
+    },
+    {
+      "label": "人力/行政/法务 / 行政",
+      "parent": "人力/行政/法务",
+      "category": "行政",
+      "options": [
+        {
+          "targetRole": "行政专员/助理",
+          "label": "行政专员/助理"
+        },
+        {
+          "targetRole": "行政经理/主管",
+          "label": "行政经理/主管"
+        },
+        {
+          "targetRole": "行政总监",
+          "label": "行政总监"
+        },
+        {
+          "targetRole": "前台",
+          "label": "前台"
+        },
+        {
+          "targetRole": "后勤",
+          "label": "后勤"
+        },
+        {
+          "targetRole": "经理助理",
+          "label": "经理助理"
+        },
+        {
+          "targetRole": "文员",
+          "label": "文员"
+        },
+        {
+          "targetRole": "企业党建",
+          "label": "企业党建"
+        },
+        {
+          "targetRole": "档案管理",
+          "label": "档案管理"
+        },
+        {
+          "targetRole": "商务司机",
+          "label": "商务司机"
+        },
+        {
+          "targetRole": "项目专员/助理",
+          "label": "项目专员/助理"
+        },
+        {
+          "targetRole": "录入员",
+          "label": "录入员"
+        }
+      ]
+    },
+    {
+      "label": "人力/行政/法务 / 法律服务",
+      "parent": "人力/行政/法务",
+      "category": "法律服务",
+      "options": [
+        {
+          "targetRole": "法务专员/助理",
+          "label": "法务专员/助理"
+        },
+        {
+          "targetRole": "法务经理/主管",
+          "label": "法务经理/主管"
+        },
+        {
+          "targetRole": "法务总监",
+          "label": "法务总监"
+        },
+        {
+          "targetRole": "法律顾问",
+          "label": "法律顾问"
+        },
+        {
+          "targetRole": "律师",
+          "label": "律师"
+        }
+      ]
+    },
+    {
+      "label": "人力/行政/法务 / 其他职能职位",
+      "parent": "人力/行政/法务",
+      "category": "其他职能职位",
+      "options": [
+        {
+          "targetRole": "其他职能职位",
+          "label": "其他职能职位"
+        }
+      ]
+    },
+    {
+      "label": "财务/审计/税务 / 会计",
+      "parent": "财务/审计/税务",
+      "category": "会计",
+      "options": [
+        {
+          "targetRole": "会计",
+          "label": "会计"
+        },
+        {
+          "targetRole": "总账会计",
+          "label": "总账会计"
+        },
+        {
+          "targetRole": "成本会计",
+          "label": "成本会计"
+        },
+        {
+          "targetRole": "结算会计",
+          "label": "结算会计"
+        },
+        {
+          "targetRole": "外勤会计",
+          "label": "外勤会计"
+        },
+        {
+          "targetRole": "建筑/工程会计",
+          "label": "建筑/工程会计"
+        }
+      ]
+    },
+    {
+      "label": "财务/审计/税务 / 审计/税务",
+      "parent": "财务/审计/税务",
+      "category": "审计/税务",
+      "options": [
+        {
+          "targetRole": "审计",
+          "label": "审计"
+        },
+        {
+          "targetRole": "税务",
+          "label": "税务"
+        }
+      ]
+    },
+    {
+      "label": "财务/审计/税务 / 高级财务职位",
+      "parent": "财务/审计/税务",
+      "category": "高级财务职位",
+      "options": [
+        {
+          "targetRole": "财务经理/主管",
+          "label": "财务经理/主管"
+        },
+        {
+          "targetRole": "财务总监/VP",
+          "label": "财务总监/VP"
+        },
+        {
+          "targetRole": "CFO",
+          "label": "CFO"
+        },
+        {
+          "targetRole": "资金管理",
+          "label": "资金管理"
+        }
+      ]
+    },
+    {
+      "label": "财务/审计/税务 / 其他财务岗位",
+      "parent": "财务/审计/税务",
+      "category": "其他财务岗位",
+      "options": [
+        {
+          "targetRole": "出纳",
+          "label": "出纳"
+        },
+        {
+          "targetRole": "风控",
+          "label": "风控"
+        },
+        {
+          "targetRole": "财务顾问",
+          "label": "财务顾问"
+        },
+        {
+          "targetRole": "财务分析/财务BP",
+          "label": "财务分析/财务BP"
+        }
+      ]
+    },
+    {
+      "label": "技工/普工 / 普工",
+      "parent": "技工/普工",
+      "category": "普工",
+      "options": [
+        {
+          "targetRole": "普工/操作工",
+          "label": "普工/操作工"
+        },
+        {
+          "targetRole": "包装工",
+          "label": "包装工"
+        },
+        {
+          "targetRole": "学徒工",
+          "label": "学徒工"
+        },
+        {
+          "targetRole": "搬运工/装卸工",
+          "label": "搬运工/装卸工"
+        },
+        {
+          "targetRole": "组装工",
+          "label": "组装工"
+        }
+      ]
+    },
+    {
+      "label": "技工/普工 / 机械加工",
+      "parent": "技工/普工",
+      "category": "机械加工",
+      "options": [
+        {
+          "targetRole": "焊工",
+          "label": "焊工"
+        },
+        {
+          "targetRole": "氩弧焊工",
+          "label": "氩弧焊工"
+        },
+        {
+          "targetRole": "车工",
+          "label": "车工"
+        },
+        {
+          "targetRole": "钳工",
+          "label": "钳工"
+        },
+        {
+          "targetRole": "切割工",
+          "label": "切割工"
+        },
+        {
+          "targetRole": "钣金工",
+          "label": "钣金工"
+        },
+        {
+          "targetRole": "注塑工",
+          "label": "注塑工"
+        },
+        {
+          "targetRole": "折弯工",
+          "label": "折弯工"
+        },
+        {
+          "targetRole": "磨工",
+          "label": "磨工"
+        },
+        {
+          "targetRole": "模具工",
+          "label": "模具工"
+        },
+        {
+          "targetRole": "铣工",
+          "label": "铣工"
+        },
+        {
+          "targetRole": "抛光工",
+          "label": "抛光工"
+        },
+        {
+          "targetRole": "喷塑工",
+          "label": "喷塑工"
+        },
+        {
+          "targetRole": "钻工",
+          "label": "钻工"
+        },
+        {
+          "targetRole": "铆工",
+          "label": "铆工"
+        },
+        {
+          "targetRole": "电镀工",
+          "label": "电镀工"
+        }
+      ]
+    },
+    {
+      "label": "技工/普工 / 技工",
+      "parent": "技工/普工",
+      "category": "技工",
+      "options": [
+        {
+          "targetRole": "电工",
+          "label": "电工"
+        },
+        {
+          "targetRole": "弱电工",
+          "label": "弱电工"
+        },
+        {
+          "targetRole": "机修工",
+          "label": "机修工"
+        },
+        {
+          "targetRole": "CNC数控操机/编程员",
+          "label": "CNC数控操机/编程员"
+        },
+        {
+          "targetRole": "木工",
+          "label": "木工"
+        },
+        {
+          "targetRole": "油漆工",
+          "label": "油漆工"
+        },
+        {
+          "targetRole": "锅炉工",
+          "label": "锅炉工"
+        }
+      ]
+    },
+    {
+      "label": "技工/普工 / 运输设备操作",
+      "parent": "技工/普工",
+      "category": "运输设备操作",
+      "options": [
+        {
+          "targetRole": "叉车工",
+          "label": "叉车工"
+        },
+        {
+          "targetRole": "铲车司机",
+          "label": "铲车司机"
+        },
+        {
+          "targetRole": "挖掘机司机",
+          "label": "挖掘机司机"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 普工",
+      "parent": "生产制造",
+      "category": "普工",
+      "options": [
+        {
+          "targetRole": "普工/操作工",
+          "label": "普工/操作工"
+        },
+        {
+          "targetRole": "包装工",
+          "label": "包装工"
+        },
+        {
+          "targetRole": "学徒工",
+          "label": "学徒工"
+        },
+        {
+          "targetRole": "搬运工/装卸工",
+          "label": "搬运工/装卸工"
+        },
+        {
+          "targetRole": "组装工",
+          "label": "组装工"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 机械加工",
+      "parent": "生产制造",
+      "category": "机械加工",
+      "options": [
+        {
+          "targetRole": "焊工",
+          "label": "焊工"
+        },
+        {
+          "targetRole": "氩弧焊工",
+          "label": "氩弧焊工"
+        },
+        {
+          "targetRole": "车工",
+          "label": "车工"
+        },
+        {
+          "targetRole": "钳工",
+          "label": "钳工"
+        },
+        {
+          "targetRole": "切割工",
+          "label": "切割工"
+        },
+        {
+          "targetRole": "钣金工",
+          "label": "钣金工"
+        },
+        {
+          "targetRole": "注塑工",
+          "label": "注塑工"
+        },
+        {
+          "targetRole": "折弯工",
+          "label": "折弯工"
+        },
+        {
+          "targetRole": "磨工",
+          "label": "磨工"
+        },
+        {
+          "targetRole": "模具工",
+          "label": "模具工"
+        },
+        {
+          "targetRole": "铣工",
+          "label": "铣工"
+        },
+        {
+          "targetRole": "抛光工",
+          "label": "抛光工"
+        },
+        {
+          "targetRole": "喷塑工",
+          "label": "喷塑工"
+        },
+        {
+          "targetRole": "钻工",
+          "label": "钻工"
+        },
+        {
+          "targetRole": "铆工",
+          "label": "铆工"
+        },
+        {
+          "targetRole": "电镀工",
+          "label": "电镀工"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 技工",
+      "parent": "生产制造",
+      "category": "技工",
+      "options": [
+        {
+          "targetRole": "电工",
+          "label": "电工"
+        },
+        {
+          "targetRole": "弱电工",
+          "label": "弱电工"
+        },
+        {
+          "targetRole": "机修工",
+          "label": "机修工"
+        },
+        {
+          "targetRole": "CNC数控操机/编程员",
+          "label": "CNC数控操机/编程员"
+        },
+        {
+          "targetRole": "木工",
+          "label": "木工"
+        },
+        {
+          "targetRole": "油漆工",
+          "label": "油漆工"
+        },
+        {
+          "targetRole": "锅炉工",
+          "label": "锅炉工"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 运输设备操作",
+      "parent": "生产制造",
+      "category": "运输设备操作",
+      "options": [
+        {
+          "targetRole": "叉车工",
+          "label": "叉车工"
+        },
+        {
+          "targetRole": "铲车司机",
+          "label": "铲车司机"
+        },
+        {
+          "targetRole": "挖掘机司机",
+          "label": "挖掘机司机"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 质量管理",
+      "parent": "生产制造",
+      "category": "质量管理",
+      "options": [
+        {
+          "targetRole": "质量管理/测试工程师",
+          "label": "质量管理/测试工程师"
+        },
+        {
+          "targetRole": "质检员",
+          "label": "质检员"
+        },
+        {
+          "targetRole": "实验室技术员",
+          "label": "实验室技术员"
+        },
+        {
+          "targetRole": "体系工程师",
+          "label": "体系工程师"
+        },
+        {
+          "targetRole": "体系审核员",
+          "label": "体系审核员"
+        },
+        {
+          "targetRole": "产品认证工程师",
+          "label": "产品认证工程师"
+        },
+        {
+          "targetRole": "失效分析工程师",
+          "label": "失效分析工程师"
+        },
+        {
+          "targetRole": "可靠度工程师",
+          "label": "可靠度工程师"
+        },
+        {
+          "targetRole": "供应商质量工程师",
+          "label": "供应商质量工程师"
+        },
+        {
+          "targetRole": "医疗器械生产/质量管理",
+          "label": "医疗器械生产/质量管理"
+        },
+        {
+          "targetRole": "汽车质量工程师",
+          "label": "汽车质量工程师"
+        },
+        {
+          "targetRole": "计量工程师",
+          "label": "计量工程师"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 机械设计/制造",
+      "parent": "生产制造",
+      "category": "机械设计/制造",
+      "options": [
+        {
+          "targetRole": "机械工程师",
+          "label": "机械工程师"
+        },
+        {
+          "targetRole": "机械结构工程师",
+          "label": "机械结构工程师"
+        },
+        {
+          "targetRole": "家电/3C结构工程师",
+          "label": "家电/3C结构工程师"
+        },
+        {
+          "targetRole": "工艺工程师",
+          "label": "工艺工程师"
+        },
+        {
+          "targetRole": "设备维修保养工程师",
+          "label": "设备维修保养工程师"
+        },
+        {
+          "targetRole": "机械设备工程师",
+          "label": "机械设备工程师"
+        },
+        {
+          "targetRole": "机电工程师",
+          "label": "机电工程师"
+        },
+        {
+          "targetRole": "机械制图员",
+          "label": "机械制图员"
+        },
+        {
+          "targetRole": "模具工程师",
+          "label": "模具工程师"
+        },
+        {
+          "targetRole": "夹具工程师",
+          "label": "夹具工程师"
+        },
+        {
+          "targetRole": "材料工程师",
+          "label": "材料工程师"
+        },
+        {
+          "targetRole": "工业工程师(IE)",
+          "label": "工业工程师(IE)"
+        },
+        {
+          "targetRole": "仿真工程师",
+          "label": "仿真工程师"
+        },
+        {
+          "targetRole": "热设计工程师",
+          "label": "热设计工程师"
+        },
+        {
+          "targetRole": "注塑工程师",
+          "label": "注塑工程师"
+        },
+        {
+          "targetRole": "焊接工程师",
+          "label": "焊接工程师"
+        },
+        {
+          "targetRole": "铸造/锻造工程师",
+          "label": "铸造/锻造工程师"
+        },
+        {
+          "targetRole": "液压工程师",
+          "label": "液压工程师"
+        },
+        {
+          "targetRole": "冲压工程师",
+          "label": "冲压工程师"
+        },
+        {
+          "targetRole": "装配工程师",
+          "label": "装配工程师"
+        },
+        {
+          "targetRole": "电机工程师",
+          "label": "电机工程师"
+        },
+        {
+          "targetRole": "生产制造项目经理",
+          "label": "生产制造项目经理"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 电气/自动化",
+      "parent": "生产制造",
+      "category": "电气/自动化",
+      "options": [
+        {
+          "targetRole": "电气工程师",
+          "label": "电气工程师"
+        },
+        {
+          "targetRole": "电气设计工程师",
+          "label": "电气设计工程师"
+        },
+        {
+          "targetRole": "自动化工程师",
+          "label": "自动化工程师"
+        },
+        {
+          "targetRole": "电力工程师",
+          "label": "电力工程师"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 生产营运",
+      "parent": "生产制造",
+      "category": "生产营运",
+      "options": [
+        {
+          "targetRole": "车间主任",
+          "label": "车间主任"
+        },
+        {
+          "targetRole": "生产组长/拉长",
+          "label": "生产组长/拉长"
+        },
+        {
+          "targetRole": "生产总监",
+          "label": "生产总监"
+        },
+        {
+          "targetRole": "厂长",
+          "label": "厂长"
+        },
+        {
+          "targetRole": "生产跟单/文员",
+          "label": "生产跟单/文员"
+        },
+        {
+          "targetRole": "生产计划/物料管理(PMC)",
+          "label": "生产计划/物料管理(PMC)"
+        },
+        {
+          "targetRole": "生产设备管理",
+          "label": "生产设备管理"
+        },
+        {
+          "targetRole": "厂务",
+          "label": "厂务"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 生产安全",
+      "parent": "生产制造",
+      "category": "生产安全",
+      "options": [
+        {
+          "targetRole": "生产安全员",
+          "label": "生产安全员"
+        },
+        {
+          "targetRole": "EHS工程师",
+          "label": "EHS工程师"
+        },
+        {
+          "targetRole": "安全评价师",
+          "label": "安全评价师"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 化工",
+      "parent": "生产制造",
+      "category": "化工",
+      "options": [
+        {
+          "targetRole": "实验室技术员",
+          "label": "实验室技术员"
+        },
+        {
+          "targetRole": "化工工程师",
+          "label": "化工工程师"
+        },
+        {
+          "targetRole": "食品/饮料研发",
+          "label": "食品/饮料研发"
+        },
+        {
+          "targetRole": "化妆品研发",
+          "label": "化妆品研发"
+        },
+        {
+          "targetRole": "涂料研发",
+          "label": "涂料研发"
+        },
+        {
+          "targetRole": "化工项目经理",
+          "label": "化工项目经理"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 服装/纺织/皮革",
+      "parent": "生产制造",
+      "category": "服装/纺织/皮革",
+      "options": [
+        {
+          "targetRole": "服装/纺织/皮革跟单",
+          "label": "服装/纺织/皮革跟单"
+        },
+        {
+          "targetRole": "打样/制版",
+          "label": "打样/制版"
+        },
+        {
+          "targetRole": "服装/纺织设计",
+          "label": "服装/纺织设计"
+        },
+        {
+          "targetRole": "鞋类设计师",
+          "label": "鞋类设计师"
+        },
+        {
+          "targetRole": "面料辅料开发",
+          "label": "面料辅料开发"
+        },
+        {
+          "targetRole": "缝纫工",
+          "label": "缝纫工"
+        },
+        {
+          "targetRole": "样衣工",
+          "label": "样衣工"
+        },
+        {
+          "targetRole": "量体师",
+          "label": "量体师"
+        },
+        {
+          "targetRole": "裁剪工",
+          "label": "裁剪工"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 新能源汽车",
+      "parent": "生产制造",
+      "category": "新能源汽车",
+      "options": [
+        {
+          "targetRole": "电池工程师",
+          "label": "电池工程师"
+        },
+        {
+          "targetRole": "电机工程师",
+          "label": "电机工程师"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 汽车研发/制造",
+      "parent": "生产制造",
+      "category": "汽车研发/制造",
+      "options": [
+        {
+          "targetRole": "汽车项目管理",
+          "label": "汽车项目管理"
+        },
+        {
+          "targetRole": "汽车质量工程师",
+          "label": "汽车质量工程师"
+        },
+        {
+          "targetRole": "汽车工艺工程师",
+          "label": "汽车工艺工程师"
+        },
+        {
+          "targetRole": "汽车设计",
+          "label": "汽车设计"
+        },
+        {
+          "targetRole": "线束设计",
+          "label": "线束设计"
+        },
+        {
+          "targetRole": "车身工程师",
+          "label": "车身工程师"
+        },
+        {
+          "targetRole": "汽车造型设计",
+          "label": "汽车造型设计"
+        },
+        {
+          "targetRole": "汽车零部件设计",
+          "label": "汽车零部件设计"
+        },
+        {
+          "targetRole": "汽车电子工程师",
+          "label": "汽车电子工程师"
+        },
+        {
+          "targetRole": "自动驾驶系统工程师",
+          "label": "自动驾驶系统工程师"
+        },
+        {
+          "targetRole": "动力系统工程师",
+          "label": "动力系统工程师"
+        },
+        {
+          "targetRole": "内外饰设计工程师",
+          "label": "内外饰设计工程师"
+        },
+        {
+          "targetRole": "底盘工程师",
+          "label": "底盘工程师"
+        },
+        {
+          "targetRole": "总布置工程师",
+          "label": "总布置工程师"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 环保",
+      "parent": "生产制造",
+      "category": "环保",
+      "options": [
+        {
+          "targetRole": "EHS工程师",
+          "label": "EHS工程师"
+        },
+        {
+          "targetRole": "环境采样/检测员",
+          "label": "环境采样/检测员"
+        },
+        {
+          "targetRole": "环评工程师",
+          "label": "环评工程师"
+        },
+        {
+          "targetRole": "环保工程师",
+          "label": "环保工程师"
+        },
+        {
+          "targetRole": "碳排放管理师",
+          "label": "碳排放管理师"
+        }
+      ]
+    },
+    {
+      "label": "生产制造 / 其他生产制造职位",
+      "parent": "生产制造",
+      "category": "其他生产制造职位",
+      "options": [
+        {
+          "targetRole": "其他生产制造职位",
+          "label": "其他生产制造职位"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 零售",
+      "parent": "零售/生活服务",
+      "category": "零售",
+      "options": [
+        {
+          "targetRole": "店员/营业员",
+          "label": "店员/营业员"
+        },
+        {
+          "targetRole": "收银",
+          "label": "收银"
+        },
+        {
+          "targetRole": "导购",
+          "label": "导购"
+        },
+        {
+          "targetRole": "服装导购",
+          "label": "服装导购"
+        },
+        {
+          "targetRole": "珠宝销售",
+          "label": "珠宝销售"
+        },
+        {
+          "targetRole": "化妆品导购",
+          "label": "化妆品导购"
+        },
+        {
+          "targetRole": "家装导购",
+          "label": "家装导购"
+        },
+        {
+          "targetRole": "理货/陈列员",
+          "label": "理货/陈列员"
+        },
+        {
+          "targetRole": "促销员",
+          "label": "促销员"
+        },
+        {
+          "targetRole": "防损员",
+          "label": "防损员"
+        },
+        {
+          "targetRole": "门店店长",
+          "label": "门店店长"
+        },
+        {
+          "targetRole": "储备店长",
+          "label": "储备店长"
+        },
+        {
+          "targetRole": "督导/巡店",
+          "label": "督导/巡店"
+        },
+        {
+          "targetRole": "卖场经理",
+          "label": "卖场经理"
+        },
+        {
+          "targetRole": "商场运营",
+          "label": "商场运营"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 美容美发",
+      "parent": "零售/生活服务",
+      "category": "美容美发",
+      "options": [
+        {
+          "targetRole": "美容师",
+          "label": "美容师"
+        },
+        {
+          "targetRole": "美容店长",
+          "label": "美容店长"
+        },
+        {
+          "targetRole": "美体师",
+          "label": "美体师"
+        },
+        {
+          "targetRole": "美容顾问",
+          "label": "美容顾问"
+        },
+        {
+          "targetRole": "美容导师",
+          "label": "美容导师"
+        },
+        {
+          "targetRole": "美甲美睫师",
+          "label": "美甲美睫师"
+        },
+        {
+          "targetRole": "纹绣师",
+          "label": "纹绣师"
+        },
+        {
+          "targetRole": "发型师",
+          "label": "发型师"
+        },
+        {
+          "targetRole": "美发助理/学徒",
+          "label": "美发助理/学徒"
+        },
+        {
+          "targetRole": "养发师",
+          "label": "养发师"
+        },
+        {
+          "targetRole": "化妆/造型/服装",
+          "label": "化妆/造型/服装"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 理疗保健",
+      "parent": "零售/生活服务",
+      "category": "理疗保健",
+      "options": [
+        {
+          "targetRole": "理疗师",
+          "label": "理疗师"
+        },
+        {
+          "targetRole": "产后康复师",
+          "label": "产后康复师"
+        },
+        {
+          "targetRole": "针灸推拿",
+          "label": "针灸推拿"
+        },
+        {
+          "targetRole": "按摩师",
+          "label": "按摩师"
+        },
+        {
+          "targetRole": "足疗师",
+          "label": "足疗师"
+        },
+        {
+          "targetRole": "采耳师",
+          "label": "采耳师"
+        },
+        {
+          "targetRole": "营养师/健康管理师",
+          "label": "营养师/健康管理师"
+        },
+        {
+          "targetRole": "康复治疗师",
+          "label": "康复治疗师"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 家政/保洁",
+      "parent": "零售/生活服务",
+      "category": "家政/保洁",
+      "options": [
+        {
+          "targetRole": "保洁",
+          "label": "保洁"
+        },
+        {
+          "targetRole": "保洁主管",
+          "label": "保洁主管"
+        },
+        {
+          "targetRole": "保姆",
+          "label": "保姆"
+        },
+        {
+          "targetRole": "月嫂",
+          "label": "月嫂"
+        },
+        {
+          "targetRole": "育婴师",
+          "label": "育婴师"
+        },
+        {
+          "targetRole": "护工",
+          "label": "护工"
+        },
+        {
+          "targetRole": "收纳师",
+          "label": "收纳师"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 安保服务",
+      "parent": "零售/生活服务",
+      "category": "安保服务",
+      "options": [
+        {
+          "targetRole": "保安",
+          "label": "保安"
+        },
+        {
+          "targetRole": "保安主管/队长",
+          "label": "保安主管/队长"
+        },
+        {
+          "targetRole": "消防中控员",
+          "label": "消防中控员"
+        },
+        {
+          "targetRole": "押运员",
+          "label": "押运员"
+        },
+        {
+          "targetRole": "安检员",
+          "label": "安检员"
+        },
+        {
+          "targetRole": "消防维保员",
+          "label": "消防维保员"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 维修服务",
+      "parent": "零售/生活服务",
+      "category": "维修服务",
+      "options": [
+        {
+          "targetRole": "家电维修",
+          "label": "家电维修"
+        },
+        {
+          "targetRole": "手机维修",
+          "label": "手机维修"
+        },
+        {
+          "targetRole": "电脑/打印机维修",
+          "label": "电脑/打印机维修"
+        },
+        {
+          "targetRole": "电动车/摩托车维修",
+          "label": "电动车/摩托车维修"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 汽车服务",
+      "parent": "零售/生活服务",
+      "category": "汽车服务",
+      "options": [
+        {
+          "targetRole": "汽车维修",
+          "label": "汽车维修"
+        },
+        {
+          "targetRole": "汽车美容",
+          "label": "汽车美容"
+        },
+        {
+          "targetRole": "洗车工",
+          "label": "洗车工"
+        },
+        {
+          "targetRole": "汽车改装",
+          "label": "汽车改装"
+        },
+        {
+          "targetRole": "汽车服务顾问",
+          "label": "汽车服务顾问"
+        },
+        {
+          "targetRole": "4S店店长/维修站长",
+          "label": "4S店店长/维修站长"
+        },
+        {
+          "targetRole": "二手车评估师",
+          "label": "二手车评估师"
+        },
+        {
+          "targetRole": "汽车查勘定损",
+          "label": "汽车查勘定损"
+        },
+        {
+          "targetRole": "加油员",
+          "label": "加油员"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 宠物服务",
+      "parent": "零售/生活服务",
+      "category": "宠物服务",
+      "options": [
+        {
+          "targetRole": "宠物美容",
+          "label": "宠物美容"
+        },
+        {
+          "targetRole": "宠物医生",
+          "label": "宠物医生"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 运动健身",
+      "parent": "零售/生活服务",
+      "category": "运动健身",
+      "options": [
+        {
+          "targetRole": "健身教练",
+          "label": "健身教练"
+        },
+        {
+          "targetRole": "舞蹈老师",
+          "label": "舞蹈老师"
+        },
+        {
+          "targetRole": "篮球教练",
+          "label": "篮球教练"
+        },
+        {
+          "targetRole": "瑜伽老师",
+          "label": "瑜伽老师"
+        },
+        {
+          "targetRole": "游泳教练",
+          "label": "游泳教练"
+        },
+        {
+          "targetRole": "跆拳道教练",
+          "label": "跆拳道教练"
+        },
+        {
+          "targetRole": "武术教练",
+          "label": "武术教练"
+        },
+        {
+          "targetRole": "轮滑教练",
+          "label": "轮滑教练"
+        },
+        {
+          "targetRole": "救生员",
+          "label": "救生员"
+        },
+        {
+          "targetRole": "乒乓球教练",
+          "label": "乒乓球教练"
+        },
+        {
+          "targetRole": "足球教练",
+          "label": "足球教练"
+        },
+        {
+          "targetRole": "羽毛球教练",
+          "label": "羽毛球教练"
+        },
+        {
+          "targetRole": "拳击教练",
+          "label": "拳击教练"
+        },
+        {
+          "targetRole": "体育/体能老师",
+          "label": "体育/体能老师"
+        },
+        {
+          "targetRole": "网球教练",
+          "label": "网球教练"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 驾驶员",
+      "parent": "零售/生活服务",
+      "category": "驾驶员",
+      "options": [
+        {
+          "targetRole": "网约车司机",
+          "label": "网约车司机"
+        },
+        {
+          "targetRole": "代驾司机",
+          "label": "代驾司机"
+        },
+        {
+          "targetRole": "驾校教练",
+          "label": "驾校教练"
+        },
+        {
+          "targetRole": "商务司机",
+          "label": "商务司机"
+        },
+        {
+          "targetRole": "货运司机",
+          "label": "货运司机"
+        },
+        {
+          "targetRole": "客运司机",
+          "label": "客运司机"
+        },
+        {
+          "targetRole": "无人机飞手",
+          "label": "无人机飞手"
+        }
+      ]
+    },
+    {
+      "label": "零售/生活服务 / 其他服务业职位",
+      "parent": "零售/生活服务",
+      "category": "其他服务业职位",
+      "options": [
+        {
+          "targetRole": "花艺师",
+          "label": "花艺师"
+        },
+        {
+          "targetRole": "婚礼策划",
+          "label": "婚礼策划"
+        },
+        {
+          "targetRole": "网吧网管",
+          "label": "网吧网管"
+        },
+        {
+          "targetRole": "会籍顾问",
+          "label": "会籍顾问"
+        },
+        {
+          "targetRole": "旅游顾问",
+          "label": "旅游顾问"
+        },
+        {
+          "targetRole": "验光师",
+          "label": "验光师"
+        },
+        {
+          "targetRole": "摄影/摄像师",
+          "label": "摄影/摄像师"
+        },
+        {
+          "targetRole": "剧本杀主持人",
+          "label": "剧本杀主持人"
+        },
+        {
+          "targetRole": "儿童引导师",
+          "label": "儿童引导师"
+        },
+        {
+          "targetRole": "游戏陪玩",
+          "label": "游戏陪玩"
+        },
+        {
+          "targetRole": "台球教练/助教",
+          "label": "台球教练/助教"
+        },
+        {
+          "targetRole": "其他服务业职位",
+          "label": "其他服务业职位"
+        }
+      ]
+    },
+    {
+      "label": "餐饮 / 前厅",
+      "parent": "餐饮",
+      "category": "前厅",
+      "options": [
+        {
+          "targetRole": "服务员",
+          "label": "服务员"
+        },
+        {
+          "targetRole": "收银",
+          "label": "收银"
+        },
+        {
+          "targetRole": "礼仪/迎宾/接待",
+          "label": "礼仪/迎宾/接待"
+        },
+        {
+          "targetRole": "传菜员",
+          "label": "传菜员"
+        }
+      ]
+    },
+    {
+      "label": "餐饮 / 后厨",
+      "parent": "餐饮",
+      "category": "后厨",
+      "options": [
+        {
+          "targetRole": "餐饮学徒",
+          "label": "餐饮学徒"
+        },
+        {
+          "targetRole": "厨师",
+          "label": "厨师"
+        },
+        {
+          "targetRole": "中餐厨师",
+          "label": "中餐厨师"
+        },
+        {
+          "targetRole": "烧烤师傅",
+          "label": "烧烤师傅"
+        },
+        {
+          "targetRole": "西餐厨师",
+          "label": "西餐厨师"
+        },
+        {
+          "targetRole": "日料厨师",
+          "label": "日料厨师"
+        },
+        {
+          "targetRole": "凉菜厨师",
+          "label": "凉菜厨师"
+        },
+        {
+          "targetRole": "面点师",
+          "label": "面点师"
+        },
+        {
+          "targetRole": "后厨",
+          "label": "后厨"
+        },
+        {
+          "targetRole": "配菜打荷",
+          "label": "配菜打荷"
+        },
+        {
+          "targetRole": "洗碗工",
+          "label": "洗碗工"
+        },
+        {
+          "targetRole": "水台/水产员",
+          "label": "水台/水产员"
+        }
+      ]
+    },
+    {
+      "label": "餐饮 / 餐饮管理",
+      "parent": "餐饮",
+      "category": "餐饮管理",
+      "options": [
+        {
+          "targetRole": "餐饮店长",
+          "label": "餐饮店长"
+        },
+        {
+          "targetRole": "餐饮前厅经理/领班",
+          "label": "餐饮前厅经理/领班"
+        },
+        {
+          "targetRole": "储备店长",
+          "label": "储备店长"
+        },
+        {
+          "targetRole": "厨师长",
+          "label": "厨师长"
+        },
+        {
+          "targetRole": "行政总厨",
+          "label": "行政总厨"
+        },
+        {
+          "targetRole": "餐饮督导",
+          "label": "餐饮督导"
+        }
+      ]
+    },
+    {
+      "label": "餐饮 / 甜点饮品",
+      "parent": "餐饮",
+      "category": "甜点饮品",
+      "options": [
+        {
+          "targetRole": "咖啡师",
+          "label": "咖啡师"
+        },
+        {
+          "targetRole": "茶艺师",
+          "label": "茶艺师"
+        },
+        {
+          "targetRole": "奶茶店店员",
+          "label": "奶茶店店员"
+        },
+        {
+          "targetRole": "调酒师",
+          "label": "调酒师"
+        },
+        {
+          "targetRole": "面包/烘焙师",
+          "label": "面包/烘焙师"
+        },
+        {
+          "targetRole": "蛋糕/裱花师",
+          "label": "蛋糕/裱花师"
+        }
+      ]
+    },
+    {
+      "label": "餐饮 / 其他餐饮岗位",
+      "parent": "餐饮",
+      "category": "其他餐饮岗位",
+      "options": [
+        {
+          "targetRole": "送餐员",
+          "label": "送餐员"
+        },
+        {
+          "targetRole": "外卖运营",
+          "label": "外卖运营"
+        }
+      ]
+    },
+    {
+      "label": "酒店/旅游 / 酒店",
+      "parent": "酒店/旅游",
+      "category": "酒店",
+      "options": [
+        {
+          "targetRole": "酒店前台",
+          "label": "酒店前台"
+        },
+        {
+          "targetRole": "礼仪/迎宾/接待",
+          "label": "礼仪/迎宾/接待"
+        },
+        {
+          "targetRole": "客房服务员",
+          "label": "客房服务员"
+        },
+        {
+          "targetRole": "酒店经理",
+          "label": "酒店经理"
+        },
+        {
+          "targetRole": "酒店前厅经理",
+          "label": "酒店前厅经理"
+        },
+        {
+          "targetRole": "客房经理",
+          "label": "客房经理"
+        },
+        {
+          "targetRole": "民宿管家",
+          "label": "民宿管家"
+        }
+      ]
+    },
+    {
+      "label": "酒店/旅游 / 旅游服务",
+      "parent": "酒店/旅游",
+      "category": "旅游服务",
+      "options": [
+        {
+          "targetRole": "旅游顾问",
+          "label": "旅游顾问"
+        },
+        {
+          "targetRole": "导游",
+          "label": "导游"
+        },
+        {
+          "targetRole": "旅游产品经理",
+          "label": "旅游产品经理"
+        },
+        {
+          "targetRole": "讲解员",
+          "label": "讲解员"
+        },
+        {
+          "targetRole": "计调",
+          "label": "计调"
+        },
+        {
+          "targetRole": "票务员",
+          "label": "票务员"
+        },
+        {
+          "targetRole": "签证专员",
+          "label": "签证专员"
+        }
+      ]
+    },
+    {
+      "label": "酒店/旅游 / 其他旅游职位",
+      "parent": "酒店/旅游",
+      "category": "其他旅游职位",
+      "options": [
+        {
+          "targetRole": "其他旅游职位",
+          "label": "其他旅游职位"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 教师",
+      "parent": "教育培训",
+      "category": "教师",
+      "options": [
+        {
+          "targetRole": "教师",
+          "label": "教师"
+        },
+        {
+          "targetRole": "英语教师",
+          "label": "英语教师"
+        },
+        {
+          "targetRole": "助教",
+          "label": "助教"
+        },
+        {
+          "targetRole": "数学教师",
+          "label": "数学教师"
+        },
+        {
+          "targetRole": "语文教师",
+          "label": "语文教师"
+        },
+        {
+          "targetRole": "高中教师",
+          "label": "高中教师"
+        },
+        {
+          "targetRole": "初中教师",
+          "label": "初中教师"
+        },
+        {
+          "targetRole": "小学教师",
+          "label": "小学教师"
+        },
+        {
+          "targetRole": "家教",
+          "label": "家教"
+        },
+        {
+          "targetRole": "物理教师",
+          "label": "物理教师"
+        },
+        {
+          "targetRole": "化学教师",
+          "label": "化学教师"
+        },
+        {
+          "targetRole": "理科教师",
+          "label": "理科教师"
+        },
+        {
+          "targetRole": "日语教师",
+          "label": "日语教师"
+        },
+        {
+          "targetRole": "生物教师",
+          "label": "生物教师"
+        },
+        {
+          "targetRole": "文科教师",
+          "label": "文科教师"
+        },
+        {
+          "targetRole": "地理教师",
+          "label": "地理教师"
+        },
+        {
+          "targetRole": "其他外语教师",
+          "label": "其他外语教师"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 幼少儿教师",
+      "parent": "教育培训",
+      "category": "幼少儿教师",
+      "options": [
+        {
+          "targetRole": "幼教",
+          "label": "幼教"
+        },
+        {
+          "targetRole": "托管老师",
+          "label": "托管老师"
+        },
+        {
+          "targetRole": "早教老师",
+          "label": "早教老师"
+        },
+        {
+          "targetRole": "保育员",
+          "label": "保育员"
+        },
+        {
+          "targetRole": "感统训练教师",
+          "label": "感统训练教师"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 教育行政",
+      "parent": "教育培训",
+      "category": "教育行政",
+      "options": [
+        {
+          "targetRole": "教务管理",
+          "label": "教务管理"
+        },
+        {
+          "targetRole": "校长/副校长",
+          "label": "校长/副校长"
+        },
+        {
+          "targetRole": "班主任/辅导员",
+          "label": "班主任/辅导员"
+        },
+        {
+          "targetRole": "教学管理",
+          "label": "教学管理"
+        },
+        {
+          "targetRole": "园长/副园长",
+          "label": "园长/副园长"
+        },
+        {
+          "targetRole": "就业老师",
+          "label": "就业老师"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 运动健身",
+      "parent": "教育培训",
+      "category": "运动健身",
+      "options": [
+        {
+          "targetRole": "健身教练",
+          "label": "健身教练"
+        },
+        {
+          "targetRole": "篮球教练",
+          "label": "篮球教练"
+        },
+        {
+          "targetRole": "跆拳道教练",
+          "label": "跆拳道教练"
+        },
+        {
+          "targetRole": "武术教练",
+          "label": "武术教练"
+        },
+        {
+          "targetRole": "轮滑教练",
+          "label": "轮滑教练"
+        },
+        {
+          "targetRole": "乒乓球教练",
+          "label": "乒乓球教练"
+        },
+        {
+          "targetRole": "足球教练",
+          "label": "足球教练"
+        },
+        {
+          "targetRole": "羽毛球教练",
+          "label": "羽毛球教练"
+        },
+        {
+          "targetRole": "拳击教练",
+          "label": "拳击教练"
+        },
+        {
+          "targetRole": "台球教练/助教",
+          "label": "台球教练/助教"
+        },
+        {
+          "targetRole": "游泳教练",
+          "label": "游泳教练"
+        },
+        {
+          "targetRole": "瑜伽老师",
+          "label": "瑜伽老师"
+        },
+        {
+          "targetRole": "救生员",
+          "label": "救生员"
+        },
+        {
+          "targetRole": "普拉提老师",
+          "label": "普拉提老师"
+        },
+        {
+          "targetRole": "体育/体能老师",
+          "label": "体育/体能老师"
+        },
+        {
+          "targetRole": "网球教练",
+          "label": "网球教练"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 文化艺术",
+      "parent": "教育培训",
+      "category": "文化艺术",
+      "options": [
+        {
+          "targetRole": "美术教师",
+          "label": "美术教师"
+        },
+        {
+          "targetRole": "舞蹈老师",
+          "label": "舞蹈老师"
+        },
+        {
+          "targetRole": "书法教师",
+          "label": "书法教师"
+        },
+        {
+          "targetRole": "音乐教师",
+          "label": "音乐教师"
+        },
+        {
+          "targetRole": "播音主持教师",
+          "label": "播音主持教师"
+        },
+        {
+          "targetRole": "钢琴教师",
+          "label": "钢琴教师"
+        },
+        {
+          "targetRole": "古筝教师",
+          "label": "古筝教师"
+        },
+        {
+          "targetRole": "吉他教师",
+          "label": "吉他教师"
+        },
+        {
+          "targetRole": "表演教师",
+          "label": "表演教师"
+        },
+        {
+          "targetRole": "架子鼓老师",
+          "label": "架子鼓老师"
+        },
+        {
+          "targetRole": "围棋老师",
+          "label": "围棋老师"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 科学探索培训",
+      "parent": "教育培训",
+      "category": "科学探索培训",
+      "options": [
+        {
+          "targetRole": "乐高教师",
+          "label": "乐高教师"
+        },
+        {
+          "targetRole": "机器人教师",
+          "label": "机器人教师"
+        },
+        {
+          "targetRole": "少儿编程老师",
+          "label": "少儿编程老师"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 职业培训",
+      "parent": "教育培训",
+      "category": "职业培训",
+      "options": [
+        {
+          "targetRole": "培训师",
+          "label": "培训师"
+        },
+        {
+          "targetRole": "拓展培训",
+          "label": "拓展培训"
+        },
+        {
+          "targetRole": "IT培训讲师",
+          "label": "IT培训讲师"
+        },
+        {
+          "targetRole": "财会培训讲师",
+          "label": "财会培训讲师"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 教育产品研发",
+      "parent": "教育培训",
+      "category": "教育产品研发",
+      "options": [
+        {
+          "targetRole": "课程设计",
+          "label": "课程设计"
+        },
+        {
+          "targetRole": "课程编辑",
+          "label": "课程编辑"
+        },
+        {
+          "targetRole": "培训策划",
+          "label": "培训策划"
+        },
+        {
+          "targetRole": "培训研究",
+          "label": "培训研究"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 教培销售",
+      "parent": "教育培训",
+      "category": "教培销售",
+      "options": [
+        {
+          "targetRole": "课程顾问",
+          "label": "课程顾问"
+        },
+        {
+          "targetRole": "留学顾问",
+          "label": "留学顾问"
+        }
+      ]
+    },
+    {
+      "label": "教育培训 / 其他教育培训职位",
+      "parent": "教育培训",
+      "category": "其他教育培训职位",
+      "options": [
+        {
+          "targetRole": "其他教育培训职位",
+          "label": "其他教育培训职位"
+        }
+      ]
+    },
+    {
+      "label": "设计 / 视觉/交互设计",
+      "parent": "设计",
+      "category": "视觉/交互设计",
+      "options": [
+        {
+          "targetRole": "平面设计",
+          "label": "平面设计"
+        },
+        {
+          "targetRole": "美工",
+          "label": "美工"
+        },
+        {
+          "targetRole": "设计师助理",
+          "label": "设计师助理"
+        },
+        {
+          "targetRole": "UI设计师",
+          "label": "UI设计师"
+        },
+        {
+          "targetRole": "视觉设计师",
+          "label": "视觉设计师"
+        },
+        {
+          "targetRole": "广告设计",
+          "label": "广告设计"
+        },
+        {
+          "targetRole": "UX/交互设计师",
+          "label": "UX/交互设计师"
+        },
+        {
+          "targetRole": "用户研究",
+          "label": "用户研究"
+        },
+        {
+          "targetRole": "包装设计",
+          "label": "包装设计"
+        },
+        {
+          "targetRole": "修图师",
+          "label": "修图师"
+        }
+      ]
+    },
+    {
+      "label": "设计 / 环境设计",
+      "parent": "设计",
+      "category": "环境设计",
+      "options": [
+        {
+          "targetRole": "室内设计",
+          "label": "室内设计"
+        },
+        {
+          "targetRole": "软装设计师",
+          "label": "软装设计师"
+        },
+        {
+          "targetRole": "展览/展示设计",
+          "label": "展览/展示设计"
+        },
+        {
+          "targetRole": "陈列设计",
+          "label": "陈列设计"
+        },
+        {
+          "targetRole": "照明设计",
+          "label": "照明设计"
+        },
+        {
+          "targetRole": "园林/景观设计",
+          "label": "园林/景观设计"
+        },
+        {
+          "targetRole": "舞美设计师",
+          "label": "舞美设计师"
+        },
+        {
+          "targetRole": "CAD绘图员",
+          "label": "CAD绘图员"
+        }
+      ]
+    },
+    {
+      "label": "设计 / 工业/产品设计",
+      "parent": "设计",
+      "category": "工业/产品设计",
+      "options": [
+        {
+          "targetRole": "家具设计",
+          "label": "家具设计"
+        },
+        {
+          "targetRole": "工业设计",
+          "label": "工业设计"
+        },
+        {
+          "targetRole": "珠宝设计",
+          "label": "珠宝设计"
+        },
+        {
+          "targetRole": "家具拆单员",
+          "label": "家具拆单员"
+        },
+        {
+          "targetRole": "服装/纺织设计",
+          "label": "服装/纺织设计"
+        },
+        {
+          "targetRole": "鞋类设计师",
+          "label": "鞋类设计师"
+        }
+      ]
+    },
+    {
+      "label": "设计 / 美术/3D/动画",
+      "parent": "设计",
+      "category": "美术/3D/动画",
+      "options": [
+        {
+          "targetRole": "3D设计师",
+          "label": "3D设计师"
+        },
+        {
+          "targetRole": "插画师",
+          "label": "插画师"
+        },
+        {
+          "targetRole": "动画设计",
+          "label": "动画设计"
+        },
+        {
+          "targetRole": "原画师",
+          "label": "原画师"
+        },
+        {
+          "targetRole": "漫画师",
+          "label": "漫画师"
+        }
+      ]
+    },
+    {
+      "label": "设计 / 游戏设计",
+      "parent": "设计",
+      "category": "游戏设计",
+      "options": [
+        {
+          "targetRole": "游戏场景",
+          "label": "游戏场景"
+        },
+        {
+          "targetRole": "游戏角色",
+          "label": "游戏角色"
+        },
+        {
+          "targetRole": "游戏UI设计",
+          "label": "游戏UI设计"
+        },
+        {
+          "targetRole": "游戏特效",
+          "label": "游戏特效"
+        },
+        {
+          "targetRole": "游戏动作",
+          "label": "游戏动作"
+        },
+        {
+          "targetRole": "游戏主美术",
+          "label": "游戏主美术"
+        }
+      ]
+    },
+    {
+      "label": "设计 / 设计管理",
+      "parent": "设计",
+      "category": "设计管理",
+      "options": [
+        {
+          "targetRole": "设计总监/经理",
+          "label": "设计总监/经理"
+        },
+        {
+          "targetRole": "视觉设计总监/经理",
+          "label": "视觉设计总监/经理"
+        }
+      ]
+    },
+    {
+      "label": "房地产/建筑 / 工程管理",
+      "parent": "房地产/建筑",
+      "category": "工程管理",
+      "options": [
+        {
+          "targetRole": "建筑施工项目经理",
+          "label": "建筑施工项目经理"
+        },
+        {
+          "targetRole": "工程造价",
+          "label": "工程造价"
+        },
+        {
+          "targetRole": "工程监理",
+          "label": "工程监理"
+        },
+        {
+          "targetRole": "工程咨询",
+          "label": "工程咨询"
+        },
+        {
+          "targetRole": "施工员",
+          "label": "施工员"
+        },
+        {
+          "targetRole": "资料员",
+          "label": "资料员"
+        },
+        {
+          "targetRole": "材料员",
+          "label": "材料员"
+        },
+        {
+          "targetRole": "测绘/测量",
+          "label": "测绘/测量"
+        },
+        {
+          "targetRole": "施工安全员",
+          "label": "施工安全员"
+        },
+        {
+          "targetRole": "工程检测员",
+          "label": "工程检测员"
+        },
+        {
+          "targetRole": "工程招投标",
+          "label": "工程招投标"
+        },
+        {
+          "targetRole": "成本工程师",
+          "label": "成本工程师"
+        }
+      ]
+    },
+    {
+      "label": "房地产/建筑 / 装饰装修",
+      "parent": "房地产/建筑",
+      "category": "装饰装修",
+      "options": [
+        {
+          "targetRole": "室内设计",
+          "label": "室内设计"
+        },
+        {
+          "targetRole": "软装设计师",
+          "label": "软装设计师"
+        },
+        {
+          "targetRole": "装修项目经理",
+          "label": "装修项目经理"
+        },
+        {
+          "targetRole": "装修监理",
+          "label": "装修监理"
+        },
+        {
+          "targetRole": "装修造价",
+          "label": "装修造价"
+        }
+      ]
+    },
+    {
+      "label": "房地产/建筑 / 物业管理",
+      "parent": "房地产/建筑",
+      "category": "物业管理",
+      "options": [
+        {
+          "targetRole": "物业经理",
+          "label": "物业经理"
+        },
+        {
+          "targetRole": "物业管理员",
+          "label": "物业管理员"
+        },
+        {
+          "targetRole": "综合维修工",
+          "label": "综合维修工"
+        },
+        {
+          "targetRole": "物业工程主管",
+          "label": "物业工程主管"
+        },
+        {
+          "targetRole": "弱电工",
+          "label": "弱电工"
+        },
+        {
+          "targetRole": "绿化工",
+          "label": "绿化工"
+        },
+        {
+          "targetRole": "保安",
+          "label": "保安"
+        },
+        {
+          "targetRole": "保安主管/队长",
+          "label": "保安主管/队长"
+        },
+        {
+          "targetRole": "消防中控员",
+          "label": "消防中控员"
+        },
+        {
+          "targetRole": "消防维保员",
+          "label": "消防维保员"
+        }
+      ]
+    },
+    {
+      "label": "房地产/建筑 / 建筑/规划设计",
+      "parent": "房地产/建筑",
+      "category": "建筑/规划设计",
+      "options": [
+        {
+          "targetRole": "土木/土建/结构工程师",
+          "label": "土木/土建/结构工程师"
+        },
+        {
+          "targetRole": "园林/景观设计",
+          "label": "园林/景观设计"
+        },
+        {
+          "targetRole": "建筑设计师",
+          "label": "建筑设计师"
+        },
+        {
+          "targetRole": "建筑工程师",
+          "label": "建筑工程师"
+        },
+        {
+          "targetRole": "弱电工程师",
+          "label": "弱电工程师"
+        },
+        {
+          "targetRole": "建筑机电工程师",
+          "label": "建筑机电工程师"
+        },
+        {
+          "targetRole": "给排水工程师",
+          "label": "给排水工程师"
+        },
+        {
+          "targetRole": "暖通工程师",
+          "label": "暖通工程师"
+        },
+        {
+          "targetRole": "幕墙工程师",
+          "label": "幕墙工程师"
+        },
+        {
+          "targetRole": "BIM工程师",
+          "label": "BIM工程师"
+        },
+        {
+          "targetRole": "消防工程师",
+          "label": "消防工程师"
+        },
+        {
+          "targetRole": "水利工程师",
+          "label": "水利工程师"
+        },
+        {
+          "targetRole": "城乡规划设计",
+          "label": "城乡规划设计"
+        }
+      ]
+    },
+    {
+      "label": "房地产/建筑 / 房地产规划开发",
+      "parent": "房地产/建筑",
+      "category": "房地产规划开发",
+      "options": [
+        {
+          "targetRole": "房地产项目管理",
+          "label": "房地产项目管理"
+        },
+        {
+          "targetRole": "房地产策划",
+          "label": "房地产策划"
+        },
+        {
+          "targetRole": "房地产估价师",
+          "label": "房地产估价师"
+        }
+      ]
+    },
+    {
+      "label": "房地产/建筑 / 房地产销售/招商",
+      "parent": "房地产/建筑",
+      "category": "房地产销售/招商",
+      "options": [
+        {
+          "targetRole": "置业顾问",
+          "label": "置业顾问"
+        },
+        {
+          "targetRole": "地产中介",
+          "label": "地产中介"
+        },
+        {
+          "targetRole": "地产招商",
+          "label": "地产招商"
+        }
+      ]
+    },
+    {
+      "label": "房地产/建筑 / 建筑/装修工人",
+      "parent": "房地产/建筑",
+      "category": "建筑/装修工人",
+      "options": [
+        {
+          "targetRole": "电工",
+          "label": "电工"
+        },
+        {
+          "targetRole": "焊工",
+          "label": "焊工"
+        },
+        {
+          "targetRole": "木工",
+          "label": "木工"
+        },
+        {
+          "targetRole": "空调工",
+          "label": "空调工"
+        },
+        {
+          "targetRole": "油漆工",
+          "label": "油漆工"
+        },
+        {
+          "targetRole": "电梯工",
+          "label": "电梯工"
+        },
+        {
+          "targetRole": "泥瓦工",
+          "label": "泥瓦工"
+        },
+        {
+          "targetRole": "水电工",
+          "label": "水电工"
+        }
+      ]
+    },
+    {
+      "label": "房地产/建筑 / 其他房地产职位",
+      "parent": "房地产/建筑",
+      "category": "其他房地产职位",
+      "options": [
+        {
+          "targetRole": "其他房地产职位",
+          "label": "其他房地产职位"
+        }
+      ]
+    },
+    {
+      "label": "直播 / 主播",
+      "parent": "直播",
+      "category": "主播",
+      "options": [
+        {
+          "targetRole": "带货主播",
+          "label": "带货主播"
+        },
+        {
+          "targetRole": "语音主播",
+          "label": "语音主播"
+        },
+        {
+          "targetRole": "娱乐主播",
+          "label": "娱乐主播"
+        },
+        {
+          "targetRole": "游戏主播",
+          "label": "游戏主播"
+        },
+        {
+          "targetRole": "主播",
+          "label": "主播"
+        }
+      ]
+    },
+    {
+      "label": "直播 / 直播支持",
+      "parent": "直播",
+      "category": "直播支持",
+      "options": [
+        {
+          "targetRole": "直播运营",
+          "label": "直播运营"
+        },
+        {
+          "targetRole": "中控/场控/助播",
+          "label": "中控/场控/助播"
+        },
+        {
+          "targetRole": "视频剪辑",
+          "label": "视频剪辑"
+        },
+        {
+          "targetRole": "摄影/摄像师",
+          "label": "摄影/摄像师"
+        },
+        {
+          "targetRole": "化妆/造型/服装",
+          "label": "化妆/造型/服装"
+        }
+      ]
+    },
+    {
+      "label": "影视/传媒 / 直播",
+      "parent": "影视/传媒",
+      "category": "直播",
+      "options": [
+        {
+          "targetRole": "带货主播",
+          "label": "带货主播"
+        },
+        {
+          "targetRole": "语音主播",
+          "label": "语音主播"
+        },
+        {
+          "targetRole": "娱乐主播",
+          "label": "娱乐主播"
+        },
+        {
+          "targetRole": "游戏主播",
+          "label": "游戏主播"
+        },
+        {
+          "targetRole": "主播",
+          "label": "主播"
+        },
+        {
+          "targetRole": "直播运营",
+          "label": "直播运营"
+        },
+        {
+          "targetRole": "中控/场控/助播",
+          "label": "中控/场控/助播"
+        }
+      ]
+    },
+    {
+      "label": "影视/传媒 / 影视",
+      "parent": "影视/传媒",
+      "category": "影视",
+      "options": [
+        {
+          "targetRole": "化妆/造型/服装",
+          "label": "化妆/造型/服装"
+        },
+        {
+          "targetRole": "演员/配音员",
+          "label": "演员/配音员"
+        },
+        {
+          "targetRole": "艺人助理",
+          "label": "艺人助理"
+        },
+        {
+          "targetRole": "主持人/DJ",
+          "label": "主持人/DJ"
+        },
+        {
+          "targetRole": "模特",
+          "label": "模特"
+        },
+        {
+          "targetRole": "摄影/摄像师",
+          "label": "摄影/摄像师"
+        },
+        {
+          "targetRole": "导演/编导",
+          "label": "导演/编导"
+        },
+        {
+          "targetRole": "经纪人/星探",
+          "label": "经纪人/星探"
+        },
+        {
+          "targetRole": "编剧",
+          "label": "编剧"
+        },
+        {
+          "targetRole": "制片人",
+          "label": "制片人"
+        },
+        {
+          "targetRole": "影视策划",
+          "label": "影视策划"
+        },
+        {
+          "targetRole": "影视发行",
+          "label": "影视发行"
+        },
+        {
+          "targetRole": "视频剪辑",
+          "label": "视频剪辑"
+        },
+        {
+          "targetRole": "后期制作",
+          "label": "后期制作"
+        },
+        {
+          "targetRole": "动画设计",
+          "label": "动画设计"
+        },
+        {
+          "targetRole": "修图师",
+          "label": "修图师"
+        },
+        {
+          "targetRole": "灯光师",
+          "label": "灯光师"
+        },
+        {
+          "targetRole": "录音/音效",
+          "label": "录音/音效"
+        },
+        {
+          "targetRole": "音频编辑",
+          "label": "音频编辑"
+        },
+        {
+          "targetRole": "影视特效",
+          "label": "影视特效"
+        },
+        {
+          "targetRole": "剧本杀主持人",
+          "label": "剧本杀主持人"
+        },
+        {
+          "targetRole": "儿童引导师",
+          "label": "儿童引导师"
+        },
+        {
+          "targetRole": "剧本杀编剧",
+          "label": "剧本杀编剧"
+        },
+        {
+          "targetRole": "舞美设计师",
+          "label": "舞美设计师"
+        }
+      ]
+    },
+    {
+      "label": "影视/传媒 / 广告",
+      "parent": "影视/传媒",
+      "category": "广告",
+      "options": [
+        {
+          "targetRole": "策划经理",
+          "label": "策划经理"
+        },
+        {
+          "targetRole": "广告文案",
+          "label": "广告文案"
+        },
+        {
+          "targetRole": "广告客户执行",
+          "label": "广告客户执行"
+        },
+        {
+          "targetRole": "广告创意策划",
+          "label": "广告创意策划"
+        },
+        {
+          "targetRole": "创意总监",
+          "label": "创意总监"
+        },
+        {
+          "targetRole": "广告设计",
+          "label": "广告设计"
+        },
+        {
+          "targetRole": "美术指导",
+          "label": "美术指导"
+        },
+        {
+          "targetRole": "广告制作",
+          "label": "广告制作"
+        },
+        {
+          "targetRole": "广告审核",
+          "label": "广告审核"
+        },
+        {
+          "targetRole": "广告/会展项目经理",
+          "label": "广告/会展项目经理"
+        }
+      ]
+    },
+    {
+      "label": "影视/传媒 / 采编/写作/出版",
+      "parent": "影视/传媒",
+      "category": "采编/写作/出版",
+      "options": [
+        {
+          "targetRole": "文案编辑",
+          "label": "文案编辑"
+        },
+        {
+          "targetRole": "作者/撰稿人",
+          "label": "作者/撰稿人"
+        },
+        {
+          "targetRole": "编辑",
+          "label": "编辑"
+        },
+        {
+          "targetRole": "印刷排版",
+          "label": "印刷排版"
+        },
+        {
+          "targetRole": "录入员",
+          "label": "录入员"
+        },
+        {
+          "targetRole": "记者/采编",
+          "label": "记者/采编"
+        },
+        {
+          "targetRole": "网站编辑",
+          "label": "网站编辑"
+        },
+        {
+          "targetRole": "主编/副主编",
+          "label": "主编/副主编"
+        },
+        {
+          "targetRole": "出版发行",
+          "label": "出版发行"
+        },
+        {
+          "targetRole": "剧本杀编剧",
+          "label": "剧本杀编剧"
+        }
+      ]
+    },
+    {
+      "label": "影视/传媒 / 其他传媒职位",
+      "parent": "影视/传媒",
+      "category": "其他传媒职位",
+      "options": [
+        {
+          "targetRole": "其他传媒职位",
+          "label": "其他传媒职位"
+        }
+      ]
+    },
+    {
+      "label": "市场/公关/广告 / 市场营销",
+      "parent": "市场/公关/广告",
+      "category": "市场营销",
+      "options": [
+        {
+          "targetRole": "市场营销策划",
+          "label": "市场营销策划"
+        },
+        {
+          "targetRole": "海外市场",
+          "label": "海外市场"
+        },
+        {
+          "targetRole": "活动策划执行",
+          "label": "活动策划执行"
+        },
+        {
+          "targetRole": "会务/会展执行",
+          "label": "会务/会展执行"
+        },
+        {
+          "targetRole": "会务/会展策划",
+          "label": "会务/会展策划"
+        },
+        {
+          "targetRole": "市场总监",
+          "label": "市场总监"
+        },
+        {
+          "targetRole": "CMO",
+          "label": "CMO"
+        }
+      ]
+    },
+    {
+      "label": "市场/公关/广告 / 推广/投放",
+      "parent": "市场/公关/广告",
+      "category": "推广/投放",
+      "options": [
+        {
+          "targetRole": "市场推广/地推",
+          "label": "市场推广/地推"
+        },
+        {
+          "targetRole": "网络推广",
+          "label": "网络推广"
+        },
+        {
+          "targetRole": "媒介投放",
+          "label": "媒介投放"
+        },
+        {
+          "targetRole": "媒介商务BD",
+          "label": "媒介商务BD"
+        },
+        {
+          "targetRole": "媒介专员",
+          "label": "媒介专员"
+        },
+        {
+          "targetRole": "媒介经理/总监",
+          "label": "媒介经理/总监"
+        },
+        {
+          "targetRole": "信息流优化师",
+          "label": "信息流优化师"
+        },
+        {
+          "targetRole": "SEO",
+          "label": "SEO"
+        },
+        {
+          "targetRole": "SEM",
+          "label": "SEM"
+        }
+      ]
+    },
+    {
+      "label": "市场/公关/广告 / 政府事务",
+      "parent": "市场/公关/广告",
+      "category": "政府事务",
+      "options": [
+        {
+          "targetRole": "政府关系",
+          "label": "政府关系"
+        },
+        {
+          "targetRole": "项目申报专员",
+          "label": "项目申报专员"
+        },
+        {
+          "targetRole": "政策研究",
+          "label": "政策研究"
+        },
+        {
+          "targetRole": "社工",
+          "label": "社工"
+        }
+      ]
+    },
+    {
+      "label": "市场/公关/广告 / 公关",
+      "parent": "市场/公关/广告",
+      "category": "公关",
+      "options": [
+        {
+          "targetRole": "品牌公关",
+          "label": "品牌公关"
+        },
+        {
+          "targetRole": "公关总监",
+          "label": "公关总监"
+        }
+      ]
+    },
+    {
+      "label": "市场/公关/广告 / 广告",
+      "parent": "市场/公关/广告",
+      "category": "广告",
+      "options": [
+        {
+          "targetRole": "策划经理",
+          "label": "策划经理"
+        },
+        {
+          "targetRole": "广告文案",
+          "label": "广告文案"
+        },
+        {
+          "targetRole": "广告客户执行",
+          "label": "广告客户执行"
+        },
+        {
+          "targetRole": "广告创意策划",
+          "label": "广告创意策划"
+        },
+        {
+          "targetRole": "创意总监",
+          "label": "创意总监"
+        },
+        {
+          "targetRole": "广告设计",
+          "label": "广告设计"
+        },
+        {
+          "targetRole": "美术指导",
+          "label": "美术指导"
+        },
+        {
+          "targetRole": "广告制作",
+          "label": "广告制作"
+        },
+        {
+          "targetRole": "广告审核",
+          "label": "广告审核"
+        },
+        {
+          "targetRole": "广告/会展项目经理",
+          "label": "广告/会展项目经理"
+        }
+      ]
+    },
+    {
+      "label": "市场/公关/广告 / 调研分析",
+      "parent": "市场/公关/广告",
+      "category": "调研分析",
+      "options": [
+        {
+          "targetRole": "市场调研",
+          "label": "市场调研"
+        },
+        {
+          "targetRole": "选址开发",
+          "label": "选址开发"
+        },
+        {
+          "targetRole": "商业数据分析",
+          "label": "商业数据分析"
+        }
+      ]
+    },
+    {
+      "label": "市场/公关/广告 / 广告/会展销售",
+      "parent": "市场/公关/广告",
+      "category": "广告/会展销售",
+      "options": [
+        {
+          "targetRole": "广告销售",
+          "label": "广告销售"
+        },
+        {
+          "targetRole": "会展活动销售",
+          "label": "会展活动销售"
+        },
+        {
+          "targetRole": "会议活动销售",
+          "label": "会议活动销售"
+        }
+      ]
+    },
+    {
+      "label": "市场/公关/广告 / 其他市场职位",
+      "parent": "市场/公关/广告",
+      "category": "其他市场职位",
+      "options": [
+        {
+          "targetRole": "其他市场职位",
+          "label": "其他市场职位"
+        }
+      ]
+    },
+    {
+      "label": "物流/仓储/司机 / 物流/运输",
+      "parent": "物流/仓储/司机",
+      "category": "物流/运输",
+      "options": [
+        {
+          "targetRole": "物流专员",
+          "label": "物流专员"
+        },
+        {
+          "targetRole": "物流经理",
+          "label": "物流经理"
+        },
+        {
+          "targetRole": "物流总监",
+          "label": "物流总监"
+        },
+        {
+          "targetRole": "物流运营",
+          "label": "物流运营"
+        },
+        {
+          "targetRole": "物流跟单",
+          "label": "物流跟单"
+        },
+        {
+          "targetRole": "调度员",
+          "label": "调度员"
+        },
+        {
+          "targetRole": "运输经理/主管",
+          "label": "运输经理/主管"
+        },
+        {
+          "targetRole": "跟车员",
+          "label": "跟车员"
+        },
+        {
+          "targetRole": "水/空/陆运操作",
+          "label": "水/空/陆运操作"
+        },
+        {
+          "targetRole": "货代/物流销售",
+          "label": "货代/物流销售"
+        },
+        {
+          "targetRole": "物流/仓储项目经理",
+          "label": "物流/仓储项目经理"
+        },
+        {
+          "targetRole": "集装箱管理",
+          "label": "集装箱管理"
+        }
+      ]
+    },
+    {
+      "label": "物流/仓储/司机 / 配送理货",
+      "parent": "物流/仓储/司机",
+      "category": "配送理货",
+      "options": [
+        {
+          "targetRole": "配/理/拣/发货",
+          "label": "配/理/拣/发货"
+        },
+        {
+          "targetRole": "配送员",
+          "label": "配送员"
+        },
+        {
+          "targetRole": "送餐员",
+          "label": "送餐员"
+        },
+        {
+          "targetRole": "快递员",
+          "label": "快递员"
+        },
+        {
+          "targetRole": "搬运工/装卸工",
+          "label": "搬运工/装卸工"
+        },
+        {
+          "targetRole": "叉车工",
+          "label": "叉车工"
+        },
+        {
+          "targetRole": "配送站长",
+          "label": "配送站长"
+        }
+      ]
+    },
+    {
+      "label": "物流/仓储/司机 / 驾驶员",
+      "parent": "物流/仓储/司机",
+      "category": "驾驶员",
+      "options": [
+        {
+          "targetRole": "货运司机",
+          "label": "货运司机"
+        },
+        {
+          "targetRole": "商务司机",
+          "label": "商务司机"
+        },
+        {
+          "targetRole": "网约车司机",
+          "label": "网约车司机"
+        },
+        {
+          "targetRole": "代驾司机",
+          "label": "代驾司机"
+        },
+        {
+          "targetRole": "驾校教练",
+          "label": "驾校教练"
+        },
+        {
+          "targetRole": "客运司机",
+          "label": "客运司机"
+        },
+        {
+          "targetRole": "无人机飞手",
+          "label": "无人机飞手"
+        }
+      ]
+    },
+    {
+      "label": "物流/仓储/司机 / 仓储",
+      "parent": "物流/仓储/司机",
+      "category": "仓储",
+      "options": [
+        {
+          "targetRole": "仓库管理员",
+          "label": "仓库管理员"
+        },
+        {
+          "targetRole": "仓库文员",
+          "label": "仓库文员"
+        },
+        {
+          "targetRole": "仓库主管/经理",
+          "label": "仓库主管/经理"
+        }
+      ]
+    },
+    {
+      "label": "物流/仓储/司机 / 供应链",
+      "parent": "物流/仓储/司机",
+      "category": "供应链",
+      "options": [
+        {
+          "targetRole": "供应链专员",
+          "label": "供应链专员"
+        },
+        {
+          "targetRole": "供应链经理",
+          "label": "供应链经理"
+        },
+        {
+          "targetRole": "供应链总监",
+          "label": "供应链总监"
+        },
+        {
+          "targetRole": "生产计划/物料管理(PMC)",
+          "label": "生产计划/物料管理(PMC)"
+        }
+      ]
+    },
+    {
+      "label": "采购/贸易 / 采购",
+      "parent": "采购/贸易",
+      "category": "采购",
+      "options": [
+        {
+          "targetRole": "采购专员/助理",
+          "label": "采购专员/助理"
+        },
+        {
+          "targetRole": "采购经理/主管",
+          "label": "采购经理/主管"
+        },
+        {
+          "targetRole": "采购工程师",
+          "label": "采购工程师"
+        },
+        {
+          "targetRole": "买手",
+          "label": "买手"
+        },
+        {
+          "targetRole": "供应商质量工程师",
+          "label": "供应商质量工程师"
+        },
+        {
+          "targetRole": "商品专员/助理",
+          "label": "商品专员/助理"
+        },
+        {
+          "targetRole": "采购总监",
+          "label": "采购总监"
+        },
+        {
+          "targetRole": "招标专员",
+          "label": "招标专员"
+        },
+        {
+          "targetRole": "投标专员",
+          "label": "投标专员"
+        },
+        {
+          "targetRole": "商品经理/主管",
+          "label": "商品经理/主管"
+        }
+      ]
+    },
+    {
+      "label": "采购/贸易 / 外贸销售",
+      "parent": "采购/贸易",
+      "category": "外贸销售",
+      "options": [
+        {
+          "targetRole": "外贸业务员",
+          "label": "外贸业务员"
+        },
+        {
+          "targetRole": "外贸经理",
+          "label": "外贸经理"
+        },
+        {
+          "targetRole": "海外销售",
+          "label": "海外销售"
+        }
+      ]
+    },
+    {
+      "label": "采购/贸易 / 进出口贸易",
+      "parent": "采购/贸易",
+      "category": "进出口贸易",
+      "options": [
+        {
+          "targetRole": "外贸跟单",
+          "label": "外贸跟单"
+        },
+        {
+          "targetRole": "单证员",
+          "label": "单证员"
+        },
+        {
+          "targetRole": "报关/报检员",
+          "label": "报关/报检员"
+        }
+      ]
+    },
+    {
+      "label": "汽车 / 新能源汽车",
+      "parent": "汽车",
+      "category": "新能源汽车",
+      "options": [
+        {
+          "targetRole": "电池工程师",
+          "label": "电池工程师"
+        },
+        {
+          "targetRole": "电机工程师",
+          "label": "电机工程师"
+        }
+      ]
+    },
+    {
+      "label": "汽车 / 汽车研发/制造",
+      "parent": "汽车",
+      "category": "汽车研发/制造",
+      "options": [
+        {
+          "targetRole": "汽车项目管理",
+          "label": "汽车项目管理"
+        },
+        {
+          "targetRole": "汽车质量工程师",
+          "label": "汽车质量工程师"
+        },
+        {
+          "targetRole": "汽车工艺工程师",
+          "label": "汽车工艺工程师"
+        },
+        {
+          "targetRole": "汽车设计",
+          "label": "汽车设计"
+        },
+        {
+          "targetRole": "线束设计",
+          "label": "线束设计"
+        },
+        {
+          "targetRole": "车身工程师",
+          "label": "车身工程师"
+        },
+        {
+          "targetRole": "汽车造型设计",
+          "label": "汽车造型设计"
+        },
+        {
+          "targetRole": "汽车零部件设计",
+          "label": "汽车零部件设计"
+        },
+        {
+          "targetRole": "汽车电子工程师",
+          "label": "汽车电子工程师"
+        },
+        {
+          "targetRole": "自动驾驶系统工程师",
+          "label": "自动驾驶系统工程师"
+        },
+        {
+          "targetRole": "动力系统工程师",
+          "label": "动力系统工程师"
+        },
+        {
+          "targetRole": "内外饰设计工程师",
+          "label": "内外饰设计工程师"
+        },
+        {
+          "targetRole": "底盘工程师",
+          "label": "底盘工程师"
+        },
+        {
+          "targetRole": "总布置工程师",
+          "label": "总布置工程师"
+        }
+      ]
+    },
+    {
+      "label": "汽车 / 汽车服务",
+      "parent": "汽车",
+      "category": "汽车服务",
+      "options": [
+        {
+          "targetRole": "汽车维修",
+          "label": "汽车维修"
+        },
+        {
+          "targetRole": "汽车美容",
+          "label": "汽车美容"
+        },
+        {
+          "targetRole": "洗车工",
+          "label": "洗车工"
+        },
+        {
+          "targetRole": "汽车改装",
+          "label": "汽车改装"
+        },
+        {
+          "targetRole": "汽车服务顾问",
+          "label": "汽车服务顾问"
+        },
+        {
+          "targetRole": "4S店店长/维修站长",
+          "label": "4S店店长/维修站长"
+        },
+        {
+          "targetRole": "二手车评估师",
+          "label": "二手车评估师"
+        },
+        {
+          "targetRole": "汽车查勘定损",
+          "label": "汽车查勘定损"
+        },
+        {
+          "targetRole": "加油员",
+          "label": "加油员"
+        }
+      ]
+    },
+    {
+      "label": "汽车 / 汽车销售",
+      "parent": "汽车",
+      "category": "汽车销售",
+      "options": [
+        {
+          "targetRole": "汽车销售",
+          "label": "汽车销售"
+        },
+        {
+          "targetRole": "汽车配件销售",
+          "label": "汽车配件销售"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 护士/护理",
+      "parent": "医疗健康",
+      "category": "护士/护理",
+      "options": [
+        {
+          "targetRole": "护士",
+          "label": "护士"
+        },
+        {
+          "targetRole": "导医",
+          "label": "导医"
+        },
+        {
+          "targetRole": "护士长",
+          "label": "护士长"
+        },
+        {
+          "targetRole": "护工",
+          "label": "护工"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 医生/医技",
+      "parent": "医疗健康",
+      "category": "医生/医技",
+      "options": [
+        {
+          "targetRole": "外科医生",
+          "label": "外科医生"
+        },
+        {
+          "targetRole": "内科医生",
+          "label": "内科医生"
+        },
+        {
+          "targetRole": "皮肤科医生",
+          "label": "皮肤科医生"
+        },
+        {
+          "targetRole": "妇产科医生",
+          "label": "妇产科医生"
+        },
+        {
+          "targetRole": "儿科医生",
+          "label": "儿科医生"
+        },
+        {
+          "targetRole": "眼科医生",
+          "label": "眼科医生"
+        },
+        {
+          "targetRole": "精神心理科医生",
+          "label": "精神心理科医生"
+        },
+        {
+          "targetRole": "整形外科医生",
+          "label": "整形外科医生"
+        },
+        {
+          "targetRole": "全科医生",
+          "label": "全科医生"
+        },
+        {
+          "targetRole": "耳鼻喉科医生",
+          "label": "耳鼻喉科医生"
+        },
+        {
+          "targetRole": "医学检验",
+          "label": "医学检验"
+        },
+        {
+          "targetRole": "放射科医生",
+          "label": "放射科医生"
+        },
+        {
+          "targetRole": "超声科医生",
+          "label": "超声科医生"
+        },
+        {
+          "targetRole": "麻醉科医生",
+          "label": "麻醉科医生"
+        },
+        {
+          "targetRole": "病理科医生",
+          "label": "病理科医生"
+        },
+        {
+          "targetRole": "医生助理",
+          "label": "医生助理"
+        },
+        {
+          "targetRole": "中医",
+          "label": "中医"
+        },
+        {
+          "targetRole": "口腔科医生",
+          "label": "口腔科医生"
+        },
+        {
+          "targetRole": "幼儿园保健医",
+          "label": "幼儿园保健医"
+        },
+        {
+          "targetRole": "药剂师",
+          "label": "药剂师"
+        },
+        {
+          "targetRole": "验光师",
+          "label": "验光师"
+        },
+        {
+          "targetRole": "医务管理",
+          "label": "医务管理"
+        },
+        {
+          "targetRole": "其他医生职位",
+          "label": "其他医生职位"
+        },
+        {
+          "targetRole": "医疗机构院长",
+          "label": "医疗机构院长"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 理疗保健",
+      "parent": "医疗健康",
+      "category": "理疗保健",
+      "options": [
+        {
+          "targetRole": "理疗师",
+          "label": "理疗师"
+        },
+        {
+          "targetRole": "营养师/健康管理师",
+          "label": "营养师/健康管理师"
+        },
+        {
+          "targetRole": "针灸推拿",
+          "label": "针灸推拿"
+        },
+        {
+          "targetRole": "康复治疗师",
+          "label": "康复治疗师"
+        },
+        {
+          "targetRole": "产后康复师",
+          "label": "产后康复师"
+        },
+        {
+          "targetRole": "心理咨询师",
+          "label": "心理咨询师"
+        },
+        {
+          "targetRole": "按摩师",
+          "label": "按摩师"
+        },
+        {
+          "targetRole": "足疗师",
+          "label": "足疗师"
+        },
+        {
+          "targetRole": "采耳师",
+          "label": "采耳师"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 药店",
+      "parent": "医疗健康",
+      "category": "药店",
+      "options": [
+        {
+          "targetRole": "药店店员",
+          "label": "药店店员"
+        },
+        {
+          "targetRole": "执业药师/驻店药师",
+          "label": "执业药师/驻店药师"
+        },
+        {
+          "targetRole": "药店店长",
+          "label": "药店店长"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 生物医药",
+      "parent": "医疗健康",
+      "category": "生物医药",
+      "options": [
+        {
+          "targetRole": "生物学研究人员",
+          "label": "生物学研究人员"
+        },
+        {
+          "targetRole": "医药研发",
+          "label": "医药研发"
+        },
+        {
+          "targetRole": "生物信息工程师",
+          "label": "生物信息工程师"
+        },
+        {
+          "targetRole": "药品生产",
+          "label": "药品生产"
+        },
+        {
+          "targetRole": "药品注册",
+          "label": "药品注册"
+        },
+        {
+          "targetRole": "医药项目经理",
+          "label": "医药项目经理"
+        },
+        {
+          "targetRole": "细胞培养员",
+          "label": "细胞培养员"
+        },
+        {
+          "targetRole": "药理毒理研究员",
+          "label": "药理毒理研究员"
+        },
+        {
+          "targetRole": "药物合成",
+          "label": "药物合成"
+        },
+        {
+          "targetRole": "制剂研发",
+          "label": "制剂研发"
+        },
+        {
+          "targetRole": "药物分析",
+          "label": "药物分析"
+        },
+        {
+          "targetRole": "医疗产品技术支持",
+          "label": "医疗产品技术支持"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 临床试验",
+      "parent": "医疗健康",
+      "category": "临床试验",
+      "options": [
+        {
+          "targetRole": "临床协调员",
+          "label": "临床协调员"
+        },
+        {
+          "targetRole": "临床监查员",
+          "label": "临床监查员"
+        },
+        {
+          "targetRole": "临床项目经理",
+          "label": "临床项目经理"
+        },
+        {
+          "targetRole": "临床数据分析",
+          "label": "临床数据分析"
+        },
+        {
+          "targetRole": "临床医学经理/专员",
+          "label": "临床医学经理/专员"
+        },
+        {
+          "targetRole": "临床医学总监",
+          "label": "临床医学总监"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 医疗器械",
+      "parent": "医疗健康",
+      "category": "医疗器械",
+      "options": [
+        {
+          "targetRole": "医疗器械生产/质量管理",
+          "label": "医疗器械生产/质量管理"
+        },
+        {
+          "targetRole": "医疗器械研发",
+          "label": "医疗器械研发"
+        },
+        {
+          "targetRole": "医疗器械注册",
+          "label": "医疗器械注册"
+        },
+        {
+          "targetRole": "试剂研发",
+          "label": "试剂研发"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 医疗销售",
+      "parent": "医疗健康",
+      "category": "医疗销售",
+      "options": [
+        {
+          "targetRole": "医药代表",
+          "label": "医药代表"
+        },
+        {
+          "targetRole": "医疗器械销售",
+          "label": "医疗器械销售"
+        },
+        {
+          "targetRole": "医美咨询",
+          "label": "医美咨询"
+        },
+        {
+          "targetRole": "健康顾问",
+          "label": "健康顾问"
+        },
+        {
+          "targetRole": "口腔咨询师",
+          "label": "口腔咨询师"
+        }
+      ]
+    },
+    {
+      "label": "医疗健康 / 其他医疗健康职位",
+      "parent": "医疗健康",
+      "category": "其他医疗健康职位",
+      "options": [
+        {
+          "targetRole": "医学编辑",
+          "label": "医学编辑"
+        },
+        {
+          "targetRole": "其他医疗健康职位",
+          "label": "其他医疗健康职位"
+        }
+      ]
+    },
+    {
+      "label": "金融 / 银行",
+      "parent": "金融",
+      "category": "银行",
+      "options": [
+        {
+          "targetRole": "银行客户经理",
+          "label": "银行客户经理"
+        },
+        {
+          "targetRole": "银行大堂经理",
+          "label": "银行大堂经理"
+        },
+        {
+          "targetRole": "信贷专员",
+          "label": "信贷专员"
+        }
+      ]
+    },
+    {
+      "label": "金融 / 证券/基金/期货",
+      "parent": "金融",
+      "category": "证券/基金/期货",
+      "options": [
+        {
+          "targetRole": "证券交易员",
+          "label": "证券交易员"
+        },
+        {
+          "targetRole": "卖方分析师",
+          "label": "卖方分析师"
+        },
+        {
+          "targetRole": "买方分析师",
+          "label": "买方分析师"
+        },
+        {
+          "targetRole": "投资银行业务",
+          "label": "投资银行业务"
+        },
+        {
+          "targetRole": "基金经理",
+          "label": "基金经理"
+        },
+        {
+          "targetRole": "量化研究员",
+          "label": "量化研究员"
+        }
+      ]
+    },
+    {
+      "label": "金融 / 中后台",
+      "parent": "金融",
+      "category": "中后台",
+      "options": [
+        {
+          "targetRole": "风控",
+          "label": "风控"
+        },
+        {
+          "targetRole": "合规稽查",
+          "label": "合规稽查"
+        },
+        {
+          "targetRole": "资信评估",
+          "label": "资信评估"
+        },
+        {
+          "targetRole": "清算",
+          "label": "清算"
+        },
+        {
+          "targetRole": "资产评估",
+          "label": "资产评估"
+        },
+        {
+          "targetRole": "金融产品经理",
+          "label": "金融产品经理"
+        },
+        {
+          "targetRole": "催收员",
+          "label": "催收员"
+        }
+      ]
+    },
+    {
+      "label": "金融 / 投融资",
+      "parent": "金融",
+      "category": "投融资",
+      "options": [
+        {
+          "targetRole": "投资经理",
+          "label": "投资经理"
+        },
+        {
+          "targetRole": "投资助理",
+          "label": "投资助理"
+        },
+        {
+          "targetRole": "行业研究",
+          "label": "行业研究"
+        },
+        {
+          "targetRole": "融资",
+          "label": "融资"
+        },
+        {
+          "targetRole": "投后管理",
+          "label": "投后管理"
+        },
+        {
+          "targetRole": "并购",
+          "label": "并购"
+        },
+        {
+          "targetRole": "投资总监/VP",
+          "label": "投资总监/VP"
+        },
+        {
+          "targetRole": "投资者关系/证券事务代表",
+          "label": "投资者关系/证券事务代表"
+        },
+        {
+          "targetRole": "其他投融资职位",
+          "label": "其他投融资职位"
+        }
+      ]
+    },
+    {
+      "label": "金融 / 保险",
+      "parent": "金融",
+      "category": "保险",
+      "options": [
+        {
+          "targetRole": "保险理赔",
+          "label": "保险理赔"
+        },
+        {
+          "targetRole": "保险精算师",
+          "label": "保险精算师"
+        }
+      ]
+    },
+    {
+      "label": "金融 / 金融销售",
+      "parent": "金融",
+      "category": "金融销售",
+      "options": [
+        {
+          "targetRole": "理财顾问",
+          "label": "理财顾问"
+        },
+        {
+          "targetRole": "保险顾问",
+          "label": "保险顾问"
+        },
+        {
+          "targetRole": "信用卡销售",
+          "label": "信用卡销售"
+        },
+        {
+          "targetRole": "证券经纪人",
+          "label": "证券经纪人"
+        }
+      ]
+    },
+    {
+      "label": "金融 / 其他金融职位",
+      "parent": "金融",
+      "category": "其他金融职位",
+      "options": [
+        {
+          "targetRole": "其他金融职位",
+          "label": "其他金融职位"
+        }
+      ]
+    },
+    {
+      "label": "项目管理 / 项目管理",
+      "parent": "项目管理",
+      "category": "项目管理",
+      "options": [
+        {
+          "targetRole": "项目经理/主管",
+          "label": "项目经理/主管"
+        },
+        {
+          "targetRole": "项目专员/助理",
+          "label": "项目专员/助理"
+        },
+        {
+          "targetRole": "建筑施工项目经理",
+          "label": "建筑施工项目经理"
+        },
+        {
+          "targetRole": "装修项目经理",
+          "label": "装修项目经理"
+        },
+        {
+          "targetRole": "软件项目经理",
+          "label": "软件项目经理"
+        },
+        {
+          "targetRole": "房地产项目管理",
+          "label": "房地产项目管理"
+        },
+        {
+          "targetRole": "通信项目经理",
+          "label": "通信项目经理"
+        },
+        {
+          "targetRole": "硬件项目经理",
+          "label": "硬件项目经理"
+        },
+        {
+          "targetRole": "咨询项目管理",
+          "label": "咨询项目管理"
+        },
+        {
+          "targetRole": "物流/仓储项目经理",
+          "label": "物流/仓储项目经理"
+        },
+        {
+          "targetRole": "广告/会展项目经理",
+          "label": "广告/会展项目经理"
+        },
+        {
+          "targetRole": "汽车项目管理",
+          "label": "汽车项目管理"
+        },
+        {
+          "targetRole": "生产制造项目经理",
+          "label": "生产制造项目经理"
+        },
+        {
+          "targetRole": "化工项目经理",
+          "label": "化工项目经理"
+        },
+        {
+          "targetRole": "临床项目经理",
+          "label": "临床项目经理"
+        },
+        {
+          "targetRole": "医药项目经理",
+          "label": "医药项目经理"
+        }
+      ]
+    },
+    {
+      "label": "咨询/翻译/法律 / 咨询/调研",
+      "parent": "咨询/翻译/法律",
+      "category": "咨询/调研",
+      "options": [
+        {
+          "targetRole": "知识产权/专利/商标代理人",
+          "label": "知识产权/专利/商标代理人"
+        },
+        {
+          "targetRole": "项目申报专员",
+          "label": "项目申报专员"
+        },
+        {
+          "targetRole": "咨询项目管理",
+          "label": "咨询项目管理"
+        },
+        {
+          "targetRole": "企业管理咨询",
+          "label": "企业管理咨询"
+        },
+        {
+          "targetRole": "战略咨询",
+          "label": "战略咨询"
+        },
+        {
+          "targetRole": "财务顾问",
+          "label": "财务顾问"
+        },
+        {
+          "targetRole": "IT咨询顾问",
+          "label": "IT咨询顾问"
+        },
+        {
+          "targetRole": "咨询经理",
+          "label": "咨询经理"
+        },
+        {
+          "targetRole": "人力资源咨询顾问",
+          "label": "人力资源咨询顾问"
+        },
+        {
+          "targetRole": "猎头顾问",
+          "label": "猎头顾问"
+        },
+        {
+          "targetRole": "咨询总监",
+          "label": "咨询总监"
+        },
+        {
+          "targetRole": "市场调研",
+          "label": "市场调研"
+        },
+        {
+          "targetRole": "数据分析师",
+          "label": "数据分析师"
+        },
+        {
+          "targetRole": "心理咨询师",
+          "label": "心理咨询师"
+        },
+        {
+          "targetRole": "婚恋咨询师",
+          "label": "婚恋咨询师"
+        },
+        {
+          "targetRole": "工程咨询",
+          "label": "工程咨询"
+        }
+      ]
+    },
+    {
+      "label": "咨询/翻译/法律 / 翻译",
+      "parent": "咨询/翻译/法律",
+      "category": "翻译",
+      "options": [
+        {
+          "targetRole": "英语翻译",
+          "label": "英语翻译"
+        },
+        {
+          "targetRole": "日语翻译",
+          "label": "日语翻译"
+        },
+        {
+          "targetRole": "韩语/朝鲜语翻译",
+          "label": "韩语/朝鲜语翻译"
+        },
+        {
+          "targetRole": "俄语翻译",
+          "label": "俄语翻译"
+        },
+        {
+          "targetRole": "西班牙语翻译",
+          "label": "西班牙语翻译"
+        },
+        {
+          "targetRole": "德语翻译",
+          "label": "德语翻译"
+        },
+        {
+          "targetRole": "法语翻译",
+          "label": "法语翻译"
+        },
+        {
+          "targetRole": "其他语种翻译",
+          "label": "其他语种翻译"
+        }
+      ]
+    },
+    {
+      "label": "咨询/翻译/法律 / 法律服务",
+      "parent": "咨询/翻译/法律",
+      "category": "法律服务",
+      "options": [
+        {
+          "targetRole": "律师助理",
+          "label": "律师助理"
+        },
+        {
+          "targetRole": "知识产权律师",
+          "label": "知识产权律师"
+        },
+        {
+          "targetRole": "律师",
+          "label": "律师"
+        }
+      ]
+    },
+    {
+      "label": "能源/环保/农业 / 能源/地质",
+      "parent": "能源/环保/农业",
+      "category": "能源/地质",
+      "options": [
+        {
+          "targetRole": "光伏系统工程师",
+          "label": "光伏系统工程师"
+        },
+        {
+          "targetRole": "风电/光伏运维工程师",
+          "label": "风电/光伏运维工程师"
+        },
+        {
+          "targetRole": "水利工程师",
+          "label": "水利工程师"
+        },
+        {
+          "targetRole": "地质工程师",
+          "label": "地质工程师"
+        },
+        {
+          "targetRole": "电力工程师",
+          "label": "电力工程师"
+        }
+      ]
+    },
+    {
+      "label": "能源/环保/农业 / 环保",
+      "parent": "能源/环保/农业",
+      "category": "环保",
+      "options": [
+        {
+          "targetRole": "EHS工程师",
+          "label": "EHS工程师"
+        },
+        {
+          "targetRole": "环境采样/检测员",
+          "label": "环境采样/检测员"
+        },
+        {
+          "targetRole": "环评工程师",
+          "label": "环评工程师"
+        },
+        {
+          "targetRole": "环保工程师",
+          "label": "环保工程师"
+        },
+        {
+          "targetRole": "碳排放管理师",
+          "label": "碳排放管理师"
+        }
+      ]
+    },
+    {
+      "label": "能源/环保/农业 / 农/林/牧/渔",
+      "parent": "能源/环保/农业",
+      "category": "农/林/牧/渔",
+      "options": [
+        {
+          "targetRole": "农业/林业技术员",
+          "label": "农业/林业技术员"
+        },
+        {
+          "targetRole": "饲养员",
+          "label": "饲养员"
+        },
+        {
+          "targetRole": "养殖技术员",
+          "label": "养殖技术员"
+        },
+        {
+          "targetRole": "畜牧兽医",
+          "label": "畜牧兽医"
+        }
+      ]
+    },
+    {
+      "label": "高级管理 / 高级管理职位",
+      "parent": "高级管理",
+      "category": "高级管理职位",
+      "options": [
+        {
+          "targetRole": "总裁/总经理/CEO",
+          "label": "总裁/总经理/CEO"
+        },
+        {
+          "targetRole": "副总裁/副总经理/VP",
+          "label": "副总裁/副总经理/VP"
+        },
+        {
+          "targetRole": "总助/CEO助理/董事长助理",
+          "label": "总助/CEO助理/董事长助理"
+        },
+        {
+          "targetRole": "区域负责人(辖多个分公司)",
+          "label": "区域负责人(辖多个分公司)"
+        },
+        {
+          "targetRole": "分公司/代表处负责人",
+          "label": "分公司/代表处负责人"
+        },
+        {
+          "targetRole": "董事会秘书",
+          "label": "董事会秘书"
+        },
+        {
+          "targetRole": "联合创始人",
+          "label": "联合创始人"
+        },
+        {
+          "targetRole": "高级管理职位",
+          "label": "高级管理职位"
+        }
+      ]
+    },
+    {
+      "label": "其他 / 其他职位类别",
+      "parent": "其他",
+      "category": "其他职位类别",
+      "options": [
+        {
+          "targetRole": "其他职位",
+          "label": "其他职位"
+        }
+      ]
+    }
+  ]
+}

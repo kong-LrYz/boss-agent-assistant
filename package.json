@@ -1,0 +1,24 @@
+{
+  "name": "boss-agent-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "可自选目标岗位与城市的跨平台 BOSS 岗位投递助手，默认 AI Agent",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/main.js",
+    "benchmark": "node scripts/benchmark.js",
+    "test": "node --test --test-concurrency=1 \"tests/*.test.js\"",
+    "test:browser": "node --test \"tests/browser*.test.js\"",
+    "setup": "playwright install chromium",
+    "setup:project": "node scripts/install.js --install-only",
+    "doctor": "node scripts/doctor.js",
+    "benchmark:throughput": "node scripts/benchmark-throughput.js"
+  },
+  "dependencies": {
+    "playwright": "1.63.0"
+  }
+}
