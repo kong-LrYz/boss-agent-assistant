@@ -26,6 +26,9 @@ async function mv3Fixture(t,{slowSearchMs=0,slowResourceMs=0}={}){
  const context=await chromium.launchPersistentContext(path.join(dir,'profile'),{channel:'chromium',headless:true,ignoreHTTPSErrors:true,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`,`--host-resolver-rules=MAP www.zhipin.com 127.0.0.1:${fixture.address().port}, MAP * ~NOTFOUND, EXCLUDE 127.0.0.1`,'--no-proxy-server']});
  t.after(async()=>{bridge.cancel();await context.close();for(const timer of resourceTimers)clearTimeout(timer);server.closeAllConnections();fixture.closeAllConnections();await Promise.all([new Promise(r=>server.close(r)),new Promise(r=>fixture.close(r))]);await rm(dir,{recursive:true,force:true});});
  const popup=await context.newPage();await popup.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);
+ // The popup reads its MV3 worker state asynchronously before enabling pairing.
+ // Visibility of the form alone does not prove the submit listener is ready.
+ await popup.waitForFunction(()=>document.getElementById('status').textContent.startsWith('尚未配对'));
  await popup.locator('#base').fill(`http://127.0.0.1:${server.address().port}`);await popup.locator('#code').fill(bridge.snapshot().pairingCode);await popup.locator('button').click();
  try{await popup.waitForFunction(()=>document.getElementById('status').textContent.includes('配对成功'),null,{timeout:6000});}
  catch(error){throw Error(`${await popup.locator('#status').innerText()}; headers=${JSON.stringify(observed)}`,{cause:error});}

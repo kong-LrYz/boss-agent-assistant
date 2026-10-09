@@ -10,7 +10,7 @@ npm run setup
 BOSS_NATIVE_SMOKE=1 npm test
 ```
 
-2026-10-09 的 macOS arm64 完整本机回归：**971 项通过，0 失败、0 取消、0 跳过**，耗时约 172.2 秒。运行与测试源文件在测试前后核对 SHA256 一致。
+发布前运行完整本机回归，并在修改后核对运行与测试源文件 SHA256。最新跨平台结果见 [GitHub Actions](https://github.com/kong-LrYz/boss-agent-assistant/actions)。
 
 主要覆盖：
 

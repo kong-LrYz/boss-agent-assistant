@@ -198,12 +198,17 @@ test('install and launch entrypoints preserve a project path and arguments with 
   }
   await writeFile(path.join(root, 'scripts/install.js'), 'console.log(JSON.stringify({cwd:process.cwd(),args:process.argv.slice(2)}));\n');
   const env = { ...process.env, FIXTURE_NODE: process.execPath };
-  const argument = 'argument with spaces';
+  const argument = 'argument with spaces 中文 & literal';
   const run = name => process.platform === 'win32'
-    ? spawnSync('cmd.exe', ['/d', '/s', '/c', `""${path.join(root, name)}" "${argument}" --no-autorun"`], { env, encoding: 'utf8', timeout: 15_000 })
+    // The /c command already uses cmd.exe quoting. Node's default Windows
+    // argument escaping is for executable argv and would escape these quotes
+    // again, so cmd.exe never reaches the actual batch file.
+    ? spawnSync(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', `""${path.join(root, name)}" "${argument}" --no-autorun"`], { env, encoding: 'utf8', windowsVerbatimArguments: true, timeout: 15_000 })
     : spawnSync('/bin/sh', [path.join(root, name), argument, '--no-autorun'], { env, encoding: 'utf8', timeout: 15_000 });
   for (const name of names) {
-    const result = run(name); assert.equal(result.status, 0, result.stdout + result.stderr);
+    const result = run(name);
+    assert.ifError(result.error);
+    assert.equal(result.status, 0, `${name}: ${result.stdout}${result.stderr}`);
     const observed = JSON.parse(result.stdout.trim());
     assert.equal(await realpath(observed.cwd), await realpath(root));
     assert.deepEqual(observed.args, name.startsWith('install.') ? ['--open-chrome-download', argument, '--no-autorun'] : [argument, '--no-autorun']);

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { EventEmitter } from 'node:events';
 import { Store } from '../src/store.js';
@@ -126,7 +127,7 @@ test('adapter and real Chromium DOM executor complete the local greeting and att
  const chromiumBrowser=await chromium.launch({headless:true});const page=await chromiumBrowser.newPage();t.after(()=>chromiumBrowser.close());
  let fixtureRequests=0;
  await page.context().route('**/*',route=>{const request=new URL(route.request().url());if(request.origin==='https://www.zhipin.com'){fixtureRequests++;return route.fulfill({contentType:'text/html;charset=utf-8',body:source});}return route.abort();});
- const url='https://www.zhipin.com/job_detail/a123.html?ka=search';const executor=new URL('../extension/dom-executor.js',import.meta.url);await page.addInitScript({path:executor.pathname});await page.goto(url);assert.equal(page.url(),url);
+ const url='https://www.zhipin.com/job_detail/a123.html?ka=search';const executor=new URL('../extension/dom-executor.js',import.meta.url);await page.addInitScript({path:fileURLToPath(executor)});await page.goto(url);assert.equal(page.url(),url);
  const {store,disk}=await persistentStage(t);const domJob={...job,title:'AI Agent开发实习生'};const state=setup();
  const run=async(op,args)=>{const result=await page.evaluate(command=>BossDomExecutor.execute(command),{op,args,expiresAt:Date.now()+8000,expectedDocument:state.bridge.meta});state.bridge.meta=result.meta;return result;};
  state.bridge.handlers.OPEN_SESSION=async()=>{state.bridge.meta=await page.evaluate(()=>BossDomExecutor.metadata());return {opened:true};};
@@ -135,8 +136,8 @@ test('adapter and real Chromium DOM executor complete the local greeting and att
  const result=await state.browser.contact(domJob,{greeting:'你好，我对该岗位感兴趣。',onStage:async(stage,patch)=>store.upsertJob(domJob,patch)});assert.equal(result.greetingStatus,'sent');assert.equal(result.resumeStatus,'sent');assert.match(result.evidence.message,/王同学\.pdf/u);assert.equal(await page.evaluate(()=>Boolean(window.wrongRecipientSent)),false);assert.ok(fixtureRequests>=2);
 });
 test('login waits for explicitly pending account hydration after opening the session',async()=>{
- const started=Date.now();const pending=()=>({authPending:true,ready:true,risk:{code:'LOGIN_REQUIRED',message:'登录入口的账号标记尚未显示'}});const {browser,bridge}=setup({handlers:{OPEN_SESSION:pending,READ_STATUS:()=>Date.now()-started<20?pending():{ready:true,loggedIn:true,account:'王同学'}}});browser.timeoutMs=80;
- const result=await browser.login();assert.equal(result.loggedIn,true);assert.equal(result.account,'王同学');assert.equal(bridge.calls.filter(call=>call.op==='OPEN_SESSION').length,1);assert.equal(bridge.calls.some(call=>['NAV_SEARCH','NAV_JOB','OPEN_CONTACT'].includes(call.op)),false);
+ let clock=1000;const sleeps=[];const pending=()=>({authPending:true,ready:true,risk:{code:'LOGIN_REQUIRED',message:'登录入口的账号标记尚未显示'}});const {browser,bridge}=setup({browserOptions:{timeoutMs:80,pollMs:5,now:()=>clock,sleep:async ms=>{clock+=ms;sleeps.push(ms);}},handlers:{OPEN_SESSION:pending,READ_STATUS:()=>clock<1020?pending():{ready:true,loggedIn:true,account:'王同学'}}});
+ const result=await browser.login();assert.equal(result.loggedIn,true);assert.equal(result.account,'王同学');assert.equal(clock,1020);assert.deepEqual(sleeps,[5,5,5,5]);assert.equal(bridge.calls.filter(call=>call.op==='READ_STATUS').length,5);assert.equal(bridge.calls.filter(call=>call.op==='OPEN_SESSION').length,1);assert.equal(bridge.calls.some(call=>['NAV_SEARCH','NAV_JOB','OPEN_CONTACT'].includes(call.op)),false);
 });
 test('readiness negative acknowledgements wait for late login hydration without reopening the session',async()=>{
  let clock=1000,reads=0;const sleeps=[];const {browser,bridge,launches}=setup({browserOptions:{timeoutMs:50,pollMs:5,now:()=>clock,sleep:async ms=>{clock+=ms;sleeps.push(ms);}},handlers:{READ_STATUS:()=>{if(++reads<3)throw Object.assign(Error('not hydrated'),{code:'PAGE_NOT_READY'});return{ready:true,loggedIn:true,account:'测试账号'};}}});
@@ -177,7 +178,10 @@ test('readiness negative acknowledgements leave the transient read retry budget 
 test('visible login controls remain an immediate pause during account hydration',async()=>{
  const {browser,bridge}=setup({handlers:{OPEN_SESSION:()=>({authPending:false,risk:{code:'LOGIN_REQUIRED',message:'可见登录对话框'}}),READ_STATUS:()=>({ready:true,loggedIn:true,account:'王同学'})}});await assert.rejects(browser.login(),{code:'LOGIN_REQUIRED'});assert.equal(bridge.calls.some(call=>call.op==='READ_STATUS'),false);
 });
-test('account hydration without a positive account times out and dispatches no search',async()=>{const pending=()=>({authPending:true,ready:true,risk:{code:'LOGIN_REQUIRED',message:'账号标记尚未显示'}});const {browser,bridge}=setup({handlers:{OPEN_SESSION:pending,READ_STATUS:pending}});const start=Date.now();await assert.rejects(browser.login(),{code:'LOGIN_REQUIRED'});assert.ok(Date.now()-start>=10);assert.ok(bridge.calls.filter(call=>call.op==='READ_STATUS').length>1);assert.equal(bridge.calls.some(call=>['NAV_SEARCH','NAV_JOB','OPEN_CONTACT'].includes(call.op)),false);});
+test('account hydration without a positive account times out and dispatches no search',async()=>{
+ let clock=1000;const sleeps=[];const pending=()=>({authPending:true,ready:true,risk:{code:'LOGIN_REQUIRED',message:'账号标记尚未显示'}});const {browser,bridge}=setup({browserOptions:{timeoutMs:12,pollMs:5,now:()=>clock,sleep:async ms=>{clock+=ms;sleeps.push(ms);}},handlers:{OPEN_SESSION:pending,READ_STATUS:pending}});
+ await assert.rejects(browser.login(),{code:'LOGIN_REQUIRED'});assert.equal(clock,1012);assert.deepEqual(sleeps,[5,5,2]);assert.equal(bridge.calls.filter(call=>call.op==='READ_STATUS').length,3);assert.equal(bridge.calls.some(call=>['NAV_SEARCH','NAV_JOB','OPEN_CONTACT'].includes(call.op)),false);
+});
 test('account-pending exceptions never authorize other operations or other risks',async()=>{const pending={authPending:true,risk:{code:'LOGIN_REQUIRED',message:'账号标记尚未显示'}};const {browser}=setup({handlers:{READ_CARDS:()=>pending,NAV_SEARCH:()=>pending,READ_STATUS:()=>({authPending:true,risk:{code:'CAPTCHA',message:'验证'}})}});await browser.open();await assert.rejects(browser.call('READ_CARDS'),{code:'LOGIN_REQUIRED'});await assert.rejects(browser.call('NAV_SEARCH',{query:'AI Agent',cityCode:'101010100'}),{code:'PAGE_CHANGED'});await assert.rejects(browser.call('READ_STATUS'),{code:'CAPTCHA'});});
 test('an explicitly pending session cannot dispatch navigation before account confirmation',async()=>{const {browser,bridge}=setup({handlers:{OPEN_SESSION:()=>({authPending:true,risk:{code:'LOGIN_REQUIRED',message:'账号标记尚未显示'}})}});await browser.open();await assert.rejects(browser.call('NAV_SEARCH',{query:'AI Agent',cityCode:'101010100'}),{code:'LOGIN_REQUIRED'});assert.equal(bridge.calls.some(call=>call.op==='NAV_SEARCH'),false);});
 

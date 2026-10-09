@@ -50,7 +50,10 @@ for(const scenario of ['native','lateChild','lostExistingAck'])test(scenario==='
  const context=await chromium.launchPersistentContext(path.join(dir,'profile'),{channel:'chromium',headless:true,ignoreHTTPSErrors:true,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`,`--host-resolver-rules=MAP www.zhipin.com 127.0.0.1:${fixture.address().port}, MAP * ~NOTFOUND, EXCLUDE 127.0.0.1`,'--no-proxy-server']});
  t.after(async()=>{releaseBind?.();bridge.cancel();server.closeAllConnections();fixture.closeAllConnections();await context.close();await Promise.all([new Promise(resolve=>server.close(resolve)),new Promise(resolve=>fixture.close(resolve))]);await rm(dir,{recursive:true,force:true});});
  context.on('page',page=>page.on('pageerror',error=>pageErrors.push(error.message)));
- const popup=await context.newPage();await popup.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);await popup.locator('#base').fill(`http://127.0.0.1:${server.address().port}`);await popup.locator('#code').fill(bridge.snapshot().pairingCode);await popup.locator('button').click();await popup.waitForFunction(()=>document.getElementById('status').textContent.includes('配对成功'));
+ const popup=await context.newPage();await popup.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);
+ // Pair only after popup initialization has installed its native submit handler.
+ await popup.waitForFunction(()=>document.getElementById('status').textContent.startsWith('尚未配对'));
+ await popup.locator('#base').fill(`http://127.0.0.1:${server.address().port}`);await popup.locator('#code').fill(bridge.snapshot().pairingCode);await popup.locator('button').click();await popup.waitForFunction(()=>document.getElementById('status').textContent.includes('配对成功'));
  const connectedUntil=Date.now()+6000;while(!bridge.isConnected()&&Date.now()<connectedUntil)await new Promise(resolve=>setTimeout(resolve,20));assert.equal(bridge.isConnected(),true);
  const browser=new ExtensionBrowser({bridge,launcher:{async launch(){}},profileDir:path.join(dir,'profile'),timeoutMs:12000,pollMs:25,navigationDelayMs:0});
  const stages=[];let priorJobDocumentId;
