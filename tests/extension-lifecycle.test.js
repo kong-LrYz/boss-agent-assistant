@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createServer } from 'node:http';
 import { createServer as createHttpsServer } from 'node:https';
+import { X509Certificate, createHash } from 'node:crypto';
 import { chromium } from 'playwright';
 import { ExtensionBridge } from '../src/extension-bridge.js';
 import { ExtensionBrowser } from '../src/extension-browser.js';
@@ -41,13 +42,18 @@ for(const scenario of ['native','lateChild','lostExistingAck'])test(scenario==='
   bridgeRequests.push({path:req.url,method:req.method});const originalEnd=res.end.bind(res);res.end=(chunk,...rest)=>{try{const packet=JSON.parse(chunk);if(packet.command)operations.push(packet.command.op);}catch{}return originalEnd(chunk,...rest);};
   if(!await bridge.handle(req,res,new URL(req.url,'http://127.0.0.1'))){res.writeHead(404);res.end();}
  });await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
- const fixture=createHttpsServer({key:await readFile(new URL('./fixtures/test-only-tls-key.pem',import.meta.url)),cert:await readFile(new URL('./fixtures/test-only-tls-cert.pem',import.meta.url))},(req,res)=>{
+ const fixtureCert=await readFile(new URL('./fixtures/test-only-tls-cert.pem',import.meta.url));
+ const fixtureSpki=createHash('sha256').update(new X509Certificate(fixtureCert).publicKey.export({type:'spki',format:'der'})).digest('base64');
+ const fixture=createHttpsServer({key:await readFile(new URL('./fixtures/test-only-tls-key.pem',import.meta.url)),cert:fixtureCert},(req,res)=>{
   const url=new URL(req.url,'https://www.zhipin.com');siteRequests.push({path:url.pathname,host:req.headers.host});res.setHeader('x-boss-fixture',fixtureMarker);
   if(url.pathname==='/_fixture/event'){siteEvents.push(url.searchParams.get('kind'));res.writeHead(204);res.end();return;}
   res.setHeader('content-type','text/html;charset=utf-8');res.end(url.pathname.startsWith('/job_detail/')?jobDocument:url.pathname==='/web/geek/chat'?chatDocument:shell('<p>登录已完成</p>'));
  });await new Promise(resolve=>fixture.listen(0,'127.0.0.1',resolve));
  const extension=path.resolve('extension');
- const context=await chromium.launchPersistentContext(path.join(dir,'profile'),{channel:'chromium',headless:true,ignoreHTTPSErrors:true,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`,`--host-resolver-rules=MAP www.zhipin.com 127.0.0.1:${fixture.address().port}, MAP * ~NOTFOUND, EXCLUDE 127.0.0.1`,'--no-proxy-server']});
+ // A native tab starts TLS before Playwright can attach a per-page setting.
+ // Pin only this local fixture's committed public key at browser startup; all
+ // other DNS names remain blocked and production receives no TLS bypass.
+ const context=await chromium.launchPersistentContext(path.join(dir,'profile'),{channel:'chromium',headless:true,ignoreHTTPSErrors:false,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`,`--ignore-certificate-errors-spki-list=${fixtureSpki}`,`--host-resolver-rules=MAP www.zhipin.com 127.0.0.1:${fixture.address().port}, MAP * ~NOTFOUND, EXCLUDE 127.0.0.1`,'--no-proxy-server']});
  t.after(async()=>{releaseBind?.();bridge.cancel();server.closeAllConnections();fixture.closeAllConnections();await context.close();await Promise.all([new Promise(resolve=>server.close(resolve)),new Promise(resolve=>fixture.close(resolve))]);await rm(dir,{recursive:true,force:true});});
  context.on('page',page=>page.on('pageerror',error=>pageErrors.push(error.message)));
  const popup=await context.newPage();await popup.goto(`chrome-extension://${EXTENSION_ID}/popup.html`);
@@ -59,6 +65,7 @@ for(const scenario of ['native','lateChild','lostExistingAck'])test(scenario==='
  const stages=[];let priorJobDocumentId;
  try{
   assert.equal((await browser.login()).loggedIn,true);
+  assert.equal(operations.filter(op=>op==='OPEN_SESSION').length,1);
   const loginPage=context.pages().find(page=>page.url().startsWith('https://www.zhipin.com/'));assert.ok(loginPage);assert.equal(await loginPage.locator('body').getAttribute('data-fixture'),fixtureMarker);assert.ok(siteRequests.some(request=>request.path==='/web/user/'),'the native tab must reach our local HTTPS server before contact');
   if(lostExistingAck){
    await loginPage.evaluate(()=>localStorage.setItem('nativeGreetings','1'));store.upsertJob(job,{greetingStatus:'sent',resumeStatus:'none'});

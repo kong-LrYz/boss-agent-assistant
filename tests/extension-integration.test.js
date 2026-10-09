@@ -5,6 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import {createServer} from 'node:http';
 import {createServer as createHttpsServer} from 'node:https';
+import {X509Certificate,createHash} from 'node:crypto';
 import {chromium} from 'playwright';
 import {ExtensionBridge} from '../src/extension-bridge.js';
 import {ExtensionBrowser} from '../src/extension-browser.js';
@@ -30,13 +31,18 @@ async function mv3Fixture(t,{slowSearchMs=0,slowResourceMs=0,slowStartupMs=0}={}
  const html=(await readFile('tests/fixtures/jobs.html','utf8')).replaceAll('__MODE__','authenticated');
  const fixtureRequests=[];
  const resourceTimers=new Set();let resourceCompletions=0;
- const fixture=createHttpsServer({key:await readFile('tests/fixtures/test-only-tls-key.pem'),cert:await readFile('tests/fixtures/test-only-tls-cert.pem')},(req,res)=>{fixtureRequests.push(req.url);res.setHeader('content-type','text/html;charset=utf-8');const url=new URL(req.url,'https://www.zhipin.com');if(slowResourceMs&&url.pathname==='/local-slow-image'){const timer=setTimeout(()=>{resourceTimers.delete(timer);resourceCompletions++;res.setHeader('content-type','image/svg+xml');res.end('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>');},slowResourceMs);resourceTimers.add(timer);}else if(slowSearchMs&&url.pathname==='/web/geek/jobs'&&url.searchParams.get('query')==='slow AI Agent')setTimeout(()=>res.end(html),slowSearchMs);else res.end(slowResourceMs&&url.pathname==='/web/geek/jobs'&&url.searchParams.get('query')==='slow image AI Agent'?html.replace('</html>','<img src="/local-slow-image" alt=""></html>'):html);});
+ const fixtureCert=await readFile('tests/fixtures/test-only-tls-cert.pem');
+ const fixtureSpki=createHash('sha256').update(new X509Certificate(fixtureCert).publicKey.export({type:'spki',format:'der'})).digest('base64');
+ const fixture=createHttpsServer({key:await readFile('tests/fixtures/test-only-tls-key.pem'),cert:fixtureCert},(req,res)=>{fixtureRequests.push(req.url);res.setHeader('content-type','text/html;charset=utf-8');const url=new URL(req.url,'https://www.zhipin.com');if(slowResourceMs&&url.pathname==='/local-slow-image'){const timer=setTimeout(()=>{resourceTimers.delete(timer);resourceCompletions++;res.setHeader('content-type','image/svg+xml');res.end('<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>');},slowResourceMs);resourceTimers.add(timer);}else if(slowSearchMs&&url.pathname==='/web/geek/jobs'&&url.searchParams.get('query')==='slow AI Agent')setTimeout(()=>res.end(html),slowSearchMs);else res.end(slowResourceMs&&url.pathname==='/web/geek/jobs'&&url.searchParams.get('query')==='slow image AI Agent'?html.replace('</html>','<img src="/local-slow-image" alt=""></html>'):html);});
  await new Promise(r=>fixture.listen(0,'127.0.0.1',r));
  const extension=path.resolve('extension');
  // Native chrome.tabs.create starts navigation before a Playwright page route
  // can attach. Map the domain directly to our local TLS fixture and block other
  // DNS names; this test never needs the public BOSS service or a real account.
- const context=await chromium.launchPersistentContext(path.join(dir,'profile'),{channel:'chromium',headless:true,ignoreHTTPSErrors:true,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`,`--host-resolver-rules=MAP www.zhipin.com 127.0.0.1:${fixture.address().port}, MAP * ~NOTFOUND, EXCLUDE 127.0.0.1`,'--no-proxy-server']});
+ // Trust only the committed fixture public key before native navigation;
+ // Playwright's per-page HTTPS setting can attach too late. Production launchers
+ // never receive this test-only pin or any certificate-error bypass.
+ const context=await chromium.launchPersistentContext(path.join(dir,'profile'),{channel:'chromium',headless:true,ignoreHTTPSErrors:false,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`,`--ignore-certificate-errors-spki-list=${fixtureSpki}`,`--host-resolver-rules=MAP www.zhipin.com 127.0.0.1:${fixture.address().port}, MAP * ~NOTFOUND, EXCLUDE 127.0.0.1`,'--no-proxy-server']});
  t.after(async()=>{bridge.cancel();await context.close();for(const timer of resourceTimers)clearTimeout(timer);server.closeAllConnections();fixture.closeAllConnections();await Promise.all([new Promise(r=>server.close(r)),new Promise(r=>fixture.close(r))]);await rm(dir,{recursive:true,force:true});});
  if(slowStartupMs){
   // Reproduce a hosted runner that schedules its first native tab slowly.
@@ -76,6 +82,7 @@ test('real MV3 refreshes the same registered document after a history route chan
  const f=await mv3Fixture(t,{slowResourceMs:3000});const browser=new ExtensionBrowser({bridge:f.bridge,launcher:{async launch(){}},profileDir:path.join(f.dir,'profile'),sessionTimeoutMs:15000,timeoutMs:12000,pollMs:50,navigationDelayMs:0});
  assert.equal((await f.phase('login',()=>browser.login())).loggedIn,true);assert.equal(f.bridge.leaseMs,f.normalLeaseMs);await f.phase('search',()=>browser.discover('slow image AI Agent',{cityCode:'101010100',maxPages:1}));const original={...browser.meta};
  const page=f.context.pages().find(page=>page.url()===original.url);assert.ok(page);const updated=await page.evaluate(()=>{const url=new URL(location.href);url.searchParams.set('spa','hydrated');history.replaceState(null,'',url.href);return location.href;});
+ assert.equal(f.observed.filter(event=>event.phase==='delivered'&&event.op==='OPEN_SESSION').length,1);
  const before=await f.popup.evaluate(async()=>{const status=await chrome.runtime.sendMessage({type:'BOSS_BRIDGE_STATUS'});const tab=await chrome.tabs.get(status.workTab);return{url:tab.url,pendingUrl:tab.pendingUrl??null,status:tab.status};});assert.equal(before.status,'loading');const started=Date.now();const state=await f.phase('history-read',()=>f.bridge.request('READ_STATUS'));const elapsed=Date.now()-started;
  assert.equal(state.meta.url,updated);assert.equal(state.meta.documentId,original.documentId);assert.equal(state.ready,true);assert.equal(f.resourceCompletions(),0,'a same-document history change must not require full resource completion');t.diagnostic(`local same-document route read ${elapsed} ms; tab=${JSON.stringify(before)}; image held 3000 ms`);await f.phase('close',()=>browser.close());
 });
@@ -89,6 +96,7 @@ test('real MV3 worker pairs over loopback and reads fixture jobs without a DOM d
  assert.ok(fixtureRequests.includes('/'),'the MV3 task must load the local HTTPS fixture');
  const next=await bridge.request('NEXT_PAGE',{}, {target:{document:rows.meta}});assert.equal(next.clicked,true);
  await bridge.request('STOP_SESSION');
+ assert.equal(observed.filter(event=>event.phase==='delivered'&&event.op==='OPEN_SESSION').length,1);
 });
 
 test('real MV3 navigation survives page loading longer than its action lease without repeating navigation',async t=>{
@@ -105,5 +113,6 @@ test('real MV3 navigation survives page loading longer than its action lease wit
  const tail=sequence.slice(navigation+1);
  assert.ok(tail.indexOf('READ_STATUS')>=0);
  assert.ok(tail.indexOf('READ_STATUS')<tail.indexOf('READ_CARDS'));
+ assert.equal(observed.filter(event=>event.phase==='delivered'&&event.op==='OPEN_SESSION').length,1);
  await phase('close',()=>browser.close());
 });

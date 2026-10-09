@@ -99,10 +99,33 @@ test('normal browser refuses unsupported destination protocols before spawning',
 // Startup failure must reap only the newly created child and report the problem.
 test('normal browser cleans up a failing native executable', async t => {
   const dir = await directory(t);
+  const profile = path.join(dir, 'profile');
   const runtime = new NormalChromeRuntime({ env: { BOSS_CHROME_PATH: process.execPath }, timeoutMs: 2000 });
-  await assert.rejects(runtime.launch(path.join(dir, 'profile'), { initialUrl: 'http://127.0.0.1:1/' }), error => error.code === 'BROWSER_START_FAILED');
+  // This newly created fixture has no browser session to recover. Isolate that
+  // preflight so Windows CIM availability cannot mask the real child cleanup.
+  let recoveryChecks = 0;
+  runtime.recover = async (candidateProfile, executable) => {
+    recoveryChecks++;
+    assert.equal(candidateProfile, await realpath(profile));
+    assert.equal(await realpath(executable), await realpath(process.execPath));
+    await assert.rejects(readFile(path.join(candidateProfile, recordName)), { code: 'ENOENT' });
+    return false;
+  };
+  let child;
+  t.after(async () => { await runtime.close(); await reap(child); });
+  await assert.rejects(runtime.launch(profile, {
+    initialUrl: 'http://127.0.0.1:1/',
+    checkpoint: async () => { if (runtime.child) child = runtime.child; }
+  }), error => error.code === 'BROWSER_START_FAILED');
+  assert.ok(recoveryChecks > 0);
+  assert.ok(child?.pid > 0, 'the configured executable must spawn a real owned child');
+  assert.equal(await realpath(child.spawnfile), await realpath(process.execPath));
+  assert.ok(child.spawnargs.includes(`--user-data-dir=${await realpath(profile)}`));
+  assert.ok(child.exitCode !== null || child.signalCode !== null, 'the failed child must be reaped');
+  assert.equal(alive(child.pid), false);
   assert.equal(runtime.child, null);
   assert.equal(runtime.session, null);
+  assert.equal(runtime.profileDir, null);
 });
 
 // A fresh backend must reuse the existing normal window without opening duplicate tabs.
