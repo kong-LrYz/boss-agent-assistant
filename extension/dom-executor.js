@@ -184,6 +184,17 @@
       while(cost>structureBudget&&candidate.header.nodes.length){const last=candidate.header.nodes.at(-1);if(last.directChildren.length)last.directChildren.pop();else candidate.header.nodes.pop();cost=serializedCost();}
       if(cost<=structureBudget){result.confirmationStructure.push(candidate);structureBudget-=cost;}
     }
+    // Observe the website's alternate success template without granting it any
+    // receipt or effect authority. Copy only public captions and text lengths.
+    for(const dialog of all(document,'.dialog-wrap.greet-pop.greet-boss-pop > .dialog-container').filter(contactVisible).filter(element=>!element.closest('form')).slice(0,2)){
+      if(result.confirmationStructure.length>=2)break;
+      const headerNodes=all(dialog,':scope > .dialog-title > h3.title').filter(element=>safe(element)&&contactVisible(element)).slice(0,2).map(element=>({...marker(element),textLength:structureSummary(element).textLength,directChildren:[],...(text(element)==='已向BOSS发送消息'?{strictTitleText:'已向BOSS发送消息'}:{})}));
+      const greetings=all(dialog,':scope > .dialog-con > #greet.greet-con').filter(element=>contactVisible(element)&&!element.closest('form,input,textarea,select,option'));
+      const controls=all(dialog,':scope > .dialog-footer > .btns > .btn').filter(element=>safe(element)&&contactVisible(element)).filter(element=>/^(?:留在此页|继续沟通|关闭)$/u.test(text(element))).slice(0,4).map(element=>({...marker(element),visible:true,strictControlText:text(element)}));
+      const candidate={...marker(dialog),visible:true,ancestors:[marker(dialog.parentElement)],header:{name:[],position:[],nodes:headerNodes},messages:[],greetingCount:greetings.length,...(greetings.length===1?{greeting:{...marker(greetings[0]),textLength:structureSummary(greetings[0]).textLength}}:{}),controls};
+      const cost=encoder.encode(JSON.stringify(candidate)).length+(result.confirmationStructure.length?1:0);
+      if(cost<=structureBudget){result.confirmationStructure.push(candidate);structureBudget-=cost;}
+    }
     return result;
   }
   function statusData() {
@@ -420,7 +431,8 @@
     return controls.some(businessDisabled);
   }
   function requireResumeAvailable(chat) {if(resumeUnavailable(chat))fail('RESUME_UNAVAILABLE','平台当前禁止发送附件简历，未执行操作');}
-  function startchatDialogs() {return all(document,'.dialog-wrap.startchat-dialog > .dialog-container').filter(confirmationVisible);}
+  const contactDialogSelector='.dialog-wrap.startchat-dialog > .dialog-container, .dialog-wrap.greet-pop.greet-boss-pop > .dialog-container';
+  function contactDialogs(onlyVisible=true) {const candidates=[...document.querySelectorAll(contactDialogSelector)];return onlyVisible?candidates.filter(confirmationVisible):candidates;}
   const confirmationNameSelector='h3.title > .name, :scope > .dialog-title > h3.title > .startchat-title > .boss-info > div.name';
   const confirmationPositionSelector='h3.title > .position, :scope > .dialog-title > h3.title > .startchat-title > .boss-info > div.position';
   function mainRecruiterName() {
@@ -431,15 +443,37 @@
     const value=clean(direct||text(names[0])).replace(/\s*\d+\s*(?:日|天|周)内活跃\s*$/u,'').trim();
     return value&&value.length<=160?value:'';
   }
+  function frozenGreetFields(binding) {
+    const fields=binding.greetFields;if(!fields)return true;
+    const {dialog,title,body,cancel,proceed,titleParent,bodyParent,controlsParent}=fields;
+    return binding.documentId===documentId&&binding.pageUrl===location.href&&binding.action.isConnected&&binding.scope.isConnected&&binding.scope.contains(binding.action)&&text(binding.action)==='继续沟通'&&binding.action.getAttribute('data-isfriend')==='true'&&same(titleText(binding.scope,S.detailTitle),binding.job.title)&&same(detailCompanyText(binding.scope),binding.job.company)&&mainRecruiterName()===binding.recruiterName&&dialog.isConnected&&dialog===binding.confirmedDialog&&dialog.parentElement?.matches('.dialog-wrap.greet-pop.greet-boss-pop')&&!dialog.closest('form,input,textarea,select,option')&&title.isConnected&&title.parentElement===titleParent&&titleParent.parentElement===dialog&&title.matches('h3.title')&&titleParent.matches('.dialog-title')&&text(title)==='已向BOSS发送消息'&&body.isConnected&&body.parentElement===bodyParent&&bodyParent.parentElement===dialog&&body.matches('#greet.greet-con')&&bodyParent.matches('.dialog-con')&&text(body)===fields.bodyText&&!body.querySelector('form,input,textarea,select,option')&&!resumeLike(body)&&!unconfirmed(dialog)&&!dialog.querySelector('.send-failed,.send-error,.message-failed,.pending,.sending,.failed,.is-failed,.is-sending')&&cancel.isConnected&&proceed.isConnected&&cancel.parentElement===controlsParent&&proceed.parentElement===controlsParent&&controlsParent.parentElement?.parentElement===dialog&&controlsParent.matches('.btns')&&controlsParent.parentElement.matches('.dialog-footer')&&cancel.matches('span.btn.btn-outline.btn-cancel')&&proceed.matches('span.btn.btn-sure')&&cancel.childElementCount===0&&proceed.childElementCount===0&&!cancel.hasAttribute('href')&&!proceed.hasAttribute('href')&&text(cancel)==='留在此页'&&text(proceed)==='继续沟通'&&!businessDisabled(cancel)&&!businessDisabled(proceed);
+  }
+  function greetReceipt(binding,dialog,detail) {
+    if(binding.actionCaption!=='立即沟通'||binding.actionFriend==='true'||detail.scope!==binding.scope||!binding.action?.isConnected||oneContactAction(detail.scope)!==binding.action||text(binding.action)!=='继续沟通'||binding.action.getAttribute('data-isfriend')!=='true'||!frozenGreetFields(binding))return null;
+    const titles=[...dialog.querySelectorAll(':scope > .dialog-title > h3.title')],bodies=[...dialog.querySelectorAll('#greet,.greet-con')],cancels=[...dialog.querySelectorAll(':scope > .dialog-footer > .btns > span.btn.btn-outline.btn-cancel')],proceeds=[...dialog.querySelectorAll(':scope > .dialog-footer > .btns > span.btn.btn-sure')];
+    if(titles.length!==1||bodies.length!==1||cancels.length!==1||proceeds.length!==1)return null;
+    const [title]=titles,[body]=bodies,[cancel]=cancels,[proceed]=proceeds;
+    if(![title,body,cancel,proceed].every(confirmationTextSafe)||text(title)!=='已向BOSS发送消息'||!body.matches('#greet.greet-con')||!body.parentElement?.matches('.dialog-con')||body.parentElement.parentElement!==dialog||!text(body)||resumeLike(body)||body.querySelector(S.attachment)||/\.pdf(?:\b|$)|\.docx?(?:\b|$)/iu.test(text(body))||unconfirmed(dialog)||dialog.querySelector('.send-failed,.send-error,.message-failed,.pending,.sending,.failed,.is-failed,.is-sending')||text(cancel)!=='留在此页'||text(proceed)!=='继续沟通'||cancel.childElementCount||proceed.childElementCount||cancel.hasAttribute('href')||proceed.hasAttribute('href')||businessDisabled(cancel)||businessDisabled(proceed))return null;
+    if(binding.greetFields&&(binding.greetFields.title!==title||binding.greetFields.body!==body||binding.greetFields.cancel!==cancel||binding.greetFields.proceed!==proceed))return null;
+    return {dialog,title,body,cancel,proceed,titleParent:title.parentElement,bodyParent:body.parentElement,controlsParent:cancel.parentElement,bodyText:text(body)};
+  }
+  function oneContactAction(scope) {const actions=contactActions(scope);return actions.length===1?actions[0]:null;}
   function contactConfirmation(job,latch=false) {
     const missing={confirmed:false,jobId:job.id,needsExistingConversation:true};
     const binding=contactBinding;
     if(!binding||binding.documentId!==documentId||binding.pageUrl!==location.href||binding.job.id!==job.id||binding.job.url!==job.url||!same(binding.job.title,job.title)||!same(binding.job.company,job.company)||!binding.recruiterName)return {proof:missing};
-    try{detailData({job},true);}catch{return {proof:missing};}
+    let detail;try{detail=detailData({job},true);}catch{return {proof:missing};}
     if(mainRecruiterName()!==binding.recruiterName)return {proof:missing};
-    const fresh=startchatDialogs().filter(dialog=>!binding.oldDialogs.has(dialog));
+    const fresh=contactDialogs().filter(dialog=>!binding.oldDialogs.has(dialog));
     if(fresh.length!==1||binding.confirmedDialog&&binding.confirmedDialog!==fresh[0])return {proof:missing};
-    const dialog=fresh[0],names=all(dialog,confirmationNameSelector).filter(confirmationTextSafe),positions=all(dialog,confirmationPositionSelector).filter(confirmationTextSafe);
+    const dialog=fresh[0];
+    if(dialog.parentElement.matches('.greet-pop.greet-boss-pop')){
+      if(dialog.parentElement.matches('.startchat-dialog'))return {proof:missing};
+      const fields=greetReceipt(binding,dialog,detail);if(!fields)return {proof:missing};
+      if(latch&&!binding.confirmedDialog){binding.confirmedDialog=dialog;binding.confirmationKind='greet-success';binding.greetFields=fields;binding.close=fields.cancel;binding.closeCaption='留在此页';}
+      return {dialog,proof:{confirmed:true,jobId:job.id,needsExistingConversation:true,evidence:{kind:'job-page-contact-confirmation',template:'greet-boss-pop',recruiterName:clipped(binding.recruiterName),company:clipped(job.company),status:'已发送',text:clipped(fields.bodyText)}}};
+    }
+    const names=all(dialog,confirmationNameSelector).filter(confirmationTextSafe),positions=all(dialog,confirmationPositionSelector).filter(confirmationTextSafe);
     if(names.length!==1||positions.length!==1||!same(text(names[0]),binding.recruiterName))return {proof:missing};
     const position=text(positions[0]),separator=position.indexOf('·');
     if(separator<1||!same(position.slice(0,separator),job.company)||!clean(position.slice(separator+1)))return {proof:missing};
@@ -461,7 +495,7 @@
     });
     if(!sent)return {proof:missing};
     if(latch&&!binding.confirmedDialog){
-      binding.confirmedDialog=dialog;
+      binding.confirmedDialog=dialog;binding.confirmationKind='startchat';
       const closes=all(dialog,'a.close').filter(confirmationTextSafe);
       binding.close=closes.length===1?closes[0]:null;binding.closeCaption=binding.close?text(binding.close):null;
     }
@@ -470,8 +504,8 @@
   function confirmationClose(job,binding) {
     const snapshot=contactConfirmation(job);
     if(!snapshot.proof.confirmed||!binding||binding!==contactBinding||binding.confirmedDialog!==snapshot.dialog)fail('PAGE_CHANGED','没有相同岗位的已确认沟通弹窗');
-    const close=one(all(snapshot.dialog,'a.close').filter(confirmationTextSafe),'PAGE_CHANGED','沟通确认弹窗关闭控件不唯一');
-    if(close!==binding.close||text(close)!==binding.closeCaption||/发送|沟通|扫码|二维码/u.test(text(close)))fail('PAGE_CHANGED','原沟通弹窗关闭控件或文字已改变');
+    const close=one(all(snapshot.dialog,binding.confirmationKind==='greet-success'?':scope > .dialog-footer > .btns > span.btn.btn-outline.btn-cancel':'a.close').filter(confirmationTextSafe),'PAGE_CHANGED','沟通确认弹窗关闭控件不唯一');
+    if(close!==binding.close||text(close)!==binding.closeCaption||/发送|沟通|扫码|二维码/u.test(text(close))||binding.confirmationKind==='greet-success'&&!frozenGreetFields(binding))fail('PAGE_CHANGED','原沟通弹窗关闭控件或文字已改变');
     const href=close.getAttribute('href');if(href&&!officialUrl(close.href)&&!/^javascript:\s*(?:void\(\s*0\s*\)\s*;?|;)\s*$/iu.test(href))fail('PAGE_CHANGED','关闭控件地址不可确认');
     return close;
   }
@@ -510,8 +544,8 @@
       case 'VERIFY_CONVERSATION_JOB':{fullChatPreview=null;fullChatBinding=null;const job=expectedJob(args.job);if(typeof args.previewToken!=='string'||!/^[a-f0-9-]{36}$/iu.test(args.previewToken))fail('COMMAND_INVALID','岗位预览标识无效');const snapshot=fullChatContext(job);guardedClick(snapshot.card,command,()=>{if(!frozenFullChat(snapshot,job))fail('RECIPIENT_UNVERIFIED','原会话岗位范围已改变');connected(snapshot.card);if(!frozenFullChatFields(snapshot))fail('RECIPIENT_UNVERIFIED','最后检查时原岗位卡或招聘者已改变');});fullChatPreview={...snapshot,previewToken:args.previewToken};result={previewStarted:true,previewToken:args.previewToken};break;}
       case 'BIND_CONVERSATION_JOB':{const job=expectedJob(args.job),snapshot=fullChatPreview;requireDocument(command.expectedDocument);if(!snapshot||snapshot.previewToken!==args.previewToken||args.canonicalURL!==job.url||!frozenFullChat(snapshot,job)||!frozenFullChatFields(snapshot))fail('RECIPIENT_UNVERIFIED','实际岗位详情地址或原会话预览绑定不一致');fullChatBinding=snapshot;fullChatPreview=null;result={verified:true,jobId:job.id};break;}
       case 'NEXT_PAGE':{const next=one(all(document,S.next),'PAGE_CHANGED','下一页按钮不唯一');if(next.disabled||next.getAttribute('aria-disabled')==='true'||/disabled/u.test(next.className)){result={clicked:false,disabled:true};break;}const href=next.getAttribute('href');if(href){const url=new URL(href,location.href);if(!/^\/web\/geek\/jobs?$/u.test(url.pathname)||!['www.zhipin.com',location.hostname].includes(url.hostname))fail('PAGE_CHANGED','下一页地址不可确认');}guardedClick(next,command);result={clicked:true};break;}
-      case 'OPEN_CONTACT':{contactBinding=null;let pendingBinding=null;const job=expectedJob(args.job);const detail=detailData({job},true);const action=one(contactActions(detail.scope),'PAGE_CHANGED','岗位沟通按钮不唯一');const caption=text(action),existing=/^继续沟通$/u.test(caption);if(args.resumeOnly&&!existing)fail('RECIPIENT_UNVERIFIED','仅复查简历时未确认该岗位已有沟通');guardedClick(action,command,()=>{const current=detailData({job},true);const latest=one(contactActions(current.scope),'PAGE_CHANGED','岗位沟通按钮不唯一');if(args.resumeOnly&&!/^继续沟通$/u.test(text(latest)))fail('RECIPIENT_UNVERIFIED','仅复查简历时沟通状态已改变');if(latest!==action||text(latest)!==caption)fail('PAGE_CHANGED','原岗位沟通控件或文字已改变，未执行点击');connected(action);const recruiterName=mainRecruiterName(),oldDialogs=startchatDialogs();if(recruiterName&&oldDialogs.length<=8)pendingBinding={documentId,pageUrl:location.href,job:{id:job.id,url:job.url,title:job.title,company:job.company},recruiterName,oldDialogs:new Set(oldDialogs)};});contactBinding=pendingBinding;result={clicked:true,existing};break;}
-      case 'DISMISS_CONTACT_CONFIRMATION':{const job=expectedJob(args.job),binding=contactBinding;if(!binding?.confirmedDialog)fail('RECIPIENT_UNVERIFIED','没有本次岗位沟通的已确认弹窗绑定');const close=confirmationClose(job,binding);guardedClick(close,command,()=>{if(confirmationClose(job,binding)!==close)fail('PAGE_CHANGED','关闭控件已改变');connected(close);if(binding!==contactBinding||!close.isConnected||!binding.confirmedDialog.isConnected||!binding.confirmedDialog.contains(close)||close!==binding.close||text(close)!==binding.closeCaption)fail('PAGE_CHANGED','最后检查时原关闭控件或文字已改变');});contactBinding=null;result={dismissed:true,jobId:job.id,needsExistingConversation:true};break;}
+      case 'OPEN_CONTACT':{contactBinding=null;let pendingBinding=null;const job=expectedJob(args.job);const detail=detailData({job},true);const action=one(contactActions(detail.scope),'PAGE_CHANGED','岗位沟通按钮不唯一');const caption=text(action),actionFriend=action.getAttribute('data-isfriend'),existing=/^继续沟通$/u.test(caption);if(args.resumeOnly&&!existing)fail('RECIPIENT_UNVERIFIED','仅复查简历时未确认该岗位已有沟通');guardedClick(action,command,()=>{const current=detailData({job},true);const latest=one(contactActions(current.scope),'PAGE_CHANGED','岗位沟通按钮不唯一');if(args.resumeOnly&&!/^继续沟通$/u.test(text(latest)))fail('RECIPIENT_UNVERIFIED','仅复查简历时沟通状态已改变');if(latest!==action||text(latest)!==caption||action.getAttribute('data-isfriend')!==actionFriend)fail('PAGE_CHANGED','原岗位沟通控件或文字已改变，未执行点击');connected(action);const recruiterName=mainRecruiterName(),oldDialogs=contactDialogs(false);if(recruiterName&&oldDialogs.length<=8)pendingBinding={documentId,pageUrl:location.href,job:{id:job.id,url:job.url,title:job.title,company:job.company},scope:current.scope,action,actionCaption:caption,actionFriend,recruiterName,oldDialogs:new Set(oldDialogs)};});contactBinding=pendingBinding;result={clicked:true,existing};break;}
+      case 'DISMISS_CONTACT_CONFIRMATION':{const job=expectedJob(args.job),binding=contactBinding;if(!binding?.confirmedDialog)fail('RECIPIENT_UNVERIFIED','没有本次岗位沟通的已确认弹窗绑定');const close=confirmationClose(job,binding);guardedClick(close,command,()=>{if(confirmationClose(job,binding)!==close)fail('PAGE_CHANGED','关闭控件已改变');connected(close);if(binding!==contactBinding||!close.isConnected||!binding.confirmedDialog.isConnected||!binding.confirmedDialog.contains(close)||close!==binding.close||text(close)!==binding.closeCaption||binding.confirmationKind==='greet-success'&&!frozenGreetFields(binding))fail('PAGE_CHANGED','最后检查时原关闭控件或文字已改变');});contactBinding=null;result={dismissed:true,jobId:job.id,needsExistingConversation:true};break;}
       case 'FILL_GREETING':case 'SEND_GREETING':{const job=expectedJob(args.job);const chat=requireChat(job);const state=conversationData(job);if(state.greetingSent||state.existing)fail('DUPLICATE_GREETING','会话已有消息，未重复发送招呼');if(!state.emptyNew)fail('GREETING_UNVERIFIED','没有明确的新空会话证据');if(typeof args.greeting!=='string'||!args.greeting.trim()||args.greeting.length>6000)fail('COMMAND_INVALID','招呼内容无效');const editor=one(all(chat,S.editor),'PAGE_CHANGED','编辑器不唯一');connected(editor);if(command.op==='FILL_GREETING'){if(clean(editorValue(editor))&&!same(editorValue(editor),args.greeting))fail('DRAFT_CONFLICT','会话已有草稿，未覆盖');requireChat(job);requireEffect(command);setEditor(editor,args.greeting);result={filled:true};}else{if(!same(editorValue(editor),args.greeting))fail('DRAFT_CONFLICT','草稿与本次招呼不一致');const sends=[];for(const scope of all(chat,S.actions))sends.push(...named(scope,/^发送$/u));const send=one([...new Set(sends)],'PAGE_CHANGED','发送按钮不唯一');guardedClick(send,command,()=>requireChat(job));result={clicked:true,...conversationData(job,args)};}break;}
       case 'REQUEST_RESUME':{const job=expectedJob(args.job);const chat=requireChat(job);requireResumeAvailable(chat);const before=resumeData(job);if(before.status==='sent'||before.status==='requested'&&!before.approved){result={clicked:false,...before};break;}if(before.status==='uncertain')fail('RESULT_UNCERTAIN','简历结果不确定，未自动重发');const binding=chat.matches(fullChatSelector)?fullChatBinding:null;const button=one(binding?actualResumeControls(chat):named(chat,/^(?:发送简历|发送附件简历)$/u),'PAGE_CHANGED','发送简历按钮不唯一'),caption=text(button),toolbarParent=button.parentElement,toolbarHost=toolbarParent?.parentElement;guardedClick(button,command,()=>{const current=requireChat(job);requireResumeAvailable(current);if(binding){if(current!==chat||binding!==fullChatBinding||one(actualResumeControls(current),'PAGE_CHANGED','发送简历按钮不唯一')!==button||text(button)!==caption)fail('PAGE_CHANGED','原简历控件或会话已改变');connected(button);if(!button.isConnected||!chat.contains(button)||!button.matches(actualResumeSelector)||!resumeControlScope(button,chat)||button.parentElement!==toolbarParent||toolbarParent?.parentElement!==toolbarHost||text(button)!==caption||!frozenFullChatFields(binding))fail('PAGE_CHANGED','最后检查时简历控件或会话已改变');if(businessDisabled(button))fail('RESUME_UNAVAILABLE','平台当前禁止发送附件简历，未执行操作');}});result={clicked:true,...resumeData(job)};break;}
       case 'SELECT_RESUME':{const job=expectedJob(args.job);requireResumeAvailable(requireChat(job));const modal=dialogData();if(!modal.dialog)fail('RESUME_SELECTION','没有附件简历对话框');const matches=args.resumeName?modal.options.filter(option=>same(option.name,args.resumeName)):modal.options.length===1?modal.options:[];const option=one(matches,'RESUME_SELECTION','多份附件必须精确匹配名称');guardedClick(option.element,command,()=>{requireResumeAvailable(requireChat(job));});if(!optionSelected(option.element))fail('RESUME_SELECTION','未看到附件被选中的状态');selection={jobId:job.id,company:job.company,title:job.title,dialog:modal.dialog,option:option.element,name:option.name,documentId};result={selected:true,name:option.name,index:option.index};break;}
