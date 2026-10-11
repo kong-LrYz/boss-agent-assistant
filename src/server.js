@@ -1,14 +1,26 @@
 import http from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, resolve, sep } from 'node:path';
-import { timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual, createHash, randomUUID } from 'node:crypto';
 import { validateConfig, roleSearchDefaults, CITY_CODES } from './core.js';
 import { CHOICE_CATALOGS } from './catalogs.js';
 import { findJobPreset } from './job-presets.js';
 
+const catalogVersion = 'sha256:' + createHash('sha256').update(JSON.stringify([CITY_CODES, CHOICE_CATALOGS])).digest('hex');
+const dashboardJobFields = ['key', 'url', 'title', 'company', 'city', 'eligible', 'greetingStatus', 'resumeStatus', 'note', 'reasons'];
+const dashboardJob = record => Object.fromEntries(dashboardJobFields.filter(key => Object.hasOwn(record, key)).map(key => [key, record[key]]));
+function dashboardParameters(url) {
+  const allowed = new Set(['view', 'knownJobs', 'knownEvents', 'knownCatalogs']);
+  for (const key of url.searchParams.keys()) {
+    if (!allowed.has(key) || url.searchParams.getAll(key).length !== 1) throw new Error('控制台刷新参数无效');
+    if (key !== 'view' && !/^[A-Za-z0-9:_-]{1,128}$/u.test(url.searchParams.get(key))) throw new Error('控制台版本标记无效');
+  }
+}
+
 const json = (res, status, data) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(data)); };
 export function createServer({ store, runner, token, publicDir, extensionBridge = null, setupExtension = async () => {}, inspectPage = null, timingSnapshot = null, heartbeat = () => {}, shutdown = async () => {}, leaseClosed = () => {}, leaseGraceMs = 2000 }) {
   let leases = 0, leaseTimer, leaseStopRequired = false;
+  const statusGeneration = randomUUID();
   return http.createServer(async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -112,7 +124,18 @@ export function createServer({ store, runner, token, publicDir, extensionBridge 
         });
         return;
       }
-      if (url.pathname === '/api/status') return json(res, 200, { runner: runner.snapshot(), config: store.loadConfig(), cities:CITY_CODES, catalogs:CHOICE_CATALOGS, jobs: store.listJobs(), events: store.listEvents(100), extension:extensionBridge?{...extensionBridge.snapshot(),directory:resolve(publicDir,'..','extension')}:null });
+      if (url.pathname === '/api/status') {
+        const base = { runner: runner.snapshot(), config: store.loadConfig(), extension: extensionBridge ? { ...extensionBridge.snapshot(), directory: resolve(publicDir, '..', 'extension') } : null };
+        if (url.searchParams.get('view') !== 'dashboard') return json(res, 200, { ...base, cities: CITY_CODES, catalogs: CHOICE_CATALOGS, jobs: store.listJobs(), events: store.listEvents(100) });
+        dashboardParameters(url);
+        const version = value => Number.isSafeInteger(value) && value >= 0 ? `${statusGeneration}:${value}` : null;
+        const versions = { jobs: version(store.jobsRevision), events: version(store.eventsRevision), catalogs: catalogVersion };
+        const data = { ...base, versions };
+        if (versions.jobs === null || url.searchParams.get('knownJobs') !== versions.jobs) data.jobs = typeof store.listJobSummaries === 'function' ? store.listJobSummaries() : store.listJobs().map(dashboardJob);
+        if (versions.events === null || url.searchParams.get('knownEvents') !== versions.events) data.events = store.listEvents(100).map(event => ({ at: event.at, type: event.type, message: event.message }));
+        if (url.searchParams.get('knownCatalogs') !== versions.catalogs) { data.cities = CITY_CODES; data.catalogs = CHOICE_CATALOGS; }
+        return json(res, 200, data);
+      }
       if (url.pathname === '/api/timings') {
         if (url.search) throw new Error('运行计时只接受固定只读请求');
         return json(res, 200, typeof timingSnapshot === 'function' ? timingSnapshot() : null);

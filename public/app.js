@@ -8,6 +8,9 @@ let configVersion = 0, configNeedsSync = false;
 let companyGoalsUnconfirmed = false;
 let lastPresetRole = 'AI Agent', roleUpdate = Promise.resolve(), titleRuleRole = '';
 let catalogSignature = '', rolePresetByKey = new Map();
+let jobsSignature = '', eventsSignature = '', statusVersions = {};
+let refreshSequence = 0, refreshInFlight = null;
+function invalidateRefresh() { refreshSequence++; }
 const roleAllowanceByKey = new Map();
 let roleComposing = false;
 let presetRemovedExclusions = [], explicitExclusionTerms = new Set();
@@ -47,6 +50,7 @@ async function action(path, body) {
   else if(pendingAction||configSaving||configPosting||stopPending)return;
   if(path==='start'&&companyGoalsUnconfirmed){clientError='公司目标尚未确认保存，请先重新保存设置。';notice(clientError);return;}
   const startedStopVersion=stopVersion;
+  invalidateRefresh();
   if(!stopping)pendingAction=path;
   const opening=path==='login'||path==='extension-setup';
   const button=$(path==='start'&&body?.preview?'preview':path);
@@ -67,7 +71,7 @@ async function action(path, body) {
     if(opening)loginOpening=false;
     if(stopping)stopPending=false;else pendingAction='';
     buttonBusy(button,false);
-    await refresh();
+    await refresh({force:true});
     updateControlAvailability();updateFormAvailability();
   }
 }
@@ -220,8 +224,10 @@ function renderGoal(goal,config) {
 function renderJobs() {
   const filter=$('filter').value;
   const jobs=state.jobs.filter(j=>filter==='all'||(filter==='eligible'&&j.eligible)||(filter==='sent'&&j.resumeStatus==='sent')||(filter==='requested'&&j.resumeStatus==='requested')||(filter==='uncertain'&&(j.resumeStatus==='uncertain'||j.greetingStatus==='uncertain'))).slice().reverse();
-  $('jobs').replaceChildren();
-  if(!jobs.length) { const tr=document.createElement('tr'); const td=cell('暂时没有记录。');td.colSpan=5;td.className='empty';tr.append(td);$('jobs').append(tr);return; }
+  const signature=JSON.stringify([filter,jobs.map(j=>[j.key,j.url,j.title,j.company,j.city,j.eligible,j.greetingStatus,j.resumeStatus,j.note,j.reasons])]);
+  if(signature===jobsSignature)return;
+  jobsSignature=signature;const fragment=document.createDocumentFragment();
+  if(!jobs.length) { const tr=document.createElement('tr'); const td=cell('暂时没有记录。');td.colSpan=5;td.className='empty';tr.append(td);fragment.append(tr);$('jobs').replaceChildren(fragment);return; }
   for(const j of jobs) {
     const tr=document.createElement('tr'), first=document.createElement('td'), link=document.createElement('a');
     try { const u=new URL(j.url); if(u.protocol==='https:'&&u.hostname==='www.zhipin.com')link.href=u.href; }catch{}
@@ -231,17 +237,27 @@ function renderJobs() {
     if(j.greetingStatus==='uncertain'||j.resumeStatus==='uncertain') { const button=document.createElement('button');button.className='mini';button.textContent='核对结果';button.onclick=()=>{
       $('reconcile-key').value=j.key;$('reconcile-greeting').value=j.greetingStatus==='existing'?'existing':'sent';$('reconcile-resume').value='requested';$('reconcile-dialog').showModal();
     };last.append(document.createElement('br'),button); }
-    tr.append(first,badge(j.eligible?'符合':'不符合',false,j.eligible),badge(greetingNames[j.greetingStatus]||j.greetingStatus,j.greetingStatus==='uncertain',j.greetingStatus==='sent'),badge(resumeNames[j.resumeStatus]||j.resumeStatus,['uncertain','requested'].includes(j.resumeStatus),j.resumeStatus==='sent'),last);$('jobs').append(tr);
+    tr.append(first,badge(j.eligible?'符合':'不符合',false,j.eligible),badge(greetingNames[j.greetingStatus]||j.greetingStatus,j.greetingStatus==='uncertain',j.greetingStatus==='sent'),badge(resumeNames[j.resumeStatus]||j.resumeStatus,['uncertain','requested'].includes(j.resumeStatus),j.resumeStatus==='sent'),last);fragment.append(tr);
   }
+  $('jobs').replaceChildren(fragment);
+}
+function renderEvents(events) {
+  const signature=JSON.stringify(events.map(event=>[event.at,event.type,event.message]));
+  if(signature===eventsSignature)return;
+  eventsSignature=signature;const fragment=document.createDocumentFragment();
+  for(const event of events) { const li=document.createElement('li'),time=document.createElement('time');time.textContent=new Date(event.at).toLocaleTimeString('zh-CN');li.append(time,document.createTextNode(event.message||event.type||''));fragment.append(li); }
+  $('events').replaceChildren(fragment);
 }
 function render(data) {
-  state=data;const r=data.runner;
+  const incoming=data;
+  state={...state,...data,jobs:Object.hasOwn(data,'jobs')?data.jobs:state?.jobs||[],events:Object.hasOwn(data,'events')?data.events:state?.events||[]};
+  data=state;const r=data.runner;
   const ext=data.extension;$('extension-panel').hidden=!ext;
   if(ext){$('extension-status').textContent=ext.connected?'已连接':ext.paired?'已配对，等待浏览器':'首次使用，安装并配对';$('extension-directory').value=ext.directory||'';$('pairing-code').value=ext.pairingCode||'';$('pairing-area').hidden=ext.paired;if(!connectionLoaded){$('extension-panel').open=!ext.paired;connectionLoaded=true;}}
   $('target-role-label').textContent=data.config.targetRole||'AI Agent';
   $('target-city-label').textContent=data.config.city||'北京';
   const goalComplete=renderGoal(r.goal,data.config);
-  renderCatalogs(data);
+  if(!formLoaded||Object.hasOwn(incoming,'catalogs')||Object.hasOwn(incoming,'cities'))renderCatalogs(data);
   $('status').textContent=r.mode==='preview'&&r.status==='running'?'正在预览岗位':r.status==='completed'&&r.mode!=='preview'&&goalComplete?'公司目标已完成':statusNames[r.status]||r.status;$('status-dot').className=`dot ${r.status}`;$('cycle').textContent=`第 ${r.cycle||0} 轮`;
   $('current').textContent=r.currentJob?`${r.currentJob.company} · ${r.currentJob.title}`:r.nextScanAt?`下一轮：${new Date(r.nextScanAt).toLocaleTimeString('zh-CN')}`:data.config.setupComplete?`${data.config.city} · ${data.config.targetRole||'AI Agent'}`:'首次使用，先保存求职设置。';
   const active=['running','waiting','paused'].includes(r.status);
@@ -253,17 +269,24 @@ function render(data) {
   renderPerformance(r.performance);
   if(!formLoaded)fillForm(data.config);
   updateFormAvailability();
-  renderJobs();$('events').replaceChildren();
-  for(const event of data.events) { const li=document.createElement('li'),time=document.createElement('time');time.textContent=new Date(event.at).toLocaleTimeString('zh-CN');li.append(time,document.createTextNode(event.message||event.type||''));$('events').append(li); }
+  renderJobs();renderEvents(data.events);
 }
-async function refresh() {
-  const version=configVersion;
-  try{
-    const response=await fetch('/api/status');if(!response.ok)throw new Error('连接失败');
-    const data=await response.json();
-    if(version!==configVersion)return false;
-    render(data);configNeedsSync=false;return true;
-  }catch{if(version===configVersion)notice('本地程序已断开连接。重新双击“启动.command”恢复。');return false;}
+function refresh({force=false}={}) {
+  if(refreshInFlight&&!force)return refreshInFlight;
+  const version=configVersion,sequence=++refreshSequence;
+  const query=new URLSearchParams({view:'dashboard'});
+  for(const [kind,value] of Object.entries(statusVersions))if(['jobs','events','catalogs'].includes(kind)&&typeof value==='string')query.set(`known${kind[0].toUpperCase()}${kind.slice(1)}`,value);
+  const request=(async()=>{
+    try{
+      const response=await fetch(`/api/status?${query}`);if(!response.ok)throw new Error('连接失败');
+      const data=await response.json();
+      if(version!==configVersion||sequence!==refreshSequence)return false;
+      render(data);statusVersions=data.versions&&typeof data.versions==='object'?{...data.versions}:{};configNeedsSync=false;return true;
+    }catch{if(version===configVersion&&sequence===refreshSequence)notice('本地程序已断开连接。重新双击“启动.command”恢复。');return false;}
+  })();
+  refreshInFlight=request;
+  request.finally(()=>{if(refreshInFlight===request)refreshInFlight=null;});
+  return request;
 }
 $('start').onclick=()=>{if(pendingAction||configSaving||configPosting||stopPending)return;if(formDirty)$('config-form').requestSubmit($('config-form').querySelector('button[value="start"]'));else action('start');};$('login').onclick=()=>action('login');$('preview').onclick=()=>action('start',{preview:true});$('pause').onclick=()=>action('pause');$('resume').onclick=()=>action('resume');$('stop').onclick=()=>action('stop');
 $('extension-setup').onclick=()=>action('extension-setup');
@@ -305,7 +328,7 @@ $('config-form').onsubmit=async event=>{
   const startedStopVersion=stopVersion;
   configSaving=true;buttonBusy(event.submitter,true,'保存中');updateFormAvailability();updateControlAvailability();$('save-feedback').textContent='正在保存…';
   try {
-    if(configNeedsSync&&!await refresh())throw new Error('上次设置已保存，但页面尚未同步最新配置。请恢复本地连接后再次保存。');
+    if(configNeedsSync&&!await refresh({force:true}))throw new Error('上次设置已保存，但页面尚未同步最新配置。请恢复本地连接后再次保存。');
     await settleRoleUpdates();
     const form=new FormData(event.target), config={};
     for(const [key,value] of form.entries()){
@@ -321,11 +344,11 @@ $('config-form').onsubmit=async event=>{
     if(titleTerms.length)config.roleTitleExclusions.push({targetRole:currentRole,keywords:titleTerms});
     // Company goals control total progress; legacy daily/run caps stay disabled.
     config.dailyLimit=0;config.runLimit=0;config.companyDedup=false;
-    configPosting=true;updateFormAvailability();
+    configPosting=true;invalidateRefresh();updateFormAvailability();
     companyGoalsUnconfirmed=config.contactCompanyTarget>0||config.resumeCompanyTarget>0;
-    await post('config',config);configVersion++;configNeedsSync=true;
+    await post('config',config);configVersion++;invalidateRefresh();configNeedsSync=true;
     if(companyGoalsUnconfirmed){
-      if(!await refresh())throw new Error('公司目标尚未确认保存，请恢复连接并重新保存设置。');
+      if(!await refresh({force:true}))throw new Error('公司目标尚未确认保存，请恢复连接并重新保存设置。');
       if(['contactCompanyTarget','resumeCompanyTarget'].some(key=>state.config[key]!==config[key]))throw new Error('公司目标未确认保存，请更新并重新启动本地程序后再保存设置。');
       companyGoalsUnconfirmed=false;
     }
@@ -334,11 +357,11 @@ $('config-form').onsubmit=async event=>{
     syncRolePicker();updateCity();
     formDirty=false;$('settings').open=true;
     if(event.submitter?.value==='start'&&startedStopVersion===stopVersion){await post('start');if(startedStopVersion!==stopVersion)await post('stop');}
-    $('save-feedback').textContent=startedStopVersion===stopVersion?'已保存':'已保存，投递已停止';clientError='';await refresh();
+    $('save-feedback').textContent=startedStopVersion===stopVersion?'已保存':'已保存，投递已停止';clientError='';await refresh({force:true});
   } catch(error){clientError=error.message;notice(clientError);$('save-feedback').textContent='保存未完成';}
   finally{configSaving=false;configPosting=false;buttonBusy(event.submitter,false);updateFormAvailability();updateControlAvailability();}
 };
-$('reconcile-save').onclick=async()=>{if(reconcilePending)return;reconcilePending=true;$('reconcile-save').disabled=true;buttonBusy($('reconcile-save'),true,'保存中');try{await post('reconcile',{key:$('reconcile-key').value,greetingStatus:$('reconcile-greeting').value,resumeStatus:$('reconcile-resume').value});$('reconcile-dialog').close();clientError='';await refresh();}catch(error){clientError=error.message;notice(clientError);}finally{reconcilePending=false;buttonBusy($('reconcile-save'),false);$('reconcile-save').disabled=false;}};
+$('reconcile-save').onclick=async()=>{if(reconcilePending)return;reconcilePending=true;$('reconcile-save').disabled=true;buttonBusy($('reconcile-save'),true,'保存中');try{await post('reconcile',{key:$('reconcile-key').value,greetingStatus:$('reconcile-greeting').value,resumeStatus:$('reconcile-resume').value});$('reconcile-dialog').close();clientError='';await refresh({force:true});}catch(error){clientError=error.message;notice(clientError);}finally{reconcilePending=false;buttonBusy($('reconcile-save'),false);$('reconcile-save').disabled=false;}};
 const lease=new EventSource(`/api/lease?token=${encodeURIComponent(token)}`);
 lease.onerror=()=>{};
 refresh();post('heartbeat').catch(()=>{});

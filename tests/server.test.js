@@ -8,6 +8,12 @@ import { Store } from '../src/store.js';
 import { Runner } from '../src/runner.js';
 import { defaultConfig } from '../src/core.js';
 
+async function compactStatusFixture(t) {
+  const value = await resumeVerificationServer(t, { eligible: true, greetingStatus: 'none', resumeStatus: 'none', evidence: { privateDetail: 'synthetic fixture evidence' } });
+  value.store.appendEvent({ type: 'fixture', message: '合成日志', detail: 'not displayed', at: '2026-01-01T00:00:00.000Z' });
+  return { ...value, read: query => fetch(value.base + '/api/status' + (query ? '?' + query : '')) };
+}
+
 async function resumeVerificationServer(t, patch = { eligible: true, greetingStatus: 'sent', resumeStatus: 'unavailable' }) {
   const dir = mkdtempSync(join(tmpdir(), 'boss-resume-verification-'));
   const store = new Store(dir);
@@ -31,7 +37,7 @@ async function resumeVerificationServer(t, patch = { eligible: true, greetingSta
   t.after(async () => { await runner.stop(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); rmSync(dir, { recursive: true, force: true }); });
   const base = `http://127.0.0.1:${server.address().port}`;
   const send = (body, headers = {}, path = '/api/verify-resume') => fetch(base + path, { method: 'POST', headers: { Origin: base, 'x-boss-token': 'resume-verify-token', 'content-type': 'application/json', ...headers }, body: JSON.stringify(body) });
-  return { store, runner, trace, send, target };
+  return { store, runner, trace, send, target, base };
 }
 
 async function greetingVerificationServer(t, patch = { eligible: true, greetingStatus: 'none', resumeStatus: 'none' }) {
@@ -358,4 +364,58 @@ test('inspect without an installed callback reports unavailable', async t => {
   const base = `http://127.0.0.1:${server.address().port}`;
   const response = await fetch(base + '/api/inspect', { method: 'POST', headers: { Origin: base, 'x-boss-token': 'inspect-token', 'content-type': 'application/json' }, body: '{}' });
   assert.equal(response.status, 501);
+});
+
+test('dashboard status projects all displayed records while the legacy status keeps complete evidence', async t => {
+  const { read, trace } = await compactStatusFixture(t);
+  const legacy = await (await read('')).json();
+  const compact = await (await read('view=dashboard')).json();
+  assert.equal(legacy.jobs[0].description, 'AI Agent 智能体开发');
+  assert.deepEqual(legacy.jobs[0].evidence, { privateDetail: 'synthetic fixture evidence' });
+  assert.equal(compact.jobs.length, legacy.jobs.length);
+  for (const key of ['key', 'url', 'title', 'company', 'city', 'eligible', 'greetingStatus', 'resumeStatus', 'note']) assert.deepEqual(compact.jobs[0][key], legacy.jobs[0][key]);
+  for (const key of ['description', 'tags', 'evidence', 'id', 'createdAt', 'updatedAt']) assert.equal(Object.hasOwn(compact.jobs[0], key), false);
+  assert.equal(compact.events[0].message, legacy.events[0].message);
+  assert.equal(Object.hasOwn(compact.events[0], 'detail'), false);
+  assert.deepEqual(compact.runner.counts, legacy.runner.counts);
+  assert.deepEqual(compact.catalogs, legacy.catalogs);
+  assert.ok(compact.versions.jobs && compact.versions.events && compact.versions.catalogs);
+  assert.equal(trace.opened, 0); assert.equal(trace.sent, 0);
+});
+
+test('dashboard status omits unchanged collections and resends only the changed collection', async t => {
+  const { read, store, target } = await compactStatusFixture(t);
+  const first = await (await read('view=dashboard')).json();
+  const query = new URLSearchParams({ view: 'dashboard', knownJobs: first.versions.jobs, knownEvents: first.versions.events, knownCatalogs: first.versions.catalogs });
+  const unchanged = await (await read(query)).json();
+  for (const key of ['jobs', 'events', 'cities', 'catalogs']) assert.equal(Object.hasOwn(unchanged, key), false);
+  assert.ok(unchanged.runner && unchanged.config);
+  store.appendEvent({ type: 'later', message: '新的合成日志' });
+  const eventChange = await (await read(query)).json();
+  assert.equal(Object.hasOwn(eventChange, 'jobs'), false);
+  assert.equal(eventChange.events[0].message, '新的合成日志');
+  assert.notEqual(eventChange.versions.events, first.versions.events);
+  query.set('knownEvents', eventChange.versions.events);
+  store.upsertJob(target, { greetingStatus: 'uncertain', note: '合成未确认结果' });
+  const jobChange = await (await read(query)).json();
+  assert.equal(Object.hasOwn(jobChange, 'events'), false);
+  assert.equal(jobChange.jobs[0].greetingStatus, 'uncertain');
+  assert.equal(jobChange.runner.counts.uncertain, 1);
+  assert.notEqual(jobChange.versions.jobs, first.versions.jobs);
+});
+
+test('dashboard restart resends records even when stored revision numbers coincide', async t => {
+  const { read, store, runner } = await compactStatusFixture(t);
+  const first = await (await read('view=dashboard')).json();
+  const server = createServer({ store, runner, token: 'second-status-token', publicDir: join(import.meta.dirname, '../public') });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(async () => { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); });
+  const query = new URLSearchParams({ view: 'dashboard', knownJobs: first.versions.jobs, knownEvents: first.versions.events, knownCatalogs: first.versions.catalogs });
+  const next = await (await fetch(`http://127.0.0.1:${server.address().port}/api/status?${query}`)).json();
+  assert.equal(next.jobs.length, first.jobs.length);
+  assert.equal(next.events.length, first.events.length);
+  assert.notEqual(next.versions.jobs, first.versions.jobs);
+  assert.notEqual(next.versions.events, first.versions.events);
+  assert.equal(next.versions.catalogs, first.versions.catalogs);
+  assert.equal(Object.hasOwn(next, 'catalogs'), false);
 });

@@ -7,6 +7,7 @@ import { boundEvent } from './logging.js';
 const greetingStates = new Set(['none', 'intent', 'sent', 'existing', 'uncertain']);
 const resumeStates = new Set(['none', 'intent', 'requested', 'sent', 'unavailable', 'uncertain']);
 const eventLimit = 500;
+const jobSummaryFields = ['key', 'url', 'title', 'company', 'city', 'eligible', 'greetingStatus', 'resumeStatus', 'note', 'reasons'];
 
 function copy(value) {
   const serialized = JSON.stringify(value);
@@ -78,6 +79,10 @@ export class Store {
   #state;
   #configFile;
   #stateFile;
+  #jobsRevision = 0;
+  #eventsRevision = 0;
+  #progressCache;
+  #jobSummariesCache;
 
   constructor(dataDir) {
     if (typeof dataDir !== 'string' || !dataDir.trim()) throw new TypeError('需要数据目录');
@@ -102,24 +107,30 @@ export class Store {
     }
     const recovered = copy(this.#state);
     recovered.events = this.#state.events.slice(-eventLimit).map(boundEvent);
-    let changed = JSON.stringify(recovered.events) !== JSON.stringify(this.#state.events);
+    const eventsChanged = JSON.stringify(recovered.events) !== JSON.stringify(this.#state.events);
+    let jobsChanged = false;
     const now = new Date().toISOString();
     for (const record of Object.values(recovered.jobs)) {
       let recoveredRecord = false;
       if (record.greetingStatus === 'intent') { record.greetingStatus = 'uncertain'; recoveredRecord = true; }
       if (record.resumeStatus === 'intent') { record.resumeStatus = 'uncertain'; recoveredRecord = true; }
       if (recoveredRecord) {
-        changed = true;
+        jobsChanged = true;
         record.updatedAt = now;
         record.note = [record.note, '上次运行中断，发送意图未确认；请人工核对后再操作。'].filter(Boolean).join('\n');
       }
     }
-    if (changed) this.#commit(recovered);
+    if (jobsChanged || eventsChanged) this.#commit(recovered, { jobsChanged, eventsChanged });
   }
 
-  #commit(state) {
+  get jobsRevision() { return this.#jobsRevision; }
+  get eventsRevision() { return this.#eventsRevision; }
+
+  #commit(state, { jobsChanged = false, eventsChanged = false } = {}) {
     atomicWrite(this.#stateFile, state);
     this.#state = state;
+    if (jobsChanged) this.#jobsRevision++;
+    if (eventsChanged) this.#eventsRevision++;
   }
 
   loadConfig() {
@@ -146,9 +157,10 @@ export class Store {
     const record = copy({ ...initial, ...previous, ...job, ...patch, key, createdAt: previous?.createdAt || now, updatedAt: now });
     if (!record.contactedAt && ['intent', 'sent', 'uncertain'].includes(record.greetingStatus)) record.contactedAt = now;
     assertRecord(record, key);
-    const state = copy(this.#state);
-    state.jobs[key] = record;
-    this.#commit(state);
+    // Records are owned, immutable snapshots. Copy the changed record and job
+    // container, retaining unchanged records without cloning their descriptions.
+    const state = { ...this.#state, jobs: { ...this.#state.jobs, [key]: record } };
+    this.#commit(state, { jobsChanged: true });
     return copy(record);
   }
 
@@ -162,28 +174,52 @@ export class Store {
     return Object.values(this.#state.jobs).map(copy).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
 
-  companyCounts() {
-    const contacted = new Set();
-    const delivered = new Set();
+  listJobSummaries() {
+    if (this.#jobSummariesCache?.revision !== this.#jobsRevision) {
+      const records = Object.values(this.#state.jobs).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+      this.#jobSummariesCache = { revision: this.#jobsRevision,
+        records: records.map(record => copy(Object.fromEntries(jobSummaryFields.map(field => [field, record[field]])))) };
+    }
+    return this.#jobSummariesCache.records.map(copy);
+  }
+
+  #progress() {
+    if (this.#progressCache?.revision === this.#jobsRevision) return this.#progressCache;
+    const counts = { discovered: 0, eligible: 0, contacted: 0, existing: 0, requested: 0, delivered: 0, uncertain: 0 };
+    const contacted = new Set(), delivered = new Set(), contactCompanies = new Set(), resumeCompanies = new Set();
     for (const record of Object.values(this.#state.jobs)) {
+      counts.discovered++;
+      if (record.eligible) counts.eligible++;
+      if (record.greetingStatus === 'sent') counts.contacted++;
+      if (record.greetingStatus === 'existing') counts.existing++;
+      if (record.resumeStatus === 'requested') counts.requested++;
+      if (record.resumeStatus === 'sent') counts.delivered++;
+      if (record.greetingStatus === 'uncertain' || record.resumeStatus === 'uncertain') counts.uncertain++;
       const company = normalizeCompany(record.company);
       if (!company) continue;
       if (record.greetingStatus === 'sent') contacted.add(company);
       if (record.resumeStatus === 'sent') delivered.add(company);
-    }
-    return { contactedCompanies: contacted.size, deliveredCompanies: delivered.size };
-  }
-
-  companyReservations() {
-    const contactCompanies = new Set();
-    const resumeCompanies = new Set();
-    for (const record of Object.values(this.#state.jobs)) {
-      const company = normalizeCompany(record.company);
-      if (!company) continue;
       if (['sent', 'intent', 'uncertain'].includes(record.greetingStatus)) contactCompanies.add(company);
       if (['sent', 'intent', 'uncertain'].includes(record.resumeStatus)) resumeCompanies.add(company);
     }
-    return { contactCompanies, resumeCompanies };
+    this.#progressCache = { revision: this.#jobsRevision, counts,
+      contactedCompanies: contacted.size, deliveredCompanies: delivered.size, contactCompanies, resumeCompanies };
+    return this.#progressCache;
+  }
+
+  getProgressSummary() {
+    const progress = this.#progress();
+    return { counts: { ...progress.counts }, contactedCompanies: progress.contactedCompanies, deliveredCompanies: progress.deliveredCompanies };
+  }
+
+  companyCounts() {
+    const progress = this.#progress();
+    return { contactedCompanies: progress.contactedCompanies, deliveredCompanies: progress.deliveredCompanies };
+  }
+
+  companyReservations() {
+    const progress = this.#progress();
+    return { contactCompanies: new Set(progress.contactCompanies), resumeCompanies: new Set(progress.resumeCompanies) };
   }
 
   hasContactedCompany(name, { excludeKey } = {}) {
@@ -195,10 +231,8 @@ export class Store {
   appendEvent(event) {
     if (!object(event)) throw new TypeError('日志必须是对象');
     const record = copy(boundEvent({ ...event, id: crypto.randomUUID(), at: event.at || new Date().toISOString() }));
-    const state = copy(this.#state);
-    state.events.push(record);
-    if (state.events.length > eventLimit) state.events = state.events.slice(-eventLimit);
-    this.#commit(state);
+    const state = { ...this.#state, events: [...this.#state.events, record].slice(-eventLimit) };
+    this.#commit(state, { eventsChanged: true });
     return copy(record);
   }
 

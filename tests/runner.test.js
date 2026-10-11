@@ -46,6 +46,46 @@ function greetingTrialFixture(t, overrides = {}) {
   return { ...value, targets, keys, calls };
 }
 
+test('runner snapshots read cached progress without cloning or sorting full jobs', t => {
+  const { store, runner } = fixture(t, { contactCompanyTarget: 1, resumeCompanyTarget: 1 });
+  store.upsertJob(job, { eligible: true, greetingStatus: 'intent', resumeStatus: 'requested' });
+  store.listJobs = () => { throw Error('full job projection is not a progress summary'); };
+  const initial = runner.snapshot();
+  assert.deepEqual(initial.counts, { discovered: 1, eligible: 1, contacted: 0, existing: 0, requested: 1, delivered: 0, uncertain: 0 });
+  assert.equal(initial.goal.complete, false);
+  initial.counts.discovered = 999;
+  store.appendEvent({ type: 'test', message: 'only logs changed' });
+  assert.equal(runner.snapshot().counts.discovered, 1);
+  store.upsertJob(job, { eligible: false, greetingStatus: 'sent', resumeStatus: 'sent' });
+  assert.deepEqual(runner.snapshot().counts, { discovered: 1, eligible: 0, contacted: 1, existing: 0, requested: 0, delivered: 1, uncertain: 0 });
+  assert.equal(runner.snapshot().goal.complete, true);
+  store.upsertJob(job, { greetingStatus: 'uncertain', resumeStatus: 'uncertain' });
+  assert.equal(runner.snapshot().counts.uncertain, 1);
+  assert.equal(runner.snapshot().goal.complete, false);
+});
+
+test('cached progress honors changed goal targets and corrected company reservations without a job rewrite', t => {
+  const { store, runner } = fixture(t, { contactCompanyTarget: 2, resumeCompanyTarget: 1 });
+  store.upsertJob(job, { greetingStatus: 'sent', resumeStatus: 'sent' });
+  assert.equal(runner.goalSnapshot().complete, false);
+  const revision = store.jobsRevision;
+  store.saveConfig({ ...store.loadConfig(), contactCompanyTarget: 1 });
+  assert.equal(store.jobsRevision, revision);
+  assert.equal(runner.goalSnapshot().complete, true);
+  store.upsertJob(job, { greetingStatus: 'uncertain', resumeStatus: 'intent' });
+  const first = runner.goalCapacity(store.loadConfig());
+  assert.equal(first.contactFull, true);
+  assert.equal(first.resumeFull, true);
+  first.contactCompanies.clear();
+  first.resumeCompanies.clear();
+  assert.equal(runner.goalCapacity(store.loadConfig()).contactFull, true);
+  assert.equal(runner.goalSnapshot().complete, false);
+  store.upsertJob(job, { greetingStatus: 'none', resumeStatus: 'none' });
+  const corrected = runner.goalCapacity(store.loadConfig());
+  assert.equal(corrected.contactFull, false);
+  assert.equal(corrected.resumeFull, false);
+});
+
 test('bounded greeting preview refreshes exactly selected stale eligibility without contacting anyone', async t => {
   const { store, browser, runner, keys, targets, calls } = greetingTrialFixture(t);
   store.upsertJob(targets[1], { eligible: false });

@@ -388,3 +388,119 @@ test('company reservations retain unresolved intents across restart and release 
   assert.equal(reopened.companyReservations().contactCompanies.size, 0);
   assert.equal(reopened.companyReservations().resumeCompanies.size, 0);
 });
+
+test('job and event revisions are independent, read-only and advance after successful commits only', t => {
+  const { dir, store } = temporaryStore(t);
+  assert.equal(store.jobsRevision, 0);
+  assert.equal(store.eventsRevision, 0);
+  assert.throws(() => { store.jobsRevision = 99; }, TypeError);
+  assert.throws(() => { store.eventsRevision = 99; }, TypeError);
+  store.upsertJob(job, { eligible: true });
+  assert.deepEqual([store.jobsRevision, store.eventsRevision], [1, 0]);
+  store.appendEvent({ type: 'test', message: 'A log is not a job update' });
+  assert.deepEqual([store.jobsRevision, store.eventsRevision], [1, 1]);
+  store.saveConfig({ setupComplete: true });
+  assert.deepEqual([store.jobsRevision, store.eventsRevision], [1, 1]);
+  assert.throws(() => store.upsertJob(job, { greetingStatus: 'invalid' }));
+  const file = path.join(dir, 'state.json');
+  fs.renameSync(file, `${file}.saved`);
+  fs.mkdirSync(file);
+  assert.throws(() => store.upsertJob(job, { greetingStatus: 'intent' }));
+  assert.throws(() => store.appendEvent({ type: 'test', message: 'must not commit' }));
+  assert.deepEqual([store.jobsRevision, store.eventsRevision], [1, 1]);
+  assert.equal(store.getJob('job:one').greetingStatus, 'none');
+  assert.equal(store.listEvents().length, 1);
+});
+
+test('lightweight job summaries retain every record and order while omitting private detail fields', t => {
+  const { store } = temporaryStore(t);
+  store.upsertJob(job, { eligible: true, reasons: ['One reason'], evidence: { private: 'receipt' }, recruiterName: 'private name' });
+  store.upsertJob({ ...job, id: 'two', url: '/job_detail/two.html', company: '另一公司' }, { reasons: ['Other reason'] });
+  const fields = ['key', 'url', 'title', 'company', 'city', 'eligible', 'greetingStatus', 'resumeStatus', 'note', 'reasons'];
+  const expected = store.listJobs().map(record => JSON.parse(JSON.stringify(Object.fromEntries(fields.map(field => [field, record[field]])))));
+  store.listJobs = () => { throw Error('summary must not clone every full description'); };
+  const actual = store.listJobSummaries();
+  assert.deepEqual(actual, expected);
+  assert.ok(actual.every(record => Object.keys(record).every(field => fields.includes(field))));
+  actual[0].reasons.push('caller edit');
+  actual[0].title = 'caller title';
+  actual.reverse();
+  assert.deepEqual(store.listJobSummaries(), expected);
+  const input = { type: 'test', message: 'nested log', details: { values: [1] } };
+  const result = store.appendEvent(input);
+  input.details.values.push(2);
+  result.details.values.push(3);
+  assert.deepEqual(store.listJobSummaries(), expected);
+  assert.deepEqual(store.listEvents()[0].details.values, [1]);
+  store.upsertJob(job, { reasons: ['Changed after cache'], eligible: false });
+  assert.deepEqual(store.listJobSummaries().find(record => record.key === 'job:one').reasons, ['Changed after cache']);
+  assert.equal(store.getJob('job:one').description, job.description);
+});
+
+test('progress summary and company caches preserve all state combinations and invalidate after correction', t => {
+  const { store } = temporaryStore(t);
+  const greetings = ['none', 'intent', 'sent', 'existing', 'uncertain'];
+  const resumes = ['none', 'intent', 'requested', 'sent', 'unavailable', 'uncertain'];
+  let index = 0;
+  for (const greetingStatus of greetings) for (const resumeStatus of resumes) {
+    const id = `matrix-${index++}`;
+    store.upsertJob({ ...job, id, url: `/job_detail/${id}.html`, company: index % 5 === 0 ? '' : index % 2 === 0 ? ' ＡＣＭＥ　科技 ' : 'ACME  科技' }, { eligible: index % 2 === 0, greetingStatus, resumeStatus });
+  }
+  const expected = () => {
+    const records = store.listJobs();
+    return { counts: {
+      discovered: records.length, eligible: records.filter(record => record.eligible).length,
+      contacted: records.filter(record => record.greetingStatus === 'sent').length,
+      existing: records.filter(record => record.greetingStatus === 'existing').length,
+      requested: records.filter(record => record.resumeStatus === 'requested').length,
+      delivered: records.filter(record => record.resumeStatus === 'sent').length,
+      uncertain: records.filter(record => record.greetingStatus === 'uncertain' || record.resumeStatus === 'uncertain').length,
+    }, contactedCompanies: 1, deliveredCompanies: 1 };
+  };
+  const summary = store.getProgressSummary();
+  assert.deepEqual(summary, expected());
+  summary.counts.discovered = 999;
+  summary.contactedCompanies = 999;
+  const reserved = store.companyReservations();
+  reserved.contactCompanies.clear();
+  reserved.resumeCompanies.add('invented');
+  assert.deepEqual(store.getProgressSummary(), expected());
+  assert.deepEqual([...store.companyReservations().contactCompanies], ['acme 科技']);
+  assert.deepEqual([...store.companyReservations().resumeCompanies], ['acme 科技']);
+  store.appendEvent({ type: 'test', message: 'summary stays current' });
+  assert.deepEqual(store.getProgressSummary(), expected());
+  store.upsertJob(store.getJob('job:matrix-0'), { company: '新公司', eligible: true, greetingStatus: 'sent', resumeStatus: 'sent' });
+  assert.deepEqual(store.getProgressSummary(), { ...expected(), contactedCompanies: 2, deliveredCompanies: 2 });
+  assert.deepEqual(store.companyCounts(), { contactedCompanies: 2, deliveredCompanies: 2 });
+  store.upsertJob(store.getJob('job:matrix-0'), { greetingStatus: 'none', resumeStatus: 'none' });
+  assert.deepEqual(store.getProgressSummary(), expected());
+});
+
+test('failed mutations retain warmed summaries, company reservations and revisions', t => {
+  const { store } = temporaryStore(t);
+  store.upsertJob(job, { eligible: true });
+  const before = { summary: store.getProgressSummary(), jobs: store.listJobSummaries(), revisions: [store.jobsRevision, store.eventsRevision], companies: store.companyReservations() };
+  const original = fs.renameSync;
+  try {
+    fs.renameSync = () => { throw Object.assign(Error('synthetic rename failure'), { code: 'EIO' }); };
+    assert.throws(() => store.upsertJob(job, { greetingStatus: 'intent', resumeStatus: 'intent' }));
+    assert.throws(() => store.appendEvent({ type: 'test', message: 'uncommitted' }));
+  } finally { fs.renameSync = original; }
+  assert.deepEqual(store.getProgressSummary(), before.summary);
+  assert.deepEqual(store.listJobSummaries(), before.jobs);
+  assert.deepEqual([store.jobsRevision, store.eventsRevision], before.revisions);
+  assert.deepEqual(store.companyReservations(), before.companies);
+});
+
+test('restart recovery advances job revision and builds summaries from recovered unknown outcomes', t => {
+  const { dir, store } = temporaryStore(t);
+  store.upsertJob(job, { eligible: true, greetingStatus: 'intent', resumeStatus: 'intent' });
+  const recovered = new Store(dir);
+  assert.deepEqual([recovered.jobsRevision, recovered.eventsRevision], [1, 0]);
+  assert.deepEqual(recovered.getProgressSummary(), { counts: { discovered: 1, eligible: 1, contacted: 0, existing: 0, requested: 0, delivered: 0, uncertain: 1 }, contactedCompanies: 0, deliveredCompanies: 0 });
+  assert.equal(recovered.listJobSummaries()[0].greetingStatus, 'uncertain');
+  assert.equal(recovered.listJobSummaries()[0].resumeStatus, 'uncertain');
+  assert.equal(recovered.companyReservations().contactCompanies.size, 1);
+  assert.equal(recovered.companyReservations().resumeCompanies.size, 1);
+  assert.equal(recovered.dailyContacts(new Date()), 1);
+});

@@ -397,7 +397,7 @@ test('a delayed configuration save stays locked and later role saves preserve it
 test('a save after a failed status refresh synchronizes stored rules before saving another target',async t=>{
  const {page,store}=await roleRulesDashboard(t,[{targetRole:'AI Agent',keywords:['产品']},{targetRole:'Go开发',keywords:['培训']}]);
  let statusOffline=false,submissions=0;
- await page.route('**/api/status',route=>statusOffline?route.abort('connectionreset'):route.continue());
+ await page.route('**/api/status*',route=>statusOffline?route.abort('connectionreset'):route.continue());
  await page.route('**/api/config',async route=>{
    if(route.request().method()!=='POST')return route.continue();
    submissions++;
@@ -415,7 +415,7 @@ test('a save after a failed status refresh synchronizes stored rules before savi
  await chooseRole(page,'Go开发');await target.press('Tab');
  await page.waitForFunction(()=>document.querySelector('[name="queries"]').value==='Go开发');
  await field.fill('客服');
- const syncAttempt=page.waitForRequest(r=>r.url().endsWith('/api/status'));
+ const syncAttempt=page.waitForRequest(r=>new URL(r.url()).pathname==='/api/status');
  await save.click();await syncAttempt;
  await page.waitForFunction(()=>!document.querySelector('button[value="save"]').disabled);
  assert.equal(submissions,1);
@@ -434,7 +434,7 @@ test('a delayed status response from before a save cannot restore old target rul
  await page.waitForFunction(()=>document.querySelector('[name="roleTitleExclusionTerms"]').value==='产品');
  let release,ready,heldOnce=false;
  const held=new Promise(resolve=>{release=resolve;}),oldRead=new Promise(resolve=>{ready=resolve;});
- await page.route('**/api/status',async route=>{
+ await page.route('**/api/status*',async route=>{
    if(heldOnce)return route.continue();
    heldOnce=true;const response=await route.fetch();ready();await held;
    await route.fulfill({response,headers:{...response.headers(),'x-fixture-old-status':'true'}});
@@ -668,4 +668,68 @@ test('basic settings keep role city and type visible while optional targets stay
  assert.equal(await page.getByRole('button',{name:'开始投递',exact:true}).count(),1);
  await page.getByText('数量与高级设置',{exact:true}).click();
  assert.equal(await page.locator('#goal-settings').isVisible(),true);
+});
+
+
+const syntheticDashboardJob={id:'dashboard_fixture',url:'https://www.zhipin.com/job_detail/dashboard_fixture.html',title:'AI Agent 合成测试',company:'合成测试公司',city:'北京'};
+
+test('unchanged dashboard lists retain nodes while filters and visible note updates still render',async t=>{
+ const {page,store}=await roleRulesDashboard(t,[]);
+ store.upsertJob(syntheticDashboardJob,{eligible:true,note:'初始说明',greetingStatus:'uncertain'});
+ store.appendEvent({type:'fixture',message:'合成日志'});
+ await page.evaluate(()=>refresh());
+ const result=await page.evaluate(()=>{
+   const row=document.querySelector('#jobs tr'),event=document.querySelector('#events li');let changes=0;
+   const observer=new MutationObserver(records=>{changes+=records.length;});observer.observe(document.getElementById('jobs'),{childList:true});observer.observe(document.getElementById('events'),{childList:true});
+   for(let i=0;i<3;i++)render(state);
+   changes+=observer.takeRecords().length;observer.disconnect();
+   return {sameRow:row===document.querySelector('#jobs tr'),sameEvent:event===document.querySelector('#events li'),changes};
+ });
+ assert.deepEqual(result,{sameRow:true,sameEvent:true,changes:0});
+ await page.locator('#filter').selectOption('sent');assert.match(await page.locator('#jobs').textContent(),/暂时没有记录/u);
+ await page.locator('#filter').selectOption('uncertain');assert.match(await page.locator('#jobs').textContent(),/初始说明/u);
+ store.upsertJob(syntheticDashboardJob,{note:'已更新说明'});await page.evaluate(()=>refresh());assert.match(await page.locator('#jobs').textContent(),/已更新说明/u);assert.equal(await page.getByRole('button',{name:'核对结果'}).count(),1);
+});
+
+test('partial dashboard snapshots keep lists and catalogs, accept restart versions, and explicit empty lists clear',async t=>{
+ const {page}=await roleRulesDashboard(t,[]);
+ const baseline=await page.evaluate(async()=>await(await fetch('/api/status')).json());
+ const first={...baseline,jobs:[{...syntheticDashboardJob,key:'job:dashboard_fixture',eligible:true,greetingStatus:'none',resumeStatus:'none'}],events:[{at:'2026-10-11T00:00:00.000Z',message:'保留日志'}],versions:{jobs:'one-jobs',events:'one-events',catalogs:'one-catalogs'}};
+ let calls=0;const requests=[];
+ await page.route('**/api/status*',async route=>{
+   const url=new URL(route.request().url());requests.push(Object.fromEntries(url.searchParams));calls++;
+   if(calls===1)return route.fulfill({json:first});
+   const partial={runner:{status:'idle',counts:{}},config:baseline.config,extension:null,versions:{jobs:calls<3?'one-jobs':'two-jobs',events:calls<3?'one-events':'two-events',catalogs:'one-catalogs'}};
+   if(calls>=3){partial.jobs=[];partial.events=[];}
+   return route.fulfill({json:partial});
+ });
+ await page.evaluate(()=>refresh({force:true}));await page.getByLabel('目标岗位',{exact:true}).fill('尚未保存的岗位');
+ const options=await page.getByLabel('目标城市',{exact:true}).locator('option').count();
+ await page.evaluate(()=>refresh({force:true}));
+ assert.equal(requests[1].view,'dashboard');assert.equal(requests[1].knownJobs,'one-jobs');assert.equal(requests[1].knownEvents,'one-events');assert.equal(requests[1].knownCatalogs,'one-catalogs');
+ assert.match(await page.locator('#jobs').textContent(),/AI Agent 合成测试/u);assert.match(await page.locator('#events').textContent(),/保留日志/u);
+ assert.equal(await page.getByLabel('目标城市',{exact:true}).locator('option').count(),options);assert.equal(await page.getByLabel('目标岗位',{exact:true}).inputValue(),'尚未保存的岗位');
+ await page.evaluate(()=>refresh({force:true}));assert.match(await page.locator('#jobs').textContent(),/暂时没有记录/u);assert.equal(await page.locator('#events li').count(),0);
+ await page.evaluate(()=>refresh({force:true}));assert.equal(requests[3].knownJobs,'two-jobs');assert.equal(requests[3].knownEvents,'two-events');
+});
+
+test('routine dashboard refreshes coalesce while an action gets a fresh independent snapshot',async t=>{
+ const runner={status:'running',async stop(){this.status='stopped';},snapshot(){return{status:this.status,counts:{}};}};
+ const {page}=await roleRulesDashboard(t,[],runner);let release,ready,calls=0;
+ const held=new Promise(r=>release=r),seen=new Promise(r=>ready=r);t.after(()=>release());
+ await page.route('**/api/status*',async route=>{calls++;if(calls===1){const response=await route.fetch();ready();await held;return route.fulfill({response,headers:{...response.headers(),'x-stale-fixture':'true'}});}return route.continue();});
+ await page.evaluate(()=>{window.fixtureRead=refresh();});await seen;
+ await page.evaluate(()=>{window.fixtureRead2=refresh();window.fixtureRead3=refresh();});await page.waitForTimeout(100);assert.equal(calls,1);
+ await page.locator('#stop').click();await page.waitForFunction(()=>document.getElementById('status').textContent==='已停止');assert.equal(calls,2);
+ release();await page.evaluate(()=>Promise.all([window.fixtureRead,window.fixtureRead2,window.fixtureRead3]));
+ assert.equal(await page.locator('#status').textContent(),'已停止');assert.equal(await page.locator('#notice').isVisible(),false);
+});
+
+test('an old status failure after STOP cannot show a disconnected notice over its new snapshot',async t=>{
+ const runner={status:'running',async stop(){this.status='stopped';},snapshot(){return{status:this.status,counts:{}};}};
+ const {page}=await roleRulesDashboard(t,[],runner);let release,ready,calls=0;
+ const held=new Promise(r=>release=r),seen=new Promise(r=>ready=r);t.after(()=>release());
+ await page.route('**/api/status*',async route=>{calls++;if(calls===1){ready();await held;return route.abort('connectionreset');}return route.continue();});
+ await page.evaluate(()=>{window.fixtureRead=refresh();});await seen;await page.locator('#stop').click();await page.waitForFunction(()=>document.getElementById('status').textContent==='已停止');release();await page.evaluate(()=>window.fixtureRead);
+ assert.equal(await page.locator('#notice').isVisible(),false);assert.equal(await page.locator('#status').textContent(),'已停止');
 });

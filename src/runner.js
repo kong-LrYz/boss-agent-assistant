@@ -68,18 +68,11 @@ export class Runner extends EventEmitter {
     this.jobRecoveries = new Map();
   }
   snapshot() {
-    const jobs = this.store.listJobs();
+    const { counts } = this.store.getProgressSummary();
     const metrics = this.state.performance;
     metrics.elapsedMs = this.performanceStartedAt === null ? 0 : Math.max(0, (this.performanceFinishedAt ?? this.now()) - this.performanceStartedAt);
     metrics.confirmedPerHour = metrics.elapsedMs > 0 ? metrics.verifiedNewContacts * 3_600_000 / metrics.elapsedMs : 0;
-    return { ...this.state, performance: { ...metrics }, goal: this.goalSnapshot(), counts: {
-      discovered: jobs.length, eligible: jobs.filter(j => j.eligible).length,
-      contacted: jobs.filter(j => j.greetingStatus === 'sent').length,
-      existing: jobs.filter(j => j.greetingStatus === 'existing').length,
-      requested: jobs.filter(j => j.resumeStatus === 'requested').length,
-      delivered: jobs.filter(j => j.resumeStatus === 'sent').length,
-      uncertain: jobs.filter(j => j.greetingStatus === 'uncertain' || j.resumeStatus === 'uncertain').length
-    } };
+    return { ...this.state, performance: { ...metrics }, goal: this.goalSnapshot(), counts };
   }
   goalSnapshot(config = this.store.loadConfig()) {
     const counts = this.store.companyCounts();
